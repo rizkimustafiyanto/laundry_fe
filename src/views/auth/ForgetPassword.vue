@@ -7,7 +7,7 @@
       <h2 class="text-2xl font-bold text-center text-gray-800">Lupa Password</h2>
 
       <div v-if="message" class="text-center mb-4">
-        <p :class="{'text-red-500': isError, 'text-green-500': !isError}">{{ message }}</p>
+        <p :class="{ 'text-red-500': isError, 'text-green-500': !isError }">{{ message }}</p>
       </div>
 
       <input
@@ -26,7 +26,9 @@
       </button>
 
       <div class="text-center mt-4">
-        <router-link to="/login" class="text-blue-600 hover:underline text-sm">Kembali ke Login</router-link>
+        <router-link to="/login" class="text-blue-600 hover:underline text-sm"
+          >Kembali ke Login</router-link
+        >
       </div>
     </form>
   </div>
@@ -35,11 +37,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/auth/user'
-import { useUIStore } from '@/stores/modal/ui'
+import { useAuthStore } from '@/stores/auth/auth'
+import { useUIStore } from '@/stores/component/ui'
 
 const router = useRouter()
-const userStore = useUserStore()
+const userStore = useAuthStore()
 const ui = useUIStore()
 
 const email = ref('')
@@ -50,10 +52,10 @@ const handleSubmit = async () => {
   const response = await userStore.forgetPassword(email.value)
 
   if (response.status === 200) {
-    ui.show('Berhasil', `Congratulation`)
+    ui.show('success', `Congratulation`)
     router.push('/login')
   } else {
-    ui.show('Failed', response.message)
+    ui.show('failed', response.message)
   }
 }
 </script>

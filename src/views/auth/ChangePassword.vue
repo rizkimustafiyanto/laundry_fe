@@ -7,12 +7,12 @@
       <h2 class="text-2xl font-bold text-center text-gray-800">Ubah Password</h2>
 
       <div v-if="message" class="text-center mb-4">
-        <p :class="{'text-red-500': isError, 'text-green-500': !isError}">{{ message }}</p>
+        <p :class="{ 'text-red-500': isError, 'text-green-500': !isError }">{{ message }}</p>
       </div>
 
       <input
         v-model="token"
-        type="text"
+        type="hidden"
         placeholder="Token Reset Password"
         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         required
@@ -42,7 +42,9 @@
       </button>
 
       <div class="text-center mt-4">
-        <router-link to="/login" class="text-blue-600 hover:underline text-sm">Kembali ke Login</router-link>
+        <router-link to="/login" class="text-blue-600 hover:underline text-sm"
+          >Kembali ke Login</router-link
+        >
       </div>
     </form>
   </div>
@@ -51,12 +53,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/auth/user'
-import { useUIStore } from '@/stores/modal/ui'
+import { useAuthStore } from '@/stores/auth/auth'
+import { useUIStore } from '@/stores/component/ui'
 
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
+const userStore = useAuthStore()
 const ui = useUIStore()
 
 const token = ref(route.query.token || '')
@@ -79,10 +81,10 @@ const handleSubmit = async () => {
   const response = await userStore.changePassword(payload)
 
   if (response.status === 200) {
-    ui.show('Berhasil', `Congratulation, ${response.data.message}`)
+    ui.show('success', `Congratulation, ${response.message}`)
     router.push('/login')
   } else {
-    ui.show('Failed', response.message)
+    ui.show('failed', response.message)
   }
 }
 </script>

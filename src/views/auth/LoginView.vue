@@ -25,21 +25,17 @@
           @click="showPassword = !showPassword"
           class="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
         >
-          <font-awesome-icon
-            :icon="!showPassword ? 'eye-slash' : 'eye'"
-            class="w-5 h-5"
-          />
+          <font-awesome-icon :icon="!showPassword ? 'eye-slash' : 'eye'" class="w-5 h-5" />
         </button>
       </div>
 
       <button
         type="submit"
-        class="w-full bg-blue-500 text-white py-2 px-4 rounded-md transition-all duration-300 hover:bg-blue-600 hover:scale-105"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
       >
         Login
       </button>
 
-      <!-- Tombol tambahan -->
       <div class="flex justify-between mt-4 text-sm text-blue-600">
         <button
           type="button"
@@ -60,15 +56,14 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/auth/user'
-import { useUIStore } from '@/stores/modal/ui'
+import { useAuthStore } from '@/stores/auth/auth'
+import { useUIStore } from '@/stores/component/ui'
 
 const router = useRouter()
-const userStore = useUserStore()
+const userStore = useAuthStore()
 const ui = useUIStore()
 const showPassword = ref(false)
 
@@ -79,10 +74,10 @@ const login = async () => {
   const result = await userStore.login(email.value, password.value)
 
   if (result.status === 200) {
-    ui.show('✅ Login Berhasil', `Selamat datang, ${result.user.name}`)
-    
+    ui.show('success', `Selamat datang, ${result.user.name}`)
+
     if (userStore.role === 'SUPER_ADMIN') {
-      router.push('/admin/dashboard')
+      router.push('/home')
     } else if (userStore.role === 'OWNER') {
       router.push('/owner/dashboard')
     } else if (userStore.role === 'CUSTOMER') {
@@ -91,7 +86,7 @@ const login = async () => {
       router.push('/unauthorized')
     }
   } else {
-    ui.show('❌ Login Gagal', result.message)
+    ui.show('failed', result.message)
   }
 }
 

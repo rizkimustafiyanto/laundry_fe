@@ -32,10 +32,7 @@
           @click="showPassword = !showPassword"
           class="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
         >
-          <font-awesome-icon
-            :icon="!showPassword ? 'eye-slash' : 'eye'"
-            class="w-5 h-5"
-          />
+          <font-awesome-icon :icon="!showPassword ? 'eye-slash' : 'eye'" class="w-5 h-5" />
         </button>
       </div>
 
@@ -47,11 +44,7 @@
       </button>
 
       <div class="text-center">
-        <button
-          type="button"
-          @click="goToLogin"
-          class="text-blue-600 hover:underline text-sm"
-        >
+        <button type="button" @click="goToLogin" class="text-blue-600 hover:underline text-sm">
           Sudah punya akun? Login
         </button>
       </div>
@@ -62,11 +55,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/auth/user'
-import { useUIStore } from '@/stores/modal/ui'
+import { useAuthStore } from '@/stores/auth/auth'
+import { useUIStore } from '@/stores/component/ui'
 
 const router = useRouter()
-const userStore = useUserStore()
+const userStore = useAuthStore()
 const ui = useUIStore()
 
 const name = ref('')
@@ -97,21 +90,21 @@ const register = async () => {
   let payload = {
     name: name.value,
     email: email.value,
-    password: password.value
+    password: password.value,
   }
 
   try {
     const result = await userStore.register(payload)
 
     if (result.status === 201) {
-      ui.show('✅ Register Berhasil', `Selamat datang, ${result.user.name}`)
+      ui.show('success', `Selamat datang, ${result.user.name}`)
       resetForm()
       goToLogin()
     } else {
-      ui.show('❌ Register Gagal', result.message)
+      ui.show('failed', result.message)
     }
   } catch (error) {
-    ui.show('❌ Terjadi kesalahan', 'Silakan coba lagi')
+    ui.show('failed', 'Silakan coba lagi')
   }
 }
 

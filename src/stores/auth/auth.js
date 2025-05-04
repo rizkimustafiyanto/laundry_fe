@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
 
-export const useUserStore = defineStore('user', {
+export const useAuthStore = defineStore('user', {
   state: () => ({
     user: JSON.parse(localStorage.getItem('user')) || null,
     token: localStorage.getItem('token') || null,
@@ -14,11 +14,10 @@ export const useUserStore = defineStore('user', {
         this.user = res.data.user
         this.token = res.data.token
         this.role = res.data.user.role
+
         localStorage.setItem('role', this.role)
         localStorage.setItem('user', JSON.stringify(this.user))
         localStorage.setItem('token', this.token)
-
-        console.log(res.data)
 
         return {
           status: res.status,
@@ -36,10 +35,23 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    checkTokenValidity() {
+      if (!this.token) return false
+
+      const decodedToken = JSON.parse(atob(this.token.split('.')[1]))
+      const currentTime = Date.now() / 1000
+
+      if (decodedToken.exp < currentTime) {
+        this.logout()
+        return false
+      }
+      return true
+    },
+
     async register(payload) {
       try {
         const res = await api.post('/auth/register', payload)
-    
+
         return {
           status: res.status,
           message: 'Register berhasil',
@@ -66,18 +78,10 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    logout() {
-      this.user = null
-      this.token = null
-      localStorage.removeItem('token')
-      localStorage.removeItem('role')
-      localStorage.removeItem('user')
-    },
-
     async forgetPassword(email) {
       try {
         const res = await api.post('/auth/forgot-password', { email })
-    
+
         return {
           status: res.status,
           message: res.data.message || 'Link reset password telah dikirim ke email Anda',
@@ -85,7 +89,7 @@ export const useUserStore = defineStore('user', {
       } catch (err) {
         const status = err.response?.status || 500
         const message = err.response?.data?.message || 'Terjadi kesalahan saat mengirim email reset'
-    
+
         return {
           status,
           message,
@@ -96,7 +100,7 @@ export const useUserStore = defineStore('user', {
     async changePassword(payload) {
       try {
         const res = await api.post('/auth/change-password', payload)
-    
+
         return {
           status: res.status,
           message: res.data.message || 'Link reset password telah dikirim ke email Anda',
@@ -104,12 +108,21 @@ export const useUserStore = defineStore('user', {
       } catch (err) {
         const status = err.response?.status || 500
         const message = err.response?.data?.message || 'Terjadi kesalahan saat mengirim email reset'
-    
+
         return {
           status,
           message,
         }
       }
+    },
+
+    logout() {
+      this.user = null
+      this.token = null
+      this.role = null
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      localStorage.removeItem('role')
     },
   },
 })

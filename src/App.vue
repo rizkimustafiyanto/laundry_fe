@@ -4,7 +4,7 @@
 
     <ResponseModal
       :visible="ui.showModal"
-      :title="ui.modalTitle"
+      :status="ui.modalStatus"
       :message="ui.modalMessage"
       @close="ui.hide"
     />
@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { useUIStore } from '@/stores/modal/ui'
+import { useUIStore } from '@/stores/component/ui'
 import ResponseModal from '@/components/ResponseModal.vue'
 
 const ui = useUIStore()

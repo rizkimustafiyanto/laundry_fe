@@ -3,11 +3,7 @@
     <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
       <div class="max-w-full mx-auto px-6 py-4 flex justify-between items-center">
         <div class="flex items-center space-x-4">
-          <img
-            src="@/assets/logo.svg"
-            alt="LaundryKuy Logo"
-            class="h-12 w-12 object-cover"
-          />
+          <img src="@/assets/logo.svg" alt="LaundryKuy Logo" class="h-12 w-12 object-cover" />
           <span class="text-2xl font-bold text-blue-700">LaundryKuy</span>
         </div>
 
@@ -41,15 +37,21 @@
       <div class="grid md:grid-cols-3 gap-6 text-left">
         <div class="p-6 bg-white rounded-xl shadow hover:shadow-md transition">
           <h3 class="text-xl font-semibold text-blue-600 mb-2">Layanan Antar Jemput</h3>
-          <p class="text-gray-600">Kami jemput cucian Anda langsung ke rumah dan antar kembali setelah bersih dan wangi.</p>
+          <p class="text-gray-600">
+            Kami jemput cucian Anda langsung ke rumah dan antar kembali setelah bersih dan wangi.
+          </p>
         </div>
         <div class="p-6 bg-white rounded-xl shadow hover:shadow-md transition">
           <h3 class="text-xl font-semibold text-blue-600 mb-2">Cuci Kering & Lipat</h3>
-          <p class="text-gray-600">Pakaian Anda dicuci dan dilipat rapi, siap langsung masuk lemari.</p>
+          <p class="text-gray-600">
+            Pakaian Anda dicuci dan dilipat rapi, siap langsung masuk lemari.
+          </p>
         </div>
         <div class="p-6 bg-white rounded-xl shadow hover:shadow-md transition">
           <h3 class="text-xl font-semibold text-blue-600 mb-2">Layanan Kilat 24 Jam</h3>
-          <p class="text-gray-600">Butuh cepat? Gunakan layanan express kami yang selesai dalam 24 jam.</p>
+          <p class="text-gray-600">
+            Butuh cepat? Gunakan layanan express kami yang selesai dalam 24 jam.
+          </p>
         </div>
       </div>
 
@@ -64,6 +66,4 @@
     </div>
   </section>
 </template>
-<script setup>
-
-</script>
+<script setup></script>

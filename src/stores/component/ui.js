@@ -3,18 +3,18 @@ import { defineStore } from 'pinia'
 export const useUIStore = defineStore('ui', {
   state: () => ({
     showModal: false,
-    modalTitle: '',
+    modalStatus: '',
     modalMessage: '',
   }),
   actions: {
-    show(title, message) {
-      this.modalTitle = title
+    show(status, message) {
+      this.modalStatus = status
       this.modalMessage = message
       this.showModal = true
     },
     hide() {
       this.showModal = false
-      this.modalTitle = ''
+      this.modalStatus = ''
       this.modalMessage = ''
     },
   },
