@@ -6,28 +6,8 @@
     >
       <h2 class="text-2xl font-semibold text-center text-gray-700">Login</h2>
 
-      <input
-        v-model="email"
-        type="email"
-        placeholder="Email"
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-      />
-
-      <div class="relative">
-        <input
-          :type="showPassword ? 'text' : 'password'"
-          v-model="password"
-          placeholder="Password"
-          class="w-full pr-9 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="button"
-          @click="showPassword = !showPassword"
-          class="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-        >
-          <font-awesome-icon :icon="!showPassword ? 'eye-slash' : 'eye'" class="w-5 h-5" />
-        </button>
-      </div>
+      <BaseInput type="email" v-model="email" id="email" placeholder="Email" />
+      <BaseInput type="password" v-model="password" id="password" placeholder="Password" />
 
       <button
         type="submit"
@@ -61,11 +41,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
 import { useUIStore } from '@/stores/component/ui'
+import BaseInput from '@/components/BaseInput.vue'
 
 const router = useRouter()
 const userStore = useAuthStore()
 const ui = useUIStore()
-const showPassword = ref(false)
 
 const email = ref('')
 const password = ref('')

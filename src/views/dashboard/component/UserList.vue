@@ -2,80 +2,39 @@
   <div>
     <h2 class="text-xl font-semibold mb-4">Daftar User</h2>
 
-    <!-- Search input -->
-    <div class="mb-4">
-      <input
-        v-model="search"
-        @change="onSearchChange"
-        type="text"
-        placeholder="Cari nama atau email..."
-        class="border rounded px-4 py-2 w-full sm:w-64"
-      />
-    </div>
-
-    <!-- Table -->
-    <div>
-      <table v-if="!isLoading && users.data?.length" class="min-w-full table-auto border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Nama</th>
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Role</th>
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Tanggal Bergabung</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="u in users.data"
-            :key="u.id"
-            class="border-t hover:bg-gray-50 cursor-pointer"
+    <!-- TABLE -->
+    <TableList
+      :items="users.data"
+      :headers="['Nama', 'Role', 'Tanggal Bergabung', 'Action']"
+      :loading="isMiniLoading"
+      :pagination="{ page: page, limit: limit, total: users.total, from: fromIndex, to: toIndex }"
+      v-model="search"
+      @search="onSearchChange"
+      @page-change="changePage"
+    >
+      <template #default="{ items }">
+        <tr v-for="u in items" :key="u.id" class="bg-white border-b hover:bg-gray-50">
+          <td
+            class="flex items-center px-6 py-4 whitespace-nowrap cursor-pointer"
             @click="showUserDetails(u)"
           >
-            <td class="px-4 py-2">{{ u.name }}</td>
-            <td class="px-4 py-2">{{ u.email }}</td>
-            <td class="px-4 py-2">{{ u.role }}</td>
-            <td class="px-4 py-2">{{ new Date(u.createdAt).toLocaleDateString() }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Loading or Empty -->
-      <div v-if="isLoading" class="text-gray-500 mb-4">Memuat data...</div>
-      <div v-else-if="users.data?.length === 0" class="text-gray-500 mb-4">
-        Tidak ada user ditemukan.
-      </div>
-
-      <!-- Kontrol bawah -->
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
-        <!-- Total data -->
-        <div class="text-sm text-gray-600">Total: {{ users.total || 0 }}</div>
-
-        <!-- Pagination & Limit -->
-        <div class="flex items-center gap-4">
-          <button
-            :disabled="page <= 1"
-            @click="changePage(page - 1)"
-            class="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
-          >
-            ← Prev
-          </button>
-          <p class="text-sm text-gray-600">Halaman {{ page }}</p>
-          <button
-            :disabled="page >= totalPages"
-            @click="changePage(page + 1)"
-            class="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
-          >
-            Next →
-          </button>
-
-          <select v-model="limit" @change="changeLimit" class="border rounded px-2 py-1 text-sm">
-            <option :value="10">10</option>
-            <option :value="25">25</option>
-            <option :value="50">50</option>
-          </select>
-        </div>
-      </div>
-    </div>
+            <img class="w-10 h-10 rounded-full" src="@/assets/logo.svg" />
+            <div class="ps-3">
+              <div class="text-base font-semibold">{{ u.name }}</div>
+              <div class="font-normal text-gray-500">{{ u.email }}</div>
+            </div>
+          </td>
+          <td class="px-6 py-4">{{ u.role }}</td>
+          <td class="px-6 py-4">{{ new Date(u.createdAt).toLocaleDateString() }}</td>
+          <td class="px-6 py-4">
+            <a href="#" class="text-blue-600 hover:underline" @click.prevent="openEditModal(u)"
+              >Edit</a
+            >
+          </td>
+        </tr>
+      </template>
+    </TableList>
+    <!-- TABLE END -->
 
     <!-- Detail Modal -->
     <div
@@ -96,6 +55,16 @@
         </button>
       </div>
     </div>
+
+    <!-- Edit Modal -->
+    <EditUserModal
+      v-if="editUser"
+      :visible="showEditModal"
+      :user="editUser"
+      :showRole="true"
+      @close="closeEditModal"
+      @save="saveEditedUser"
+    />
   </div>
 </template>
 
@@ -104,24 +73,26 @@ import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/services/user.js'
 import { useUIStore } from '@/stores/component/ui'
+import { useLoadingStore } from '@/stores/component/loading'
+import TableList from '@/components/TableList.vue'
+import EditUserModal from '@/components/EditUserModal.vue'
 
 const userStore = useUserStore()
 const ui = useUIStore()
+const loading = useLoadingStore()
 const { users } = storeToRefs(userStore)
 
 const search = ref('')
 const page = ref(1)
 const limit = ref(10)
-const isLoading = ref(true)
 const selectedUser = ref(null)
 
-const totalPages = computed(() => {
-  const total = users.value?.totalUsers || 0
-  return Math.ceil(total / limit.value)
-})
+const fromIndex = computed(() => (page.value - 1) * limit.value + 1)
+const toIndex = computed(() => Math.min(fromIndex.value + limit.value - 1, users.value?.total || 0))
+const isMiniLoading = computed(() => loading.isMiniLoading)
 
 const loadUsers = async () => {
-  isLoading.value = true
+  loading.startMini()
   try {
     await userStore.fetchUsers({
       page: page.value,
@@ -131,7 +102,7 @@ const loadUsers = async () => {
   } catch (err) {
     ui.show('failed', err?.response?.data?.message || 'Gagal memuat data user')
   } finally {
-    isLoading.value = false
+    loading.stopMini()
   }
 }
 
@@ -145,11 +116,6 @@ const changePage = (newPage) => {
   loadUsers()
 }
 
-const changeLimit = () => {
-  page.value = 1
-  loadUsers()
-}
-
 const showUserDetails = (user) => {
   selectedUser.value = user
 }
@@ -158,5 +124,39 @@ const closeUserDetails = () => {
   selectedUser.value = null
 }
 
-onMounted(loadUsers)
+const showEditModal = ref(false)
+const editUser = ref(null)
+
+const openEditModal = (user) => {
+  editUser.value = { ...user }
+  showEditModal.value = true
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+  editUser.value = null
+}
+
+const saveEditedUser = async (updatedUser) => {
+  loading.startMini()
+  try {
+    await userStore.updateUserById(updatedUser.id, updatedUser)
+    ui.show('success', 'User berhasil diperbarui')
+    loadUsers()
+  } catch (err) {
+    ui.show('failed', err?.response?.data?.message || 'Gagal memperbarui user')
+  } finally {
+    loading.stopMini()
+    closeEditModal()
+  }
+}
+
+onMounted(async () => {
+  loading.start()
+  try {
+    await loadUsers()
+  } finally {
+    loading.stop()
+  }
+})
 </script>

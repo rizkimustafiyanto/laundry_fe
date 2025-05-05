@@ -1,11 +1,15 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
+import socket from '@/plugins/socket'
 
 export const useUserStore = defineStore('users', {
   state: () => ({
     users: [],
     selectedUser: null,
     profile: null,
+    currentPage: 1,
+    limit: 10,
+    searchQuery: '',
   }),
 
   actions: {
@@ -30,15 +34,19 @@ export const useUserStore = defineStore('users', {
       }
     },
 
-    async fetchUsers(query = { page: 1, limit: 10, search: '' }) {
-      try {
-        const queryParams = {
-          page: query.page || 1,
-          limit: query.limit || 10,
-          search: query.search || '',
-        }
+    async fetchUsers(query = {}) {
+      if (query.page !== undefined) this.currentPage = query.page
+      if (query.limit !== undefined) this.limit = query.limit
+      if (query.search !== undefined) this.searchQuery = query.search
 
-        const res = await api.get('/users/list', { params: queryParams })
+      try {
+        const res = await api.get('/users/list', {
+          params: {
+            page: this.currentPage || 1,
+            limit: this.limit || 10,
+            search: this.searchQuery || '',
+          },
+        })
         this.users = res.data
       } catch (error) {
         console.error('Failed to fetch users:', error)
@@ -67,6 +75,25 @@ export const useUserStore = defineStore('users', {
         console.error('Failed to update user by ID:', error)
         throw error
       }
+    },
+
+    listenUserUpdates() {
+      socket.on('profile_updated', (updatedUser) => {
+        const updatedData = updatedUser.user
+        const index = this.users.data.findIndex((u) => u.id === updatedData.id)
+
+        if (index !== -1) {
+          this.users.data.splice(index, 1, updatedData)
+        }
+      })
+      socket.on('user_updated', (updatedUser) => {
+        const updatedData = updatedUser.user
+        const index = this.users.data.findIndex((u) => u.id === updatedData.id)
+
+        if (index !== -1) {
+          this.users.data.splice(index, 1, updatedData)
+        }
+      })
     },
   },
 })
