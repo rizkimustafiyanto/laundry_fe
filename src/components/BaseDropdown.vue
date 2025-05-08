@@ -3,7 +3,7 @@
     <button
       @click="toggleDropdown"
       type="button"
-      class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5"
+      class="inline-flex items-center text-gray-500 bg-white font-medium rounded-lg text-sm px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
     >
       {{ label }}
       <svg class="w-2.5 h-2.5 ml-2.5" fill="none" viewBox="0 0 10 6">

@@ -1,0 +1,12 @@
+.fade-page-enter-active,
+.fade-page-leave-active {
+  transition: all 0.4s ease;
+}
+.fade-page-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.fade-page-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}

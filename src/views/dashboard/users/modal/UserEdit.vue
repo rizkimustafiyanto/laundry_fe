@@ -6,7 +6,6 @@
   >
     <div class="w-full max-w-xl bg-white rounded-lg shadow-lg">
       <form @submit.prevent="handleSubmit">
-        <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-gray-200">
           <h3 class="text-xl font-semibold text-gray-900">Edit User</h3>
           <button type="button" @click="close" class="text-gray-400 hover:text-gray-900">
@@ -21,32 +20,28 @@
           </button>
         </div>
 
-        <!-- Body -->
         <div class="p-6 space-y-6">
           <BaseInput label="Name" v-model="form.name" id="name" />
           <BaseInput type="email" label="Email" v-model="form.email" id="email" />
           <BaseInput
             type="password"
             label="New Password (optional)"
+            placeholder="New Password (optional)"
             v-model="form.password"
             id="password"
             :required="false"
           />
-          <div v-if="showRole">
-            <label for="role" class="block mb-2 text-sm font-medium text-gray-900">Role</label>
-            <select
-              id="role"
-              v-model="form.role"
-              class="w-full p-2.5 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 bg-gray-50"
-            >
-              <option value="ADMIN">Admin</option>
-              <option value="CUSTOMER">Customer</option>
-              <option value="STAFF">Staff</option>
-            </select>
-          </div>
+          <BaseSelect
+            v-if="showRole"
+            id="role"
+            label="Role"
+            v-model="form.role"
+            :options="roleOptions"
+            placeholder="Pilih Role"
+            type="default"
+          />
         </div>
 
-        <!-- Footer -->
         <div class="flex justify-end p-4 border-t border-gray-200">
           <button
             type="submit"
@@ -61,8 +56,9 @@
 </template>
 
 <script setup>
-import { reactive, defineProps, defineEmits } from 'vue'
-import BaseInput from './BaseInput.vue'
+import { reactive } from 'vue'
+import BaseInput from '@/components/BaseInput.vue'
+import BaseSelect from '@/components/BaseSelect.vue'
 
 const props = defineProps({
   visible: Boolean,
@@ -81,6 +77,12 @@ const form = reactive({
   password: '',
   role: props.user?.role || 'CUSTOMER',
 })
+
+const roleOptions = [
+  { label: 'Admin', value: 'SUPER_ADMIN' },
+  { label: 'Owner', value: 'OWNER' },
+  { label: 'Customer', value: 'CUSTOMER' },
+]
 
 function close() {
   emit('close')

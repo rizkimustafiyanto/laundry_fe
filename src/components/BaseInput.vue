@@ -7,7 +7,7 @@
     <div class="relative">
       <!-- Prefix Icon -->
       <div
-        v-if="icon && type !== 'textarea'"
+        v-if="icon && type !== 'textarea' && type !== 'file'"
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400"
       >
         <font-awesome-icon :icon="['fas', icon]" />
@@ -26,7 +26,19 @@
         />
       </template>
 
-      <!-- Input -->
+      <!-- Input for File -->
+      <template v-else-if="type === 'file'">
+        <input
+          :id="id"
+          type="file"
+          :disabled="disabled"
+          @change="handleFileChange"
+          class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          :required="required"
+        />
+      </template>
+
+      <!-- Input for other types -->
       <template v-else>
         <input
           :id="id"
@@ -80,7 +92,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:file'])
 
 const showPassword = ref(false)
 
@@ -92,5 +104,12 @@ const computedType = computed(() => {
 
 function togglePassword() {
   showPassword.value = !showPassword.value
+}
+
+function handleFileChange(event) {
+  const file = event.target.files[0]
+  if (file) {
+    emit('update:file', file)
+  }
 }
 </script>

@@ -1,7 +1,12 @@
 <template>
   <div class="w-full min-h-screen flex flex-col">
     <LoadingSpinner v-if="loading.isLoading" />
-    <RouterView />
+
+    <router-view v-slot="{ Component }">
+      <Transition name="fade-page" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </router-view>
 
     <ResponseModal
       :visible="ui.showModal"

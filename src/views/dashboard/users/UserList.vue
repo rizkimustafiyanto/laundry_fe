@@ -3,7 +3,7 @@
     <h2 class="text-xl font-semibold mb-4">Daftar User</h2>
 
     <!-- TABLE -->
-    <TableList
+    <BaseTable
       :items="users.data"
       :headers="['Nama', 'Role', 'Tanggal Bergabung', 'Action']"
       :loading="isMiniLoading"
@@ -18,7 +18,7 @@
             class="flex items-center px-6 py-4 whitespace-nowrap cursor-pointer"
             @click="showUserDetails(u)"
           >
-            <img class="w-10 h-10 rounded-full" src="@/assets/logo.svg" />
+            <img class="w-10 h-10 rounded-full" :src="u.photo || defaultAvatar" />
             <div class="ps-3">
               <div class="text-base font-semibold">{{ u.name }}</div>
               <div class="font-normal text-gray-500">{{ u.email }}</div>
@@ -33,28 +33,16 @@
           </td>
         </tr>
       </template>
-    </TableList>
+    </BaseTable>
     <!-- TABLE END -->
 
     <!-- Detail Modal -->
-    <div
-      v-if="selectedUser"
-      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-10"
-    >
-      <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-        <h3 class="text-xl font-semibold mb-4">Detail User</h3>
-        <p><strong>Nama:</strong> {{ selectedUser.name }}</p>
-        <p><strong>Email:</strong> {{ selectedUser.email }}</p>
-        <p><strong>Role:</strong> {{ selectedUser.role }}</p>
-        <p>
-          <strong>Tanggal Bergabung:</strong>
-          {{ new Date(selectedUser.createdAt).toLocaleDateString() }}
-        </p>
-        <button class="mt-4 bg-red-500 text-white py-2 px-4 rounded" @click="closeUserDetails">
-          Tutup
-        </button>
-      </div>
-    </div>
+    <UserDetail
+      v-if="selectedUser && showDetail"
+      :user="selectedUser"
+      :show="showDetail"
+      @close="showDetail = false"
+    />
 
     <!-- Edit Modal -->
     <EditUserModal
@@ -74,8 +62,9 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/services/user.js'
 import { useUIStore } from '@/stores/component/ui'
 import { useLoadingStore } from '@/stores/component/loading'
-import TableList from '@/components/TableList.vue'
-import EditUserModal from '@/components/EditUserModal.vue'
+import EditUserModal from './modal/UserEdit.vue'
+import UserDetail from './modal/UserDetail.vue'
+import defaultAvatar from '@/assets/icons/user.png'
 
 const userStore = useUserStore()
 const ui = useUIStore()
@@ -116,12 +105,10 @@ const changePage = (newPage) => {
   loadUsers()
 }
 
+const showDetail = ref(false)
 const showUserDetails = (user) => {
   selectedUser.value = user
-}
-
-const closeUserDetails = () => {
-  selectedUser.value = null
+  showDetail.value = true
 }
 
 const showEditModal = ref(false)

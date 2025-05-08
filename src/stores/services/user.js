@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '@/api'
+import api from '@/utils/api'
 import socket from '@/plugins/socket'
 
 export const useUserStore = defineStore('users', {
@@ -23,9 +23,14 @@ export const useUserStore = defineStore('users', {
       }
     },
 
-    async updateProfile(data) {
+    async updateProfile(formData) {
       try {
-        const res = await api.put('/users/profile', data)
+        const res = await api.put('/users/profile', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
         this.profile = res.data
         return res.data
       } catch (error) {
@@ -79,12 +84,7 @@ export const useUserStore = defineStore('users', {
 
     listenUserUpdates() {
       socket.on('profile_updated', (updatedUser) => {
-        const updatedData = updatedUser.user
-        const index = this.users.data.findIndex((u) => u.id === updatedData.id)
-
-        if (index !== -1) {
-          this.users.data.splice(index, 1, updatedData)
-        }
+        this.fetchProfile()
       })
       socket.on('user_updated', (updatedUser) => {
         const updatedData = updatedUser.user

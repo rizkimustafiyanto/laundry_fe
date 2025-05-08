@@ -1,12 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
-import HomeView from '@/views/HomeView.vue'
-import LoginView from '@/views/auth/LoginView.vue'
-import RegisterView from '@/views/auth/RegisterView.vue'
-import HomeViewUser from '@/views/dashboard/HomeViewUser.vue'
+import HomeView from '@/views/Home.vue'
+import LoginView from '@/views/auth/Login.vue'
+import RegisterView from '@/views/auth/Register.vue'
+import HomeViewUser from '@/views/dashboard/Home.vue'
 import Unauthorized from '@/views/error/Unauthorized.vue'
 import ForgetPassword from '@/views/auth/ForgetPassword.vue'
 import ChangePassword from '@/views/auth/ChangePassword.vue'
+import Profile from '@/views/dashboard/users/Profile.vue'
+import Dashboard from '@/views/dashboard/Dashboard.vue'
+import UserList from '@/views/dashboard/users/UserList.vue'
+import TransactionList from '@/views/transactions/TransactionList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +53,29 @@ const router = createRouter({
       path: '/home',
       component: HomeViewUser,
       meta: { requiresAuth: true, roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'] },
+      children: [
+        {
+          path: '',
+          name: 'dashboard',
+          component: Dashboard,
+        },
+        {
+          path: 'users',
+          name: 'users',
+          component: UserList,
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
+          path: 'transactions',
+          name: 'transactions',
+          component: TransactionList,
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: Profile,
+        },
+      ],
     },
     {
       path: '/:catchAll(.*)',
