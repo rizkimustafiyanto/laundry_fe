@@ -1,69 +1,74 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-10">
-    <div v-if="profile" class="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-8">
-      <div class="flex justify-between items-start mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Profil Saya</h1>
-        <button
-          @click="editMode = !editMode"
-          class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition"
-        >
-          {{ editMode ? 'Batal' : 'Edit Profil' }}
-        </button>
-      </div>
-
-      <div class="flex items-center space-x-6">
-        <img
-          :src="profile.photo || defaultAvatar"
-          alt="Foto Profil"
-          class="w-28 h-28 rounded-full object-cover ring-2 ring-indigo-500"
-        />
-        <div>
-          <h2 class="text-2xl font-semibold text-gray-800">{{ profile.name }}</h2>
-          <p class="text-sm text-gray-500">{{ profile.email }}</p>
-          <span
-            class="mt-2 inline-block text-sm px-3 py-1 rounded-full font-medium bg-indigo-100 text-indigo-600"
+  <div class="min-h-screen py-10">
+    <div v-if="profile" class="max-w-4xl mx-auto">
+      <BaseCard type="single" variant="primary">
+        <!-- HEADER -->
+        <div class="flex justify-between items-start mb-6">
+          <h1 class="text-3xl font-bold">Profil Saya</h1>
+          <button
+            @click="editMode = !editMode"
+            class="px-4 py-2 text-white bg-indigo-600 text-sm rounded-md hover:bg-indigo-700 transition"
           >
-            {{ profile.role }}
-          </span>
+            {{ editMode ? 'Batal' : 'Edit Profil' }}
+          </button>
         </div>
-      </div>
 
-      <div class="mt-8">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Bio</h3>
-
-        <div v-if="editMode">
-          <BaseInput
-            id="bio"
-            label="Bio"
-            type="textarea"
-            v-model="editableBio"
-            placeholder="Hello"
+        <!-- PROFILE INFO -->
+        <div class="flex items-center space-x-6">
+          <img
+            :src="profile.photo || defaultAvatar"
+            alt="Foto Profil"
+            class="w-28 h-28 rounded-full object-cover ring-2 ring-indigo-500"
           />
-
-          <BaseInput
-            id="profile-picture"
-            label="Foto Profil"
-            type="file"
-            @update:file="selectedFile = $event"
-          />
-
-          <div class="mt-4 text-right">
-            <button
-              @click="saveProfile"
-              class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          <div>
+            <h2 class="text-2xl font-medium text-gray-900 dark:text-white">{{ profile.name }}</h2>
+            <p class="truncate text-sm text-gray-500 dark:text-gray-400">{{ profile.email }}</p>
+            <span
+              class="mt-2 inline-block text-sm px-3 py-1 rounded-full font-medium bg-indigo-100 text-indigo-600"
             >
-              Simpan
-            </button>
+              {{ profile.role }}
+            </span>
           </div>
         </div>
 
-        <p v-else class="text-gray-600 whitespace-pre-line">
-          {{ profile.bio || 'Belum ada bio.' }}
-        </p>
-      </div>
+        <!-- BIO SECTION -->
+        <div class="mt-8">
+          <h3 class="text-lg font-semibold mb-2">Bio</h3>
+
+          <div v-if="editMode">
+            <BaseInput
+              id="bio"
+              label="Bio"
+              type="textarea"
+              v-model="editableBio"
+              placeholder="Hello"
+            />
+
+            <BaseInput
+              id="profile-picture"
+              label="Foto Profil"
+              type="file"
+              @update:file="selectedFile = $event"
+            />
+
+            <div class="mt-4 text-right">
+              <button
+                @click="saveProfile"
+                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+
+          <p v-else class="whitespace-pre-line">
+            {{ profile.bio || 'Belum ada bio.' }}
+          </p>
+        </div>
+      </BaseCard>
     </div>
 
-    <div v-else class="text-center text-gray-500 py-20">Memuat data profil...</div>
+    <div v-else class="text-center py-20">Memuat data profil...</div>
   </div>
 </template>
 
@@ -73,6 +78,7 @@ import { storeToRefs } from 'pinia'
 import { useUIStore } from '@/stores/component/ui'
 import { useLoadingStore } from '@/stores/component/loading'
 import { useUserStore } from '@/stores/services/user.js'
+import defaultAvatar from '@/assets/icons/user.png'
 
 const editMode = ref(false)
 const editableBio = ref('')
@@ -83,8 +89,6 @@ const loading = useLoadingStore()
 const userStore = useUserStore()
 
 const { profile } = storeToRefs(userStore)
-
-const defaultAvatar = 'https://ui-avatars.com/api/?name=User&background=4f46e5&color=ffffff'
 
 const saveProfile = async () => {
   if (!profile.value) return

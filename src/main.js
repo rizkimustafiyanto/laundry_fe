@@ -17,7 +17,10 @@ import BaseTable from './components/BaseTable.vue'
 import Navbar from '@/components/Navbar.vue'
 import BaseInput from './components/BaseInput.vue'
 import BaseSelect from './components/BaseSelect.vue'
+import BaseCard from './components/BaseCard.vue'
 import BaseDropdown from './components/BaseDropdown.vue'
+import BaseRadioButton from './components/BaseRadioButton.vue'
+import BaseModal from './components/BaseModal.vue'
 import LoadingSpinner from './components/LoadingSpinner.vue'
 import ResponseModal from './components/ResponseModal.vue'
 
@@ -29,7 +32,10 @@ app.component('BaseTable', BaseTable)
 app.component('Navbar', Navbar)
 app.component('BaseInput', BaseInput)
 app.component('BaseDropdown', BaseDropdown)
+app.component('BaseCard', BaseCard)
 app.component('BaseSelect', BaseSelect)
+app.component('BaseRadioButton', BaseRadioButton)
+app.component('BaseModal', BaseModal)
 app.component('LoadingSpinner', LoadingSpinner)
 app.component('ResponseModal', ResponseModal)
 

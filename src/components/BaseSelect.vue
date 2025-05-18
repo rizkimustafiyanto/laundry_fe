@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label v-if="label" :for="id" class="block mb-2 text-sm font-medium text-gray-900">
+    <label v-if="label" :for="id" class="block mb-2 text-sm font-medium" :class="themeClass.label">
       {{ label }}
     </label>
 
@@ -17,7 +17,8 @@
       :multiple="type === 'multiple'"
       :value="modelValue"
       @change="onChange"
-      class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
+      :class="themeClass.select"
       :required="required"
     >
       <option v-if="placeholder && type !== 'multiple'" disabled value="">
@@ -33,6 +34,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 import BaseInput from './BaseInput.vue'
+import { useThemeClass } from '@/composables/useThemeClass.js'
+
+const { themeClass } = useThemeClass()
 
 const props = defineProps({
   id: String,
@@ -68,7 +72,7 @@ const searchTerm = ref('')
 const filteredOptions = computed(() => {
   if (props.type === 'search' && searchTerm.value) {
     return props.options.filter((opt) =>
-      opt.label.toLowerCase().includes(searchTerm.value.toLowerCase()),
+      opt.label.toLowerCase().includes(searchTerm.value.toLowerCase())
     )
   }
   return props.options
@@ -83,3 +87,7 @@ const onChange = (e) => {
   }
 }
 </script>
+
+<style scoped>
+/* Additional styles for customization if needed */
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="mb-4">
-    <label v-if="label" :for="id" class="block mb-2 text-sm font-medium text-gray-900">
+    <label v-if="label" :for="id" class="block mb-2 text-sm font-medium" :class="themeClass.label">
       {{ label }}
     </label>
 
@@ -8,7 +8,8 @@
       <!-- Prefix Icon -->
       <div
         v-if="icon && type !== 'textarea' && type !== 'file'"
-        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400"
+        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+        :class="themeClass.icon"
       >
         <font-awesome-icon :icon="['fas', icon]" />
       </div>
@@ -21,7 +22,8 @@
           :value="modelValue"
           :disabled="disabled"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-y min-h-[100px]"
+          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition resize-y min-h-[100px]"
+          :class="themeClass.input"
           :required="required"
         />
       </template>
@@ -33,7 +35,8 @@
           type="file"
           :disabled="disabled"
           @change="handleFileChange"
-          class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
+          :class="themeClass.input"
           :required="required"
         />
       </template>
@@ -47,11 +50,8 @@
           :value="modelValue"
           :disabled="disabled"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          :class="{
-            'pl-10': icon,
-            'pr-10': isPassword,
-          }"
+          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input, { 'pl-10': icon, 'pr-10': isPassword }]"
           :required="required"
         />
 
@@ -59,7 +59,8 @@
         <button
           v-if="isPassword"
           type="button"
-          class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+          class="absolute inset-y-0 right-0 flex items-center pr-3"
+          :class="themeClass.iconButton"
           @click="togglePassword"
         >
           <font-awesome-icon :icon="showPassword ? ['fas', 'eye-slash'] : ['fas', 'eye']" />
@@ -71,6 +72,9 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useThemeClass } from '@/composables/useThemeClass.js'
+
+const { themeClass } = useThemeClass()
 
 const props = defineProps({
   id: String,
@@ -113,3 +117,7 @@ function handleFileChange(event) {
   }
 }
 </script>
+
+<style scoped>
+/* Optional: You can add transitions or animations here if needed */
+</style>

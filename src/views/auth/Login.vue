@@ -1,39 +1,53 @@
 <template>
-  <div class="w-full min-h-screen flex items-center justify-center bg-gray-100">
-    <form
-      @submit.prevent="login"
-      class="max-w-xl min-w-[200px] mx-auto mt-20 p-6 bg-white shadow-lg rounded-xl space-y-6"
-    >
-      <h2 class="text-2xl font-semibold text-center text-gray-700">Login</h2>
+  <BaseCard type="single" variant="primary" class="w-full min-h-screen flex items-center justify-center bg-gray-100">
+    <BaseCard type="single" variant="secondary" class="w-full max-w-md mt-20">
+      <form @submit.prevent="login" class="space-y-6">
+        <h2 class="text-2xl font-semibold text-center">Login</h2>
 
-      <BaseInput type="email" v-model="email" id="email" placeholder="Email" />
-      <BaseInput type="password" v-model="password" id="password" placeholder="Password" />
+        <BaseInput
+          type="email"
+          v-model="email"
+          id="email"
+          label="Email"
+          placeholder="Masukkan Email"
+          required
+        />
 
-      <button
-        type="submit"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-      >
-        Login
-      </button>
+        <BaseInput
+          type="password"
+          v-model="password"
+          id="password"
+          label="Password"
+          placeholder="Masukkan Password"
+          required
+        />
 
-      <div class="flex justify-between mt-4 text-sm text-blue-600">
         <button
-          type="button"
-          @click="goToRegister"
-          class="hover:underline hover:text-blue-800 transition"
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
         >
-          Belum punya akun? Daftar
+          Login
         </button>
-        <button
-          type="button"
-          @click="goToForgotPassword"
-          class="hover:underline hover:text-blue-800 transition"
-        >
-          Lupa Password?
-        </button>
-      </div>
-    </form>
-  </div>
+
+        <div class="flex justify-between mt-4 text-sm text-blue-600">
+          <button
+            type="button"
+            @click="goToRegister"
+            class="hover:underline hover:text-blue-800 transition"
+          >
+            Belum punya akun? Daftar
+          </button>
+          <button
+            type="button"
+            @click="goToForgotPassword"
+            class="hover:underline hover:text-blue-800 transition"
+          >
+            Lupa Password?
+          </button>
+        </div>
+      </form>
+    </BaseCard>
+  </BaseCard>
 </template>
 
 <script setup>
@@ -41,7 +55,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
 import { useUIStore } from '@/stores/component/ui'
-import BaseInput from '@/components/BaseInput.vue'
 
 const router = useRouter()
 const userStore = useAuthStore()
@@ -56,14 +69,18 @@ const login = async () => {
   if (result.status === 200) {
     ui.show('success', `Selamat datang, ${result.user.name}`)
 
-    if (userStore.role === 'SUPER_ADMIN') {
-      router.push('/home')
-    } else if (userStore.role === 'OWNER') {
-      router.push('/owner/dashboard')
-    } else if (userStore.role === 'CUSTOMER') {
-      router.push('/customer/dashboard')
-    } else {
-      router.push('/unauthorized')
+    switch (userStore.role) {
+      case 'SUPER_ADMIN':
+        router.push('/home')
+        break
+      case 'OWNER':
+        router.push('/owner/dashboard')
+        break
+      case 'CUSTOMER':
+        router.push('/customer/dashboard')
+        break
+      default:
+        router.push('/unauthorized')
     }
   } else {
     ui.show('failed', result.message)

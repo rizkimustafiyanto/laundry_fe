@@ -1,24 +1,24 @@
 <template>
   <div v-if="visible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div
-      class="bg-white w-full max-w-md mx-4 p-6 rounded-2xl shadow-2xl text-center animate-fade-in"
+      class="w-full max-w-md mx-4 p-6 rounded-2xl shadow-2xl text-center animate-fade-in bg-white dark:bg-gray-800"
     >
       <font-awesome-icon
         :icon="status === 'success' ? ['far', 'thumbs-up'] : ['fas', 'exclamation-circle']"
-        :class="[
-          'text-5xl mb-4 transition-transform duration-300',
-          status === 'success' ? 'text-green-500 animate-pulse' : 'text-red-500 animate-shake',
+        :class="[ 
+          'text-5xl mb-4 transition-transform duration-300', 
+          status === 'success' ? 'text-green-500 animate-pulse' : 'text-red-500 animate-shake', 
         ]"
       />
       <h2
-        :class="[
-          'text-2xl font-bold mb-2',
-          status === 'success' ? 'text-green-600' : 'text-red-600',
+        :class="[ 
+          'text-2xl font-bold mb-2', 
+          status === 'success' ? 'text-green-600' : 'text-red-600' 
         ]"
       >
         {{ status === 'success' ? 'SUCCESS' : 'FAILED' }}
       </h2>
-      <p class="text-xl text-gray-700 mb-6">{{ message }}</p>
+      <p class="text-xl mb-6">{{ message }}</p>
       <button
         @click="$emit('close')"
         class="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition duration-200"

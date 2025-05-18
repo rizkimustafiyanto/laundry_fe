@@ -1,11 +1,11 @@
 <template>
-  <header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-semibold text-blue-600">{{ title }}</h1>
+  <header class="bg-white dark:bg-gray-800 shadow-md px-6 py-4 flex justify-between items-center">
+    <h1 class="text-2xl font-semibold text-blue-600 dark:text-blue-400">{{ title }}</h1>
 
     <!-- Desktop Menu -->
     <nav class="hidden md:flex space-x-4 items-center">
       <template v-for="item in menuItems" :key="item.key">
-        <div v-if="item.children" class="relative" ref="dropdownRefs[item.key]">
+        <div v-if="item.children" class="relative">
           <button
             @click="toggleDropdown(item.key)"
             :class="menuClass(item.key)"
@@ -16,14 +16,13 @@
           <transition name="fade-scale">
             <div
               v-show="openDropdown === item.key"
-              class="absolute top-full left-0 mt-2 w-40 bg-white border rounded-lg shadow-md z-20"
+              class="absolute top-full left-0 mt-2 w-40 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-md z-20"
             >
               <button
                 v-for="child in item.children"
                 :key="child.key"
-                @click="() => selectDropdown(child.key)"
+                @click="selectDropdown(child.key)"
                 :class="menuClass(child.key)"
-                class="block w-full text-left px-4 py-2 text-sm hover:bg-blue-50"
               >
                 {{ child.label }}
               </button>
@@ -35,26 +34,37 @@
         </button>
       </template>
 
-      <!-- Logout Icon -->
+      <!-- Theme Toggle -->
+      <button
+        @click="toggleTheme"
+        class="text-gray-600 dark:text-yellow-300 hover:text-yellow-500 transition duration-200 ml-4"
+        title="Toggle Theme"
+      >
+        <svg v-if="theme === 'light'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m8.485-8.485h1M3.515 12.515h1m15.364-6.364l-.707.707M5.636 18.364l-.707.707m0-12.728l.707.707M18.364 18.364l.707.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
+        </svg>
+      </button>
+
+      <!-- Logout -->
       <font-awesome-icon
         icon="right-from-bracket"
-        class="cursor-pointer text-gray-600 hover:text-red-500 transition duration-200"
+        class="cursor-pointer text-gray-600 dark:text-red-400 hover:text-red-500 transition duration-200"
         @click="logout"
         title="Logout"
       />
     </nav>
 
-    <!-- Mobile Toggle -->
-    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-600">
-      <svg
-        class="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+    <!-- Mobile Menu Toggle -->
+    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-600 dark:text-gray-300">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
@@ -62,21 +72,16 @@
 
   <!-- Mobile Dropdown Menu -->
   <transition name="fade-scale">
-    <div v-show="mobileMenuOpen" class="md:hidden bg-white shadow px-4 py-4 space-y-2">
+    <div v-show="mobileMenuOpen" class="md:hidden bg-white dark:bg-gray-900 shadow px-4 py-4 space-y-2">
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="space-y-1">
           <button
             @click="toggleMobileDropdown(item.key)"
-            class="w-full text-left font-medium text-gray-800 px-4 py-2 flex justify-between items-center rounded hover:bg-gray-100"
+            class="w-full text-left font-medium text-gray-800 dark:text-gray-200 px-4 py-2 flex justify-between items-center rounded hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             {{ item.label }}
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <transition name="fade-scale">
@@ -86,7 +91,6 @@
                 :key="child.key"
                 @click="select(child.key)"
                 :class="menuClass(child.key, true)"
-                class="block w-full text-left px-4 py-2 rounded hover:bg-blue-50"
               >
                 {{ child.label }}
               </button>
@@ -97,16 +101,15 @@
           v-else
           @click="select(item.key)"
           :class="menuClass(item.key, true)"
-          class="block w-full text-left px-4 py-2 rounded hover:bg-blue-50"
         >
           {{ item.label }}
         </button>
       </template>
 
-      <!-- Logout Icon for Mobile -->
+      <!-- Logout Mobile -->
       <button
         @click="logout"
-        class="flex items-center gap-2 text-red-600 hover:underline w-full px-4 py-2 mt-2"
+        class="flex items-center gap-2 text-red-600 dark:text-red-400 hover:underline w-full px-4 py-2 mt-2"
       >
         <font-awesome-icon icon="right-from-bracket" class="w-4 h-4" />
         Logout
@@ -116,9 +119,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
+import { useThemeStore } from '@/stores/component/theme.js'
 
 const props = defineProps({
   active: String,
@@ -168,10 +172,20 @@ const selectDropdown = (key) => {
 }
 
 const menuClass = (key, mobile = false) => {
-  const base = mobile ? 'block w-full text-left px-4 py-2 rounded' : 'px-3 py-2 text-sm rounded'
-  const active = props.active === key ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
-  return `${base} ${active}`
+  const base = mobile
+    ? 'block w-full text-left px-4 py-2 rounded'
+    : 'px-3 py-2 text-sm rounded'
+  const isActive = props.active === key
+  return `${base} ${isActive
+    ? 'bg-blue-600 text-white'
+    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`
 }
+
+// Theme
+const themeStore = useThemeStore()
+themeStore.applyTheme()
+const theme = computed(() => themeStore.theme)
+const toggleTheme = () => themeStore.toggleTheme()
 </script>
 
 <style scoped>

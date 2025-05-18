@@ -1,5 +1,5 @@
 <template>
-  <div class="relative overflow-x-auto sm:rounded-lg border p-4 bg-white">
+  <div class="relative overflow-x-auto sm:rounded-lg border p-4" :class="themeClass.baseDiv">
     <div class="flex justify-between items-center pb-2">
       <BaseInput
         v-model="searchQuery"
@@ -18,8 +18,8 @@
       </div>
     </div>
 
-    <table v-if="!loading && items?.length" class="w-full text-sm text-left">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-300">
+    <table v-if="!loading && items?.length" class="w-full text-sm text-left rounded-xl border">
+      <thead class="text-xs uppercase" :class="themeClass.thead">
         <tr>
           <th v-for="(header, index) in headers" :key="index" class="px-6 py-3">{{ header }}</th>
         </tr>
@@ -30,14 +30,14 @@
     </table>
 
     <LoadingSpinner v-else-if="loading" :type="'mini'" />
-    <div v-else class="text-gray-500 p-4">Tidak ada data ditemukan.</div>
+    <div v-else class="text-center p-4" :class="themeClass.label">Tidak ada data ditemukan.</div>
 
     <nav
       v-if="!loading && pagination && items?.length"
       class="flex items-center justify-between pt-4"
       aria-label="Table navigation"
     >
-      <span class="text-sm text-gray-500">
+      <span class="text-sm" :class="themeClass.color1">
         Menampilkan <span class="font-semibold">{{ pagination.from }}</span> -
         <span class="font-semibold">{{ pagination.to }}</span> dari
         <span class="font-semibold">{{ pagination.total }}</span>
@@ -47,7 +47,7 @@
           <button
             :disabled="pagination.page <= 1"
             @click="$emit('page-change', pagination.page - 1)"
-            class="px-3 h-8 text-gray-500 border border-gray-300 rounded-s-lg hover:bg-gray-100 disabled:opacity-50"
+            class="px-3 h-8 rounded-s-lg disabled:opacity-50" :class="themeClass.color2"
           >
             Previous
           </button>
@@ -67,7 +67,8 @@
           <button
             :disabled="pagination.page >= totalPages"
             @click="$emit('page-change', pagination.page + 1)"
-            class="px-3 h-8 text-gray-500 border border-gray-300 rounded-e-lg hover:bg-gray-100 disabled:opacity-50"
+            class="px-3 h-8 rounded-e-lg disabled:opacity-50"
+            :class="themeClass.color2"
           >
             Next
           </button>
@@ -82,6 +83,9 @@ import { computed, ref, watch } from 'vue'
 import BaseInput from './BaseInput.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import BaseDropdown from './BaseDropdown.vue'
+import { useThemeClass } from '@/composables/useThemeClass.js'
+
+const { themeClass } = useThemeClass()
 
 const props = defineProps({
   modelValue: String,

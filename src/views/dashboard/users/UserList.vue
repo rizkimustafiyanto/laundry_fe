@@ -13,15 +13,15 @@
       @page-change="changePage"
     >
       <template #default="{ items }">
-        <tr v-for="u in items" :key="u.id" class="bg-white border-b hover:bg-gray-50">
+        <tr v-for="u in items" :key="u.id" class="border-b" :class="themeClass.trHover" >
           <td
             class="flex items-center px-6 py-4 whitespace-nowrap cursor-pointer"
             @click="showUserDetails(u)"
           >
             <img class="w-10 h-10 rounded-full" :src="u.photo || defaultAvatar" />
             <div class="ps-3">
-              <div class="text-base font-semibold">{{ u.name }}</div>
-              <div class="font-normal text-gray-500">{{ u.email }}</div>
+              <div :class="themeClass.labelName">{{ u.name }}</div>
+              <div :class="themeClass.labelMail">{{ u.email }}</div>
             </div>
           </td>
           <td class="px-6 py-4">{{ u.role }}</td>
@@ -65,7 +65,9 @@ import { useLoadingStore } from '@/stores/component/loading'
 import EditUserModal from './modal/UserEdit.vue'
 import UserDetail from './modal/UserDetail.vue'
 import defaultAvatar from '@/assets/icons/user.png'
+import { useThemeClass } from '@/composables/useThemeClass.js'
 
+const { themeClass } = useThemeClass()
 const userStore = useUserStore()
 const ui = useUIStore()
 const loading = useLoadingStore()

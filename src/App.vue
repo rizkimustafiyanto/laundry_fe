@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-screen flex flex-col">
+  <div class="w-full min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 dark:text-white">
     <LoadingSpinner v-if="loading.isLoading" />
 
     <router-view v-slot="{ Component }">
@@ -23,6 +23,10 @@ import ResponseModal from '@/components/ResponseModal.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useUserStore } from '@/stores/services/user'
 import { useLoadingStore } from './stores/component/loading'
+import { useThemeStore } from '@/stores/component/theme'
+
+const themeStore = useThemeStore()
+themeStore.applyTheme()
 
 const ui = useUIStore()
 const loading = useLoadingStore()
