@@ -5,7 +5,6 @@
     </label>
 
     <div class="relative">
-      <!-- Prefix Icon -->
       <div
         v-if="icon && type !== 'textarea' && type !== 'file'"
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -14,7 +13,6 @@
         <font-awesome-icon :icon="['fas', icon]" />
       </div>
 
-      <!-- Textarea -->
       <template v-if="type === 'textarea'">
         <textarea
           :id="id"
@@ -28,7 +26,6 @@
         />
       </template>
 
-      <!-- Input for File -->
       <template v-else-if="type === 'file'">
         <input
           :id="id"
@@ -41,7 +38,6 @@
         />
       </template>
 
-      <!-- Input for other types -->
       <template v-else>
         <input
           :id="id"
@@ -55,7 +51,6 @@
           :required="required"
         />
 
-        <!-- Password Toggle -->
         <button
           v-if="isPassword"
           type="button"
@@ -117,7 +112,3 @@ function handleFileChange(event) {
   }
 }
 </script>
-
-<style scoped>
-/* Optional: You can add transitions or animations here if needed */
-</style>

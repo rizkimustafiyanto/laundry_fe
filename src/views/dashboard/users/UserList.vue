@@ -2,7 +2,6 @@
   <div>
     <h2 class="text-xl font-semibold mb-4">Daftar User</h2>
 
-    <!-- TABLE -->
     <BaseTable
       :items="users.data"
       :headers="['Nama', 'Role', 'Tanggal Bergabung', 'Action']"
@@ -13,7 +12,7 @@
       @page-change="changePage"
     >
       <template #default="{ items }">
-        <tr v-for="u in items" :key="u.id" class="border-b" :class="themeClass.trHover" >
+        <tr v-for="u in items" :key="u.id" class="border-b" :class="themeClass.trHover">
           <td
             class="flex items-center px-6 py-4 whitespace-nowrap cursor-pointer"
             @click="showUserDetails(u)"
@@ -34,9 +33,7 @@
         </tr>
       </template>
     </BaseTable>
-    <!-- TABLE END -->
 
-    <!-- Detail Modal -->
     <UserDetail
       v-if="selectedUser && showDetail"
       :user="selectedUser"
@@ -44,7 +41,6 @@
       @close="showDetail = false"
     />
 
-    <!-- Edit Modal -->
     <EditUserModal
       v-if="editUser"
       :visible="showEditModal"

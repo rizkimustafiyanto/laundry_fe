@@ -1,17 +1,17 @@
 <template>
   <div
-    :class="[ 
+    :class="[
       'rounded-2xl shadow-md transition duration-300',
       variantClass,
       type === 'grid' ? gridLayoutClass : 'p-4',
-      classOverride
+      classOverride,
     ]"
     :style="styleOverride"
   >
     <template v-if="type === 'grid'">
       <slot name="grid">
         <div
-          :class="[ 
+          :class="[
             gridDirection === 'row'
               ? 'flex flex-row flex-wrap gap-4'
               : 'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3',
@@ -84,5 +84,4 @@ const variantClass = computed(() => {
     return themeClass.value.variantSecondary
   }
 })
-
 </script>

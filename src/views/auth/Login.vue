@@ -1,5 +1,9 @@
 <template>
-  <BaseCard type="single" variant="primary" class="w-full min-h-screen flex items-center justify-center bg-gray-100">
+  <BaseCard
+    type="single"
+    variant="primary"
+    class="w-full min-h-screen flex items-center justify-center bg-gray-100"
+  >
     <BaseCard type="single" variant="secondary" class="w-full max-w-md mt-20">
       <form @submit.prevent="login" class="space-y-6">
         <h2 class="text-2xl font-semibold text-center">Login</h2>

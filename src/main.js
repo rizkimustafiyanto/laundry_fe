@@ -14,14 +14,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import App from './App.vue'
 import router from './router'
 import BaseTable from './components/BaseTable.vue'
-import Navbar from '@/components/Navbar.vue'
+import BaseNavbar from '@/components/BaseNavbar.vue'
 import BaseInput from './components/BaseInput.vue'
 import BaseSelect from './components/BaseSelect.vue'
 import BaseCard from './components/BaseCard.vue'
 import BaseDropdown from './components/BaseDropdown.vue'
 import BaseRadioButton from './components/BaseRadioButton.vue'
 import BaseModal from './components/BaseModal.vue'
-import LoadingSpinner from './components/LoadingSpinner.vue'
+import BaseLoadingSpinner from './components/BaseLoadingSpinner.vue'
 import ResponseModal from './components/ResponseModal.vue'
 
 library.add(fas, far, fab)
@@ -29,14 +29,14 @@ const app = createApp(App)
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.component('BaseTable', BaseTable)
-app.component('Navbar', Navbar)
+app.component('BaseNavbar', BaseNavbar)
 app.component('BaseInput', BaseInput)
 app.component('BaseDropdown', BaseDropdown)
 app.component('BaseCard', BaseCard)
 app.component('BaseSelect', BaseSelect)
 app.component('BaseRadioButton', BaseRadioButton)
 app.component('BaseModal', BaseModal)
-app.component('LoadingSpinner', LoadingSpinner)
+app.component('BaseLoadingSpinner', BaseLoadingSpinner)
 app.component('ResponseModal', ResponseModal)
 
 app.use(createPinia())

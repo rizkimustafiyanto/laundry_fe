@@ -1,4 +1,3 @@
-<!-- src/components/order/EditOrderModal.vue -->
 <template>
   <BaseModal v-model="modelValue">
     <template #header>
@@ -6,26 +5,11 @@
     </template>
 
     <form @submit.prevent="submit" class="space-y-4">
-      <BaseInput
-        label="Berat (kg)"
-        type="number"
-        v-model="form.weight"
-        required
-      />
+      <BaseInput label="Berat (kg)" type="number" v-model="form.weight" required />
 
-      <BaseInput
-        label="Item"
-        type="text"
-        v-model="form.items"
-        required
-      />
+      <BaseInput label="Item" type="text" v-model="form.items" required />
 
-      <BaseInput
-        label="Catatan"
-        type="textarea"
-        v-model="form.notes"
-        rows="3"
-      />
+      <BaseInput label="Catatan" type="textarea" v-model="form.notes" rows="3" />
 
       <div class="flex justify-end pt-2">
         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -40,7 +24,7 @@ import { useOrderStore } from '@/stores/services/order'
 import { useUIStore } from '@/stores/component/ui'
 
 const props = defineProps({
-  order: Object
+  order: Object,
 })
 
 const modelValue = defineModel()
@@ -54,15 +38,18 @@ const form = ref({
   notes: '',
 })
 
-watch(() => props.order, (val) => {
-  if (val) {
-    form.value = {
-      weight: val.weight || '',
-      items: val.items || '',
-      notes: val.notes || '',
+watch(
+  () => props.order,
+  (val) => {
+    if (val) {
+      form.value = {
+        weight: val.weight || '',
+        items: val.items || '',
+        notes: val.notes || '',
+      }
     }
-  }
-})
+  },
+)
 
 const submit = async () => {
   try {

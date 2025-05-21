@@ -8,10 +8,6 @@
   </div>
 </template>
 
-<script setup>
-// Tidak perlu script tambahan kecuali ingin menambahkan logika
-</script>
-
 <style scoped>
 .unauthorized-container {
   display: flex;

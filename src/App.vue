@@ -1,6 +1,6 @@
 <template>
   <div class="w-full min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 dark:text-white">
-    <LoadingSpinner v-if="loading.isLoading" />
+    <BaseLoadingSpinner v-if="loading.isLoading" />
 
     <router-view v-slot="{ Component }">
       <Transition name="fade-page" mode="out-in">
@@ -19,8 +19,6 @@
 
 <script setup>
 import { useUIStore } from '@/stores/component/ui'
-import ResponseModal from '@/components/ResponseModal.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useUserStore } from '@/stores/services/user'
 import { useLoadingStore } from './stores/component/loading'
 import { useThemeStore } from '@/stores/component/theme'

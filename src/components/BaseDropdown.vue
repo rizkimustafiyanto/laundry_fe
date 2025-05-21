@@ -5,7 +5,7 @@
       type="button"
       :class="[
         'inline-flex items-center font-medium rounded-xl text-sm px-3 py-1.5 border focus:outline-none focus:ring-2 transition',
-        themeClass.button
+        themeClass.button,
       ]"
     >
       {{ labelHead }}

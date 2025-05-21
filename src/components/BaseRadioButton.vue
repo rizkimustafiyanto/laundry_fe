@@ -9,7 +9,7 @@
         :key="option.value"
         :class="[
           'flex items-center cursor-pointer',
-          type === 'vertical' ? 'mb-2 last:mb-0' : 'mr-4 last:mr-0'
+          type === 'vertical' ? 'mb-2 last:mb-0' : 'mr-4 last:mr-0',
         ]"
       >
         <input
@@ -50,7 +50,7 @@ const props = defineProps({
 })
 
 const wrapperClass = computed(() =>
-  props.type === 'horizontal' ? 'flex flex-row flex-wrap' : 'flex flex-col'
+  props.type === 'horizontal' ? 'flex flex-row flex-wrap' : 'flex flex-col',
 )
 </script>
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen py-10">
-    <div v-if="profile" class="max-w-4xl mx-auto">
+  <div>
+    <BaseLoadingSpinner v-if="isMiniLoading" :type="'mini'" />
+    <div v-if="profile && !isMiniLoading" class="max-w-4xl mx-auto">
       <BaseCard type="single" variant="primary">
-        <!-- HEADER -->
         <div class="flex justify-between items-start mb-6">
           <h1 class="text-3xl font-bold">Profil Saya</h1>
           <button
@@ -13,7 +13,6 @@
           </button>
         </div>
 
-        <!-- PROFILE INFO -->
         <div class="flex items-center space-x-6">
           <img
             :src="profile.photo || defaultAvatar"
@@ -31,7 +30,6 @@
           </div>
         </div>
 
-        <!-- BIO SECTION -->
         <div class="mt-8">
           <h3 class="text-lg font-semibold mb-2">Bio</h3>
 
@@ -67,13 +65,11 @@
         </div>
       </BaseCard>
     </div>
-
-    <div v-else class="text-center py-20">Memuat data profil...</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUIStore } from '@/stores/component/ui'
 import { useLoadingStore } from '@/stores/component/loading'
@@ -87,6 +83,8 @@ const selectedFile = ref(null)
 const ui = useUIStore()
 const loading = useLoadingStore()
 const userStore = useUserStore()
+
+const isMiniLoading = computed(() => loading.isMiniLoading)
 
 const { profile } = storeToRefs(userStore)
 

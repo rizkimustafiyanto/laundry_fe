@@ -8,7 +8,6 @@
         style="max-width: 30%"
       />
 
-      <!-- Optional dropdown -->
       <div v-if="withDropdown">
         <BaseDropdown
           :label="dropdownLabel"
@@ -29,7 +28,7 @@
       </tbody>
     </table>
 
-    <LoadingSpinner v-else-if="loading" :type="'mini'" />
+    <BaseLoadingSpinner v-else-if="loading" :type="'mini'" />
     <div v-else class="text-center p-4" :class="themeClass.label">Tidak ada data ditemukan.</div>
 
     <nav
@@ -47,7 +46,8 @@
           <button
             :disabled="pagination.page <= 1"
             @click="$emit('page-change', pagination.page - 1)"
-            class="px-3 h-8 rounded-s-lg disabled:opacity-50" :class="themeClass.color2"
+            class="px-3 h-8 rounded-s-lg disabled:opacity-50"
+            :class="themeClass.color2"
           >
             Previous
           </button>
@@ -80,9 +80,6 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import BaseInput from './BaseInput.vue'
-import LoadingSpinner from './LoadingSpinner.vue'
-import BaseDropdown from './BaseDropdown.vue'
 import { useThemeClass } from '@/composables/useThemeClass.js'
 
 const { themeClass } = useThemeClass()

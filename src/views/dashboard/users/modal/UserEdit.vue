@@ -5,7 +5,6 @@
     @click.self="close"
   >
     <BaseCard type="single" variant="primary" class="w-full max-w-xl">
-      <!-- HEADER -->
       <div class="flex items-center justify-between p-4 border-b border-gray-200">
         <h3 class="text-xl font-semibold">Edit User</h3>
         <button type="button" @click="close" class="text-gray-400 hover:text-gray-900">
@@ -20,7 +19,6 @@
         </button>
       </div>
 
-      <!-- FORM CONTENT -->
       <form @submit.prevent="handleSubmit">
         <div class="p-6 space-y-6">
           <BaseInput label="Name" v-model="form.name" id="name" />
@@ -44,7 +42,10 @@
           />
           <BaseRadioButton
             v-model="form.isActive"
-            :options="[ { label: 'Active', value: true }, { label: 'Disabled', value: false } ]"
+            :options="[
+              { label: 'Active', value: true },
+              { label: 'Disabled', value: false },
+            ]"
             type="horizontal"
             label="Status"
           />
@@ -82,7 +83,7 @@ const form = reactive({
   email: props.user?.email || '',
   password: '',
   role: props.user?.role || 'CUSTOMER',
-  isActive: props.user?.isActive || false
+  isActive: props.user?.isActive || false,
 })
 
 const roleOptions = [

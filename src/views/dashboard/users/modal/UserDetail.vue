@@ -6,7 +6,6 @@
       @click.self="close"
     >
       <BaseCard type="single" variant="secondary" class="w-[40vw] max-w-4xl">
-        <!-- HEADER -->
         <div class="flex items-center space-x-6">
           <img
             :src="user.photo || defaultAvatar"
@@ -14,8 +13,8 @@
             class="w-28 h-28 rounded-full object-cover ring-2 ring-indigo-500"
           />
           <div>
-            <h2 class="text-3xl font-semibold ">{{ user.name }}</h2>
-            <p class="text-sm ">{{ user.email }}</p>
+            <h2 class="text-3xl font-semibold">{{ user.name }}</h2>
+            <p class="text-sm">{{ user.email }}</p>
             <span
               class="mt-2 inline-block text-sm px-3 py-1 rounded-full font-medium bg-indigo-100 text-indigo-600"
             >
@@ -24,10 +23,9 @@
           </div>
         </div>
 
-        <!-- BIO -->
         <div class="mt-6">
-          <h3 class="text-lg font-semibold  mb-2">Bio</h3>
-          <p class=" whitespace-pre-line">
+          <h3 class="text-lg font-semibold mb-2">Bio</h3>
+          <p class="whitespace-pre-line">
             {{ user.bio || 'Belum ada bio.' }}
           </p>
         </div>

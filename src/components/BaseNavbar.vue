@@ -2,7 +2,6 @@
   <header class="bg-white dark:bg-gray-800 shadow-md px-6 py-4 flex justify-between items-center">
     <h1 class="text-2xl font-semibold text-blue-600 dark:text-blue-400">{{ title }}</h1>
 
-    <!-- Desktop Menu -->
     <nav class="hidden md:flex space-x-4 items-center">
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="relative">
@@ -34,25 +33,43 @@
         </button>
       </template>
 
-      <!-- Theme Toggle -->
       <button
         @click="toggleTheme"
         class="text-gray-600 dark:text-yellow-300 hover:text-yellow-500 transition duration-200 ml-4"
         title="Toggle Theme"
       >
-        <svg v-if="theme === 'light'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 3v1m0 16v1m8.485-8.485h1M3.515 12.515h1m15.364-6.364l-.707.707M5.636 18.364l-.707.707m0-12.728l.707.707M18.364 18.364l.707.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
+        <svg
+          v-if="theme === 'light'"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 3v1m0 16v1m8.485-8.485h1M3.515 12.515h1m15.364-6.364l-.707.707M5.636 18.364l-.707.707m0-12.728l.707.707M18.364 18.364l.707.707M12 5a7 7 0 100 14 7 7 0 000-14z"
+          />
         </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
+        <svg
+          v-else
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"
+          />
         </svg>
       </button>
 
-      <!-- Logout -->
       <font-awesome-icon
         icon="right-from-bracket"
         class="cursor-pointer text-gray-600 dark:text-red-400 hover:text-red-500 transition duration-200"
@@ -61,18 +78,29 @@
       />
     </nav>
 
-    <!-- Mobile Menu Toggle -->
-    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-600 dark:text-gray-300">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+    <button
+      @click="mobileMenuOpen = !mobileMenuOpen"
+      class="md:hidden text-gray-600 dark:text-gray-300"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
   </header>
 
-  <!-- Mobile Dropdown Menu -->
   <transition name="fade-scale">
-    <div v-show="mobileMenuOpen" class="md:hidden bg-white dark:bg-gray-900 shadow px-4 py-4 space-y-2">
+    <div
+      v-show="mobileMenuOpen"
+      class="md:hidden bg-white dark:bg-gray-900 shadow px-4 py-4 space-y-2"
+    >
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="space-y-1">
           <button
@@ -81,7 +109,12 @@
           >
             {{ item.label }}
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
           <transition name="fade-scale">
@@ -97,16 +130,11 @@
             </div>
           </transition>
         </div>
-        <button
-          v-else
-          @click="select(item.key)"
-          :class="menuClass(item.key, true)"
-        >
+        <button v-else @click="select(item.key)" :class="menuClass(item.key, true)">
           {{ item.label }}
         </button>
       </template>
 
-      <!-- Logout Mobile -->
       <button
         @click="logout"
         class="flex items-center gap-2 text-red-600 dark:text-red-400 hover:underline w-full px-4 py-2 mt-2"
@@ -172,16 +200,15 @@ const selectDropdown = (key) => {
 }
 
 const menuClass = (key, mobile = false) => {
-  const base = mobile
-    ? 'block w-full text-left px-4 py-2 rounded'
-    : 'px-3 py-2 text-sm rounded'
+  const base = mobile ? 'block w-full text-left px-4 py-2 rounded' : 'px-3 py-2 text-sm rounded'
   const isActive = props.active === key
-  return `${base} ${isActive
-    ? 'bg-blue-600 text-white'
-    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'}`
+  return `${base} ${
+    isActive
+      ? 'bg-blue-600 text-white'
+      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+  }`
 }
 
-// Theme
 const themeStore = useThemeStore()
 themeStore.applyTheme()
 const theme = computed(() => themeStore.theme)

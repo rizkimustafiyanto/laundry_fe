@@ -26,12 +26,11 @@ export const useOrderStore = defineStore('order', {
     filteredOrders(state) {
       const keyword = state.search.toLowerCase()
       return state.orders
-        .filter((order) =>
-          state.filterStatus ? order.status === state.filterStatus : true
-        )
-        .filter((order) =>
-          order.invoiceNumber.toLowerCase().includes(keyword) ||
-          order.customer?.name?.toLowerCase().includes(keyword)
+        .filter((order) => (state.filterStatus ? order.status === state.filterStatus : true))
+        .filter(
+          (order) =>
+            order.invoiceNumber.toLowerCase().includes(keyword) ||
+            order.customer?.name?.toLowerCase().includes(keyword),
         )
     },
   },
@@ -41,8 +40,8 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.post('/laundry/transactions', payload)  // Path diperbarui
-        this.orders.push(res.data)  // Menambahkan transaksi yang baru dibuat
+        const res = await api.post('/laundry/transactions', payload) // Path diperbarui
+        this.orders.push(res.data) // Menambahkan transaksi yang baru dibuat
         return res.data
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to create order'
@@ -58,13 +57,13 @@ export const useOrderStore = defineStore('order', {
       this.error = null
       try {
         const res = await api.put(`/laundry/transactions/${transactionId}/status`, {
-          newStatus,  // Tidak lagi membutuhkan transactionId dalam body
+          newStatus, // Tidak lagi membutuhkan transactionId dalam body
         })
         if (this.selectedOrder?.id === transactionId) {
           this.selectedOrder = res.data
         }
         // Update the list of orders
-        const index = this.orders.findIndex(o => o.id === transactionId)
+        const index = this.orders.findIndex((o) => o.id === transactionId)
         if (index !== -1) this.orders[index] = res.data
         return res.data
       } catch (err) {
@@ -80,7 +79,7 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get(`/laundry/transactions/${transactionId}`)  // Path diperbarui
+        const res = await api.get(`/laundry/transactions/${transactionId}`) // Path diperbarui
         this.selectedOrder = res.data
         return res.data
       } catch (err) {
@@ -96,12 +95,13 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get('/laundry/transactions', {  // Path diperbarui
+        const res = await api.get('/laundry/transactions', {
+          // Path diperbarui
           params: {
             page: this.pagination.page,
             limit: this.pagination.limit,
-            status: this.filterStatus,  // Add filtering by status
-            search: this.search,         // Add search functionality
+            status: this.filterStatus, // Add filtering by status
+            search: this.search, // Add search functionality
           },
         })
         this.orders = res.data.data?.orders
@@ -121,7 +121,7 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get('/laundry/transactions/summary')  // Path diperbarui
+        const res = await api.get('/laundry/transactions/summary') // Path diperbarui
         this.summary = res.data
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to fetch summary'
@@ -135,10 +135,10 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get('/laundry/transactions/status-filter')  // Path diperbarui
+        const res = await api.get('/laundry/transactions/status-filter') // Path diperbarui
         this.filterList = res.data.map((item) => ({
           label: item,
-          value: item
+          value: item,
         }))
         this.filterList.unshift({ label: 'ALL', value: '' })
       } catch (err) {
@@ -158,15 +158,16 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {  // Path diperbarui
+        const res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {
+          // Path diperbarui
           paymentData,
-          totalAmount
+          totalAmount,
         })
         // Update the selected order and the orders list with the new payment data
         if (this.selectedOrder?.id === transactionId) {
           this.selectedOrder = res.data
         }
-        const index = this.orders.findIndex(o => o.id === transactionId)
+        const index = this.orders.findIndex((o) => o.id === transactionId)
         if (index !== -1) this.orders[index] = res.data
         return res.data
       } catch (err) {

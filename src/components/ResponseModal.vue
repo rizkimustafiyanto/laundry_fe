@@ -5,15 +5,15 @@
     >
       <font-awesome-icon
         :icon="status === 'success' ? ['far', 'thumbs-up'] : ['fas', 'exclamation-circle']"
-        :class="[ 
-          'text-5xl mb-4 transition-transform duration-300', 
-          status === 'success' ? 'text-green-500 animate-pulse' : 'text-red-500 animate-shake', 
+        :class="[
+          'text-5xl mb-4 transition-transform duration-300',
+          status === 'success' ? 'text-green-500 animate-pulse' : 'text-red-500 animate-shake',
         ]"
       />
       <h2
-        :class="[ 
-          'text-2xl font-bold mb-2', 
-          status === 'success' ? 'text-green-600' : 'text-red-600' 
+        :class="[
+          'text-2xl font-bold mb-2',
+          status === 'success' ? 'text-green-600' : 'text-red-600',
         ]"
       >
         {{ status === 'success' ? 'SUCCESS' : 'FAILED' }}

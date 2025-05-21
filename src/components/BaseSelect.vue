@@ -72,7 +72,7 @@ const searchTerm = ref('')
 const filteredOptions = computed(() => {
   if (props.type === 'search' && searchTerm.value) {
     return props.options.filter((opt) =>
-      opt.label.toLowerCase().includes(searchTerm.value.toLowerCase())
+      opt.label.toLowerCase().includes(searchTerm.value.toLowerCase()),
     )
   }
   return props.options

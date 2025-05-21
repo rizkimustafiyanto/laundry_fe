@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-4">
-    <!-- User Dashboard Section -->
     <BaseCard variant="primary">
       <h2 class="text-lg font-semibold">Selamat datang, {{ user?.name }}</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -12,23 +11,21 @@
         </BaseCard>
         <BaseCard variant="secondary">
           <h3 class="text-sm font-medium text-gray-400 mb-2">Total Tagihan</h3>
-          <p class="text-lg font-semibold">
-            Rp {{ formatCurrency(totalBill) }}
-          </p>
+          <p class="text-lg font-semibold">Rp {{ formatCurrency(totalBill) }}</p>
         </BaseCard>
         <BaseCard variant="secondary">
           <h3 class="text-sm font-medium text-gray-400 mb-2">Estimasi Selesai</h3>
           <p class="text-lg font-semibold">
-            {{ latestOrder?.estimatedCompletion
-              ? formatDate(latestOrder.estimatedCompletion)
-              : 'Belum Ada' }}
+            {{
+              latestOrder?.estimatedCompletion
+                ? formatDate(latestOrder.estimatedCompletion)
+                : 'Belum Ada'
+            }}
           </p>
         </BaseCard>
       </div>
     </BaseCard>
 
-    <!-- Action Section -->
-    <!-- CUSTOMER: Tombol Pesan Sekarang -->
     <BaseCard v-if="isCustomer || isSuperadmin" variant="primary">
       <h3 class="text-lg font-semibold mb-2">Minta Penjemputan Laundry</h3>
       <button
@@ -76,11 +73,7 @@
       </BaseCard>
     </div>
 
-    <EditOrderModal
-      v-if="selectedOrder"
-      :order="selectedOrder"
-      v-model="showEditModal"
-    />
+    <EditOrderModal v-if="selectedOrder" :order="selectedOrder" v-model="showEditModal" />
   </div>
 </template>
 
@@ -106,7 +99,7 @@ onMounted(() => {
 })
 
 const userOrders = computed(() =>
-  orderStore.orders.filter(order => order.customer?.id === user.value?.id)
+  orderStore.orders.filter((order) => order.customer?.id === user.value?.id),
 )
 
 const latestOrder = computed(() => {
@@ -117,7 +110,7 @@ const latestOrder = computed(() => {
 
 const totalBill = computed(() => {
   return userOrders.value
-    .filter(order => order.status === 'COMPLETED' || order.status === 'DELIVERED')
+    .filter((order) => order.status === 'COMPLETED' || order.status === 'DELIVERED')
     .reduce((sum, order) => sum + (order.total || 0), 0)
 })
 
@@ -130,12 +123,10 @@ function formatDate(dateStr) {
   return format(date, 'dd MMMM yyyy', { locale: idLocale })
 }
 
-// Role checks
 const isSuperadmin = computed(() => role.value === 'SUPER_ADMIN')
 const isOwner = computed(() => role.value === 'OWNER')
 const isCustomer = computed(() => role.value === 'CUSTOMER')
 
-// Customer request pickup
 const requestPickup = async () => {
   try {
     await orderStore.createOrder({
@@ -149,9 +140,10 @@ const requestPickup = async () => {
   }
 }
 
-// Penjemputan oleh petugas
 const pickupOrders = computed(() =>
-  orderStore.orders.filter(order => order.status === 'REGISTERED' && order.pickupRequested === true)
+  orderStore.orders.filter(
+    (order) => order.status === 'REGISTERED' && order.pickupRequested === true,
+  ),
 )
 
 const showEditModal = ref(false)

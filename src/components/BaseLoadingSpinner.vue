@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="type === 'full'"
-    class="absolute inset-0 z-50 bg-white/50 flex items-center justify-center"
+    :class="['absolute inset-0 z-50 flex items-center justify-center', themeClass.bg_spinner]"
   >
     <div :class="['flex items-center gap-2', themeClass.spinner]">
       <svg
@@ -22,7 +22,10 @@
     </div>
   </div>
 
-  <div v-else-if="type === 'mini'" class="flex items-center justify-center p-4">
+  <div
+    v-else-if="type === 'mini'"
+    :class="['flex items-center justify-center p-4', themeClass.bg_spinner]"
+  >
     <div :class="['flex items-center gap-2', themeClass.spinner]">
       <svg
         class="animate-spin h-5 w-5"
@@ -57,5 +60,4 @@ defineProps({
 
 import { useThemeClass } from '@/composables/useThemeClass.js'
 const { themeClass } = useThemeClass()
-
 </script>

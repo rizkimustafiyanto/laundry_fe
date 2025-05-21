@@ -14,8 +14,14 @@
             class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:hover:text-white"
             @click="close"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -31,8 +37,8 @@ const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const close = () => {
@@ -51,14 +57,18 @@ const close = () => {
 }
 
 .modal-scale-enter-active {
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 .modal-scale-enter-from {
   transform: scale(0.95);
   opacity: 0;
 }
 .modal-scale-leave-active {
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 .modal-scale-leave-to {
   transform: scale(0.95);

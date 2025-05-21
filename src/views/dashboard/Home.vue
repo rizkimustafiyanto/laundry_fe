@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <Navbar
+    <BaseNavbar
       title="Admin Panel"
       :active="route.path"
       :menuItems="filteredMenuItems"

@@ -1,12 +1,10 @@
 <template>
   <div class="space-y-6">
-    <!-- TRANSAKSI HARI INI (SINGLE CARD) -->
     <BaseCard variant="primary">
       <div class="text-sm text-gray-400">Transaksi Hari Ini</div>
       <div class="text-2xl font-bold">{{ orderStore.summary.todayTotal }}</div>
     </BaseCard>
 
-    <!-- TRANSAKSI PER STATUS (GRID MODE) -->
     <BaseCard variant="primary" type="grid" gridDirection="column">
       <template #grid>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -23,7 +21,6 @@
       </template>
     </BaseCard>
 
-    <!-- TABLE LIST -->
     <BaseTable
       v-model="orderStore.search"
       :items="filteredOrders"
@@ -37,12 +34,7 @@
       @dropdown-select="setFilterStatus"
     >
       <template #default="{ items }">
-        <tr
-          v-for="order in items"
-          :key="order.id"
-          class="border-b"
-          :class="themeClass.trHover"
-        >
+        <tr v-for="order in items" :key="order.id" class="border-b" :class="themeClass.trHover">
           <td class="px-6 py-4 font-medium whitespace-nowrap">
             {{ order.invoiceNumber }}
           </td>
@@ -57,10 +49,7 @@
             >
               Cancel
             </button>
-            <button
-              @click="deleteOrder(order.id)"
-              class="text-red-600 hover:text-red-800 ml-2"
-            >
+            <button @click="deleteOrder(order.id)" class="text-red-600 hover:text-red-800 ml-2">
               Delete
             </button>
           </td>
@@ -71,41 +60,35 @@
 </template>
 
 <script setup>
-// ===== IMPORTS =====
 import { onMounted, computed } from 'vue'
 import { useOrderStore } from '@/stores/services/order.js'
 import { useAuthStore } from '@/stores/auth/auth.js'
 import { useUIStore } from '@/stores/component/ui.js'
 import { useThemeClass } from '@/composables/useThemeClass.js'
 
-// ===== STORES =====
 const orderStore = useOrderStore()
 const authStore = useAuthStore()
 const uiStore = useUIStore()
 const { themeClass } = useThemeClass()
 
-// ===== COMPUTED PROPERTIES =====
 const statusOptions = computed(() =>
   orderStore.filterList.filter((item) =>
-    ['REGISTERED', 'PROCESS', 'COMPLETED', 'CANCELLED', 'DELIVERED', ''].includes(item.value)
-))
+    ['REGISTERED', 'PROCESS', 'COMPLETED', 'CANCELLED', 'DELIVERED', ''].includes(item.value),
+  ),
+)
 
 const filteredOrders = computed(() => {
-  return orderStore.filteredOrders.filter(order =>
-    authStore.user?.role === 'SUPER_ADMIN'
-      ? true
-      : order.customerId === authStore.user?.id
+  return orderStore.filteredOrders.filter((order) =>
+    authStore.user?.role === 'SUPER_ADMIN' ? true : order.customerId === authStore.user?.id,
   )
 })
 
-// ===== LIFECYCLE =====
 onMounted(async () => {
   await orderStore.fetchAllOrders()
   await orderStore.fetchOrderSummary()
   await orderStore.fetchFilterListStatus()
 })
 
-// ===== METHODS =====
 function handlePageChange(newPage) {
   orderStore.pagination.page = newPage
   orderStore.fetchAllOrders()

@@ -50,11 +50,10 @@ const orderStore = useOrderStore()
 const ui = useUIStore()
 const auth = useAuthStore()
 
-
 const orders = computed(() => {
   return auth.role === 'SUPER_ADMIN'
     ? orderStore.orders
-    : orderStore.orders.filter(order => order.branchId === auth.user?.branchId)
+    : orderStore.orders.filter((order) => order.branchId === auth.user?.branchId)
 })
 
 const updateStatus = async (order) => {
@@ -78,10 +77,10 @@ const cancelOrder = async (order) => {
 }
 
 const statusOption = [
-  { label: 'REGISTERED', value: 'REGISTERED'},
-  { label: 'PROCESS', value: 'PROCESS'},
-  { label: 'COMPLETED', value: 'COMPLETED'},
-  { label: 'DELIVERED', value: 'DELIVERED'},
-  { label: 'CANCELLED', value: 'CANCELLED'},
+  { label: 'REGISTERED', value: 'REGISTERED' },
+  { label: 'PROCESS', value: 'PROCESS' },
+  { label: 'COMPLETED', value: 'COMPLETED' },
+  { label: 'DELIVERED', value: 'DELIVERED' },
+  { label: 'CANCELLED', value: 'CANCELLED' },
 ]
 </script>
