@@ -28,12 +28,12 @@
 
     <BaseCard v-if="isCustomer || isSuperadmin" variant="primary">
       <h3 class="text-lg font-semibold mb-2">Minta Penjemputan Laundry</h3>
-      <button
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        @click="requestPickup"
-      >
-        Pesan Sekarang
-      </button>
+      <BaseButton label="Pesan Sekarang" @click="requestPickup" />
+    </BaseCard>
+
+    <BaseCard v-if="isOwner || isSuperadmin" variant="primary">
+      <h3 class="text-lg font-semibold mb-2">Receive Laundry</h3>
+      <BaseButton label="Pesanan Dibuat" @click="createOrder" />
     </BaseCard>
 
     <BaseCard v-if="isOwner || isSuperadmin" variant="primary" class="space-y-4">
@@ -44,7 +44,7 @@
       <div
         v-for="order in pickupOrders"
         :key="order.id"
-        class="flex justify-between items-center border p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
+        class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700"
       >
         <div>
           <div class="font-medium">#{{ order.invoiceNumber }}</div>
@@ -52,12 +52,7 @@
             {{ order.customer?.name || 'Customer tidak diketahui' }}
           </div>
         </div>
-        <button
-          class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-          @click="openEditModal(order)"
-        >
-          Sudah Diambil
-        </button>
+        <BaseButton label="Sudah Diambil" @click="openEditModal(order)" variant="success" />
       </div>
     </BaseCard>
 
@@ -73,12 +68,13 @@
       </BaseCard>
     </div>
 
-    <EditOrderModal v-if="selectedOrder" :order="selectedOrder" v-model="showEditModal" />
+    <EditOrderModal v-if="selectedOrder" :orderId="selectedOrder" v-model="showEditModal" />
+    <CreateOrderModal v-if="showCreateModal" v-model="showCreateModal" />
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth/auth'
 import { useOrderStore } from '@/stores/services/order'
 import { format } from 'date-fns'
@@ -86,6 +82,7 @@ import { id as idLocale } from 'date-fns/locale'
 import ManageOrderStatus from '@/components/order/ManageOrderStatus.vue'
 import EditOrderModal from '@/components/order/EditOrderModal.vue'
 import { useUIStore } from '@/stores/component/ui'
+import CreateOrderModal from '@/components/order/CreateOrderModal.vue'
 
 const authStore = useAuthStore()
 const orderStore = useOrderStore()
@@ -140,17 +137,18 @@ const requestPickup = async () => {
   }
 }
 
-const pickupOrders = computed(() =>
-  orderStore.orders.filter(
-    (order) => order.status === 'REGISTERED' && order.pickupRequested === true,
-  ),
-)
+const pickupOrders = computed(() => orderStore.pickedUpRequest)
 
 const showEditModal = ref(false)
-const selectedOrder = ref([])
+const showCreateModal = ref(false)
+const selectedOrder = ref()
+
+const createOrder = () => {
+  showCreateModal.value = true
+}
 
 const openEditModal = (order) => {
-  selectedOrder.value = order
+  selectedOrder.value = order.id
   showEditModal.value = true
 }
 

@@ -19,6 +19,7 @@
           :placeholder="placeholder"
           :value="modelValue"
           :disabled="disabled"
+          :rows="rows"
           @input="$emit('update:modelValue', $event.target.value)"
           class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition resize-y min-h-[100px]"
           :class="themeClass.input"
@@ -34,6 +35,22 @@
           @change="handleFileChange"
           class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
           :class="themeClass.input"
+          :required="required"
+        />
+      </template>
+
+      <template v-else-if="type === 'number'">
+        <input
+          :id="id"
+          type="number"
+          :placeholder="placeholder"
+          :max="max"
+          :min="min"
+          :value="modelValue"
+          :disabled="disabled"
+          @input="$emit('update:modelValue', $event.target.value)"
+          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input, themeClass.textColor]"
           :required="required"
         />
       </template>
@@ -74,7 +91,13 @@ const { themeClass } = useThemeClass()
 const props = defineProps({
   id: String,
   label: String,
-  modelValue: String,
+  modelValue: {
+    type: [String, Number],
+    required: true,
+  },
+  min: [String, Number],
+  max: [String, Number],
+  rows: String,
   type: {
     type: String,
     default: 'text',
@@ -112,3 +135,12 @@ function handleFileChange(event) {
   }
 }
 </script>
+
+<style scoped>
+input[type='number']::-webkit-inner-spin-button {
+  filter: invert(0%);
+}
+.dark input[type='number']::-webkit-inner-spin-button {
+  filter: invert(100%);
+}
+</style>

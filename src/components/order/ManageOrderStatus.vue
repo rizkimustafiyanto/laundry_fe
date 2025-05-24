@@ -5,7 +5,7 @@
     <div
       v-for="order in orders"
       :key="order.id"
-      class="p-4 border rounded-lg space-y-2 bg-gray-100 dark:bg-gray-800"
+      class="p-4 border rounded-lg space-y-2 bg-gray-100 dark:bg-gray-800 dark:border-gray-500"
     >
       <div class="flex justify-between items-center">
         <div>
@@ -20,19 +20,17 @@
             placeholder="Pilih Status"
             type="default"
           />
-          <button
+          <BaseButton
+            :label="!isStatusChanged(order) ? '...' : 'Simpan'"
             @click="updateStatus(order)"
-            class="text-white bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 text-sm"
-          >
-            Simpan
-          </button>
-          <button
+            :disabled="!isStatusChanged(order)"
+          />
+          <BaseButton
             v-if="order.status !== 'CANCELLED'"
+            label="Batalkan"
             @click="cancelOrder(order)"
-            class="text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700 text-sm"
-          >
-            Batalkan
-          </button>
+            variant="danger"
+          />
         </div>
       </div>
     </div>
@@ -40,11 +38,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, reactive, onMounted } from 'vue'
 import { useOrderStore } from '@/stores/services/order'
 import { useUIStore } from '@/stores/component/ui'
 import { useAuthStore } from '@/stores/auth/auth'
-import BaseSelect from '../BaseSelect.vue'
 
 const orderStore = useOrderStore()
 const ui = useUIStore()
@@ -56,11 +53,29 @@ const orders = computed(() => {
     : orderStore.orders.filter((order) => order.branchId === auth.user?.branchId)
 })
 
+const originalStatuses = reactive({})
+
+// Fetch ulang saat komponen dimuat
+onMounted(async () => {
+  await orderStore.fetchAllOrders()
+
+  orders.value.forEach((order) => {
+    originalStatuses[order.id] = order.status
+  })
+})
+
+const isStatusChanged = (order) => {
+  return order.status !== originalStatuses[order.id]
+}
+
 const updateStatus = async (order) => {
   try {
     await orderStore.updateOrderStatus(order.id, order.status)
     ui.show('success', 'Status pesanan diperbarui.')
-    orderStore.fetchAllOrders()
+    await orderStore.fetchAllOrders()
+    orders.value.forEach((order) => {
+      originalStatuses[order.id] = order.status
+    })
   } catch (err) {
     ui.show('error', 'Gagal memperbarui status.')
   }
@@ -70,7 +85,10 @@ const cancelOrder = async (order) => {
   try {
     await orderStore.updateOrderStatus(order.id, 'CANCELLED')
     ui.show('success', 'Pesanan berhasil dibatalkan.')
-    orderStore.fetchAllOrders()
+    await orderStore.fetchAllOrders()
+    orders.value.forEach((order) => {
+      originalStatuses[order.id] = order.status
+    })
   } catch (err) {
     ui.show('error', 'Gagal membatalkan pesanan.')
   }

@@ -4,6 +4,7 @@ import api from '@/utils/api'
 export const useOrderStore = defineStore('order', {
   state: () => ({
     orders: [],
+    pickedUpRequest: [],
     selectedOrder: null,
     summary: {
       todayTotal: 0,
@@ -21,6 +22,7 @@ export const useOrderStore = defineStore('order', {
     search: '',
     loading: false,
     error: null,
+    serviceTypeList: [],
   }),
   getters: {
     filteredOrders(state) {
@@ -29,7 +31,7 @@ export const useOrderStore = defineStore('order', {
         .filter((order) => (state.filterStatus ? order.status === state.filterStatus : true))
         .filter(
           (order) =>
-            order.invoiceNumber.toLowerCase().includes(keyword) ||
+            order.invoiceNumber?.toLowerCase().includes(keyword) ||
             order.customer?.name?.toLowerCase().includes(keyword),
         )
     },
@@ -74,6 +76,21 @@ export const useOrderStore = defineStore('order', {
       }
     },
 
+    async updateOrderDetail(transactionId, payload) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await api.put(`/laundry/transactions/${transactionId}/detail`, payload)
+        console.log(res)
+        return res.data
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Failed to update status'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
     // Fetch order by ID
     async fetchOrderById(transactionId) {
       this.loading = true
@@ -108,6 +125,9 @@ export const useOrderStore = defineStore('order', {
         this.pagination.total = res.data.data?.total
         this.pagination.from = res.data.data?.from
         this.pagination.to = res.data.data?.to
+        this.pickedUpRequest = this.orders.filter(
+          (order) => order.status === 'REGISTERED' && order.pickupRequested === true,
+        )
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to fetch orders'
         throw err
@@ -151,6 +171,18 @@ export const useOrderStore = defineStore('order', {
     // Set filter status for orders
     setFilterStatus(status) {
       this.filterStatus = status
+    },
+
+    async fetchServiceType() {
+      try {
+        const res = await api.get('/laundry/transactions/service-type')
+        this.serviceTypeList = res.data.map((item) => ({
+          label: item.replace(/_/g, ' '),
+          value: item,
+        }))
+      } catch (err) {
+        this.error = err.response.data.message || 'Failed to fetch list'
+      }
     },
 
     // Update payment for an order
