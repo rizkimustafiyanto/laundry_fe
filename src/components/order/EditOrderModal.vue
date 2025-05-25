@@ -48,6 +48,16 @@
         @click="addItem"
       />
 
+      <!-- Status -->
+      <BaseSelect
+        v-if="!orderTake"
+        label="Status"
+        v-model="form.status"
+        :options="statusOption"
+        placeholder="Pilih Status"
+        required
+      />
+
       <!-- Notes -->
       <BaseInput
         label="Catatan"
@@ -55,6 +65,7 @@
         v-model="form.notes"
         rows="3"
         placeholder="Masukkan Catatan..."
+        :disabled="orderTake"
       />
 
       <!-- Action Buttons -->
@@ -75,6 +86,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  orderTake: {
+    type: Boolean,
+    default: () => false,
+  },
 })
 
 const modelValue = defineModel()
@@ -84,11 +99,11 @@ const ui = useUIStore()
 const form = ref({
   items: [],
   notes: '',
+  status: '',
 })
 
-const serviceTypeOption = computed(() => {
-  return orderStore.serviceTypeList
-})
+const serviceTypeOption = ref()
+const statusOption = ref()
 
 const addItem = () => {
   form.value.items.push({
@@ -112,7 +127,6 @@ const loadOrder = async () => {
 
   try {
     await orderStore.fetchOrderById(props.orderId)
-    await orderStore.fetchServiceType()
     const order = orderStore.selectedOrder
 
     form.value.items =
@@ -130,9 +144,29 @@ const loadOrder = async () => {
   }
 }
 
+const loadServiceType = async () => {
+  try {
+    await orderStore.fetchServiceType()
+    serviceTypeOption.value = orderStore.serviceTypeList
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const loadStatusOption = async () => {
+  try {
+    await orderStore.fetchFilterListStatus()
+    statusOption.value = orderStore.filterList
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 onMounted(() => {
   if (props.orderId) {
     loadOrder()
+    loadServiceType()
+    loadStatusOption()
   }
 })
 
@@ -156,13 +190,20 @@ const submit = async () => {
     const payload = {
       items: preparedItems,
       notes: form.value.notes,
+      ...(props.orderTake
+        ? {
+            status: 'PICKED_UP',
+          }
+        : {
+            status: form.value.status,
+          }),
     }
 
     await orderStore.updateOrderDetail(props.orderId, payload)
     ui.show('success', 'Transaksi berhasil diperbarui.')
     modelValue.value = false
   } catch (err) {
-    ui.show('error', `Gagal menyimpan transaksi.`)
+    ui.show('error', `Gagal menyimpan transaksi. ${err}`)
   }
 }
 </script>

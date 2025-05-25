@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
+import socket from '@/plugins/socket'
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
@@ -42,8 +43,8 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.post('/laundry/transactions', payload) // Path diperbarui
-        this.orders.push(res.data) // Menambahkan transaksi yang baru dibuat
+        const res = await api.post('/laundry/transactions', payload)
+        this.orders.push(res.data)
         return res.data
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to create order'
@@ -59,7 +60,7 @@ export const useOrderStore = defineStore('order', {
       this.error = null
       try {
         const res = await api.put(`/laundry/transactions/${transactionId}/status`, {
-          newStatus, // Tidak lagi membutuhkan transactionId dalam body
+          newStatus,
         })
         if (this.selectedOrder?.id === transactionId) {
           this.selectedOrder = res.data
@@ -70,6 +71,34 @@ export const useOrderStore = defineStore('order', {
         return res.data
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to update status'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async deleteOrderSoft(transactionId) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await api.delete(`/laundry/transactions/${transactionId}/soft`)
+        return res.data
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Failed to delete'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async deleteOrderHard(transactionId) {
+      this.loading = true
+      this.error = null
+      try {
+        const res = await api.delete(`/laundry/transactions/${transactionId}/hard`)
+        return res.data
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Failed to delete'
         throw err
       } finally {
         this.loading = false
@@ -96,7 +125,7 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get(`/laundry/transactions/${transactionId}`) // Path diperbarui
+        const res = await api.get(`/laundry/transactions/${transactionId}`)
         this.selectedOrder = res.data
         return res.data
       } catch (err) {
@@ -113,12 +142,11 @@ export const useOrderStore = defineStore('order', {
       this.error = null
       try {
         const res = await api.get('/laundry/transactions', {
-          // Path diperbarui
           params: {
             page: this.pagination.page,
             limit: this.pagination.limit,
-            status: this.filterStatus, // Add filtering by status
-            search: this.search, // Add search functionality
+            status: this.filterStatus,
+            search: this.search,
           },
         })
         this.orders = res.data.data?.orders
@@ -141,7 +169,7 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get('/laundry/transactions/summary') // Path diperbarui
+        const res = await api.get('/laundry/transactions/summary')
         this.summary = res.data
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to fetch summary'
@@ -155,9 +183,9 @@ export const useOrderStore = defineStore('order', {
       this.loading = true
       this.error = null
       try {
-        const res = await api.get('/laundry/transactions/status-filter') // Path diperbarui
+        const res = await api.get('/laundry/transactions/status-filter')
         this.filterList = res.data.map((item) => ({
-          label: item,
+          label: item.replace(/_/g, ' '),
           value: item,
         }))
         this.filterList.unshift({ label: 'ALL', value: '' })
@@ -191,11 +219,10 @@ export const useOrderStore = defineStore('order', {
       this.error = null
       try {
         const res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {
-          // Path diperbarui
           paymentData,
           totalAmount,
         })
-        // Update the selected order and the orders list with the new payment data
+
         if (this.selectedOrder?.id === transactionId) {
           this.selectedOrder = res.data
         }
@@ -208,6 +235,21 @@ export const useOrderStore = defineStore('order', {
       } finally {
         this.loading = false
       }
+    },
+
+    listenOrderUpdates() {
+      socket.on('order_updated', () => {
+        this.fetchAllOrders()
+        this.fetchOrderSummary()
+      })
+      // socket.on('user_updated', (updatedUser) => {
+      //   const updatedData = updatedUser.user
+      //   const index = this.users.data.findIndex((u) => u.id === updatedData.id)
+
+      //   if (index !== -1) {
+      //     this.users.data.splice(index, 1, updatedData)
+      //   }
+      // })
     },
   },
 })

@@ -75,6 +75,13 @@ export function useThemeClass() {
         theme.value === 'dark'
           ? 'bg-green-600 text-white hover:bg-green-700'
           : 'bg-green-500 text-white hover:bg-green-600',
+
+      scrollbar:
+        theme.value === 'dark'
+          ? 'scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800'
+          : 'scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100',
+
+      borderColor: theme.value === 'dark' ? 'border-gray-600' : 'border-gray-300',
     }
   })
 

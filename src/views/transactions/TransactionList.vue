@@ -9,13 +9,17 @@
       <template #grid>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <BaseCard
-            v-for="(count, status) in orderStore.summary.statusCount"
+            v-if="statusSummary.length > 0"
+            v-for="(count, status) in statusSummary"
             :key="status"
             variant="secondary"
             type="single"
           >
             <div class="text-sm text-gray-400 capitalize">{{ status }}</div>
             <div class="text-2xl font-bold">{{ count }}</div>
+          </BaseCard>
+          <BaseCard v-else variant="secondary" type="single">
+            <div class="text-sm text-gray-400 capitalize">No Transaction</div>
           </BaseCard>
         </div>
       </template>
@@ -34,7 +38,12 @@
       @dropdown-select="setFilterStatus"
     >
       <template #default="{ items }">
-        <tr v-for="order in items" :key="order.id" class="border-b" :class="themeClass.trHover">
+        <tr
+          v-for="order in items"
+          :key="order.id"
+          class="border-b"
+          :class="[themeClass.trHover, themeClass.borderColor, order.deletedAt ? 'bg-red-800' : '']"
+        >
           <td class="px-6 py-4 font-medium whitespace-nowrap">
             {{ order.invoiceNumber }}
           </td>
@@ -43,14 +52,25 @@
           <td class="px-6 py-4">{{ formatDate(order.createdAt) }}</td>
           <td class="px-6 py-4">
             <button
-              v-if="order.status !== 'CANCELLED'"
+              v-if="order.status !== 'CANCELLED' && !order.deletedAt"
               @click="updateOrderStatusToCancelled(order.id)"
               class="text-red-600 hover:text-red-800"
             >
               Cancel
             </button>
-            <button @click="deleteOrder(order.id)" class="text-red-600 hover:text-red-800 ml-2">
+            <button
+              v-if="!order.deletedAt"
+              @click="deleteOrder(order.id)"
+              class="text-red-600 hover:text-red-800 ml-2"
+            >
               Delete
+            </button>
+            <button
+              v-if="order.deletedAt"
+              @click="hardDelete(order.id)"
+              class="text-red-600 hover:text-red-800 ml-2"
+            >
+              Delete Hard
             </button>
           </td>
         </tr>
@@ -76,6 +96,10 @@ const statusOptions = computed(() =>
     ['REGISTERED', 'PROCESS', 'COMPLETED', 'CANCELLED', 'DELIVERED', ''].includes(item.value),
   ),
 )
+
+const statusSummary = computed(() => {
+  return orderStore.summary.statusCount ?? []
+})
 
 const filteredOrders = computed(() => {
   return orderStore.filteredOrders.filter((order) =>
@@ -114,7 +138,16 @@ async function updateOrderStatusToCancelled(orderId) {
 
 async function deleteOrder(orderId) {
   try {
-    await orderStore.deleteOrder(orderId)
+    await orderStore.deleteOrderSoft(orderId)
+    uiStore.show('success', 'Pesanan berhasil dihapus!')
+  } catch (error) {
+    uiStore.show('error', 'Gagal menghapus pesanan.')
+  }
+}
+
+async function hardDelete(orderId) {
+  try {
+    await orderStore.deleteOrderHard(orderId)
     uiStore.show('success', 'Pesanan berhasil dihapus!')
   } catch (error) {
     uiStore.show('error', 'Gagal menghapus pesanan.')

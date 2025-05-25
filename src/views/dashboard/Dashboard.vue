@@ -52,7 +52,7 @@
             {{ order.customer?.name || 'Customer tidak diketahui' }}
           </div>
         </div>
-        <BaseButton label="Sudah Diambil" @click="openEditModal(order)" variant="success" />
+        <BaseButton label="Sudah Diambil" @click="openEditModal(order, true)" variant="success" />
       </div>
     </BaseCard>
 
@@ -68,7 +68,12 @@
       </BaseCard>
     </div>
 
-    <EditOrderModal v-if="selectedOrder" :orderId="selectedOrder" v-model="showEditModal" />
+    <EditOrderModal
+      v-if="selectedOrder"
+      :orderId="selectedOrder"
+      :orderTake="orderTake"
+      v-model="showEditModal"
+    />
     <CreateOrderModal v-if="showCreateModal" v-model="showCreateModal" />
   </div>
 </template>
@@ -142,13 +147,15 @@ const pickupOrders = computed(() => orderStore.pickedUpRequest)
 const showEditModal = ref(false)
 const showCreateModal = ref(false)
 const selectedOrder = ref()
+const orderTake = ref()
 
 const createOrder = () => {
   showCreateModal.value = true
 }
 
-const openEditModal = (order) => {
+const openEditModal = (order, take = false) => {
   selectedOrder.value = order.id
+  orderTake.value = take
   showEditModal.value = true
 }
 

@@ -57,7 +57,7 @@ const originalStatuses = reactive({})
 
 // Fetch ulang saat komponen dimuat
 onMounted(async () => {
-  await orderStore.fetchAllOrders()
+  await orderStore.fetchFilterListStatus()
 
   orders.value.forEach((order) => {
     originalStatuses[order.id] = order.status
@@ -94,11 +94,7 @@ const cancelOrder = async (order) => {
   }
 }
 
-const statusOption = [
-  { label: 'REGISTERED', value: 'REGISTERED' },
-  { label: 'PROCESS', value: 'PROCESS' },
-  { label: 'COMPLETED', value: 'COMPLETED' },
-  { label: 'DELIVERED', value: 'DELIVERED' },
-  { label: 'CANCELLED', value: 'CANCELLED' },
-]
+const statusOption = computed(() => {
+  return orderStore.filterList.filter((q) => q.label.toLowerCase() !== 'all')
+})
 </script>

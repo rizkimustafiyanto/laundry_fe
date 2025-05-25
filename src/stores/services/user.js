@@ -10,6 +10,7 @@ export const useUserStore = defineStore('users', {
     currentPage: 1,
     limit: 10,
     searchQuery: '',
+    roleOption: [],
   }),
 
   actions: {
@@ -19,22 +20,6 @@ export const useUserStore = defineStore('users', {
         this.profile = res.data
       } catch (error) {
         console.error('Failed to fetch profile:', error)
-        throw error
-      }
-    },
-
-    async updateProfile(formData) {
-      try {
-        const res = await api.put('/users/profile', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-
-        this.profile = res.data
-        return res.data
-      } catch (error) {
-        console.error('Failed to update profile:', error)
         throw error
       }
     },
@@ -78,6 +63,35 @@ export const useUserStore = defineStore('users', {
         return res.data
       } catch (error) {
         console.error('Failed to update user by ID:', error)
+        throw error
+      }
+    },
+
+    async updateProfile(formData) {
+      try {
+        const res = await api.put('/users/profile', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
+        this.profile = res.data
+        return res.data
+      } catch (error) {
+        console.error('Failed to update profile:', error)
+        throw error
+      }
+    },
+
+    async fetchRoleOption() {
+      try {
+        const res = await api.get('/users/role-option')
+        this.roleOption = res.data.map((item) => ({
+          label: item.replace(/_/g, ' '),
+          value: item,
+        }))
+      } catch (error) {
+        console.error('Failed to get role option', error)
         throw error
       }
     },

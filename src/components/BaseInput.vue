@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4">
+  <div class="py-1">
     <label v-if="label" :for="id" class="block mb-2 text-sm font-medium" :class="themeClass.label">
       {{ label }}
     </label>

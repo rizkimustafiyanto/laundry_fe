@@ -1,5 +1,5 @@
 <template>
-  <div class="relative overflow-x-auto sm:rounded-lg border p-4" :class="themeClass.baseDiv">
+  <div class="relative overflow-x-auto sm:rounded-lg p-4" :class="themeClass.baseDiv">
     <div class="flex justify-between items-center pb-2">
       <BaseInput
         v-model="searchQuery"
@@ -8,25 +8,33 @@
         style="max-width: 30%"
       />
 
-      <div v-if="withDropdown">
-        <BaseDropdown
-          :label="dropdownLabel"
-          :items="dropdownItems"
-          @select="handleDropdownSelect"
-        />
-      </div>
+      <BaseSelect
+        v-if="withDropdown"
+        :modelValue="selectedDropdownValue"
+        @update:modelValue="handleDropdownSelect"
+        :options="dropdownItems"
+        :placeholder="dropdownLabel"
+        required
+      />
     </div>
 
-    <table v-if="!loading && items?.length" class="w-full text-sm text-left rounded-xl border">
-      <thead class="text-xs uppercase" :class="themeClass.thead">
-        <tr>
-          <th v-for="(header, index) in headers" :key="index" class="px-6 py-3">{{ header }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <slot :items="items"></slot>
-      </tbody>
-    </table>
+    <div v-if="!loading && items?.length" class="w-full overflow-x-auto">
+      <table
+        class="w-full text-sm text-left rounded-xl border min-w-max"
+        :class="[themeClass.borderColor]"
+      >
+        <thead class="text-xs uppercase" :class="themeClass.thead">
+          <tr>
+            <th v-for="(header, index) in headers" :key="index" class="px-6 py-3">
+              {{ header }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <slot :items="items"></slot>
+        </tbody>
+      </table>
+    </div>
 
     <BaseLoadingSpinner v-else-if="loading" :type="'mini'" />
     <div v-else class="text-center p-4" :class="themeClass.label">Tidak ada data ditemukan.</div>
@@ -47,7 +55,7 @@
             :disabled="pagination.page <= 1"
             @click="$emit('page-change', pagination.page - 1)"
             class="px-3 h-8 rounded-s-lg disabled:opacity-50"
-            :class="themeClass.color2"
+            :class="[themeClass.color2, themeClass.borderColor]"
           >
             Previous
           </button>
@@ -57,7 +65,10 @@
             @click="$emit('page-change', p)"
             :class="[
               'px-3 h-8 border',
-              p === pagination.page ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100',
+              p === pagination.page
+                ? 'bg-blue-500 text-white dark:bg-blue-600 dark:text-white'
+                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
+              themeClass.borderColor,
             ]"
           >
             {{ p }}
@@ -68,7 +79,7 @@
             :disabled="pagination.page >= totalPages"
             @click="$emit('page-change', pagination.page + 1)"
             class="px-3 h-8 rounded-e-lg disabled:opacity-50"
-            :class="themeClass.color2"
+            :class="[themeClass.color2, themeClass.borderColor]"
           >
             Next
           </button>
@@ -81,6 +92,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useThemeClass } from '@/composables/useThemeClass.js'
+import { createDebouncer } from '@/utils/debounce'
 
 const { themeClass } = useThemeClass()
 
@@ -108,19 +120,26 @@ const emit = defineEmits(['update:modelValue', 'search', 'page-change', 'dropdow
 
 const searchQuery = ref(props.modelValue)
 
+watch(searchQuery, (val) => {
+  debouncedSearch(val)
+})
+
 watch(
   () => props.modelValue,
   (val) => {
-    searchQuery.value = val
+    if (val !== searchQuery.value) searchQuery.value = val
   },
 )
 
-watch(searchQuery, (val) => {
-  emit('update:modelValue', val)
+const debouncedSearch = createDebouncer((val) => {
   emit('search', val)
-})
+  emit('update:modelValue', val)
+}, 400)
+
+const selectedDropdownValue = ref(null)
 
 const handleDropdownSelect = (value) => {
+  selectedDropdownValue.value = value
   emit('dropdown-select', value)
 }
 

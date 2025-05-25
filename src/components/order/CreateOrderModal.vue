@@ -7,6 +7,8 @@
         v-model="form.customerId"
         :options="customerOptions"
         placeholder="-- Pilih Pelanggan --"
+        type="search"
+        :onSearch="searchCustomers"
         required
       />
 
@@ -40,31 +42,21 @@
           class="mb-4 p-4 border rounded-md space-y-2 bg-gray-50 dark:bg-gray-800 dark:border-gray-600"
         >
           <div class="grid grid-cols-2 gap-4">
-            <BaseInput v-model="item.itemType" label="Jenis Item" required />
+            <BaseInput
+              v-model="item.itemType"
+              label="Jenis Item"
+              placeholder="Baju, Kaos, Celana"
+              required
+            />
             <BaseSelect
               v-model="item.serviceType"
               label="Jenis Layanan"
-              :options="[
-                { label: 'Regular', value: 'REGULAR' },
-                { label: 'Express', value: 'EXPRESS' },
-              ]"
+              :options="serviceTypeOption"
               placeholder="-- Pilih Layanan --"
               required
             />
-            <BaseInput
-              v-model.number="item.weightInKg"
-              type="number"
-              label="Berat (kg)"
-              min="0"
-              required
-            />
-            <BaseInput
-              v-model.number="item.unitPrice"
-              type="number"
-              label="Harga/kg"
-              min="0"
-              required
-            />
+            <BaseInput v-model.number="item.weightInKg" type="number" label="Berat (kg)" min="0" />
+            <BaseInput v-model.number="item.unitPrice" type="number" label="Harga/kg" min="0" />
           </div>
           <div class="text-sm text-gray-500 dark:text-gray-300">
             Subtotal: Rp {{ item.subtotal.toLocaleString() }}
@@ -116,13 +108,29 @@
 import { reactive, ref, onMounted, computed } from 'vue'
 import { useUIStore } from '@/stores/component/ui'
 import { useOrderStore } from '@/stores/services/order'
+import { useUserStore } from '@/stores/services/user'
 
 const modelValue = defineModel()
 const ui = useUIStore()
 const orderStore = useOrderStore()
-const customers = ref([])
+const userStore = useUserStore()
+const customers = computed(() => {
+  return Array.isArray(userStore.users.data) ? userStore.users.data : []
+})
 
-const customerOptions = computed(() => customers.value.map((c) => ({ label: c.name, value: c.id })))
+const searchCustomers = async (keyword) => {
+  await userStore.fetchUsers({ search: keyword })
+}
+
+const customerOptions = computed(() => {
+  return Array.isArray(customers.value)
+    ? customers.value.map((c) => ({ label: c.name, value: c.id }))
+    : []
+})
+
+const serviceTypeOption = computed(() => {
+  return Array.isArray(orderStore.serviceTypeList) ? orderStore.serviceTypeList : []
+})
 
 const form = reactive({
   customerId: '',
@@ -149,6 +157,14 @@ const addItem = () => {
   })
 }
 
+const loadServiceType = async () => {
+  try {
+    serviceTypeOption.value = orderStore.serviceTypeList
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 const removeItem = (index) => {
   form.items.splice(index, 1)
 }
@@ -169,7 +185,11 @@ const submitOrder = async () => {
       deliveryRequested: form.deliveryRequested,
       notes: form.notes,
       items: preparedItems,
-      paymentData: form.payment,
+      ...(form.payment.paymentMethod
+        ? {
+            paymentData: form.payment,
+          }
+        : {}),
     }
 
     await orderStore.createOrder(payload)
@@ -180,14 +200,7 @@ const submitOrder = async () => {
 }
 
 onMounted(async () => {
-  customers.value = await fetchCustomers()
+  await userStore.fetchUsers()
+  await orderStore.fetchServiceType()
 })
-
-const fetchCustomers = async () => {
-  return [
-    { id: '1', name: 'Ali' },
-    { id: '2', name: 'Budi' },
-    { id: '3', name: 'Citra' },
-  ]
-}
 </script>

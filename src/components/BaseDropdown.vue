@@ -9,20 +9,12 @@
       ]"
     >
       {{ labelHead }}
-      <svg class="w-2.5 h-2.5 ml-2.5" fill="none" viewBox="0 0 10 6">
-        <path
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M1 1l4 4 4-4"
-        />
-      </svg>
+      <font-awesome-icon :icon="isOpen ? 'angle-down' : 'angle-up'" class="ml-2" />
     </button>
 
     <div
       v-show="isOpen"
-      class="absolute right-0 mt-2 z-10 w-44 rounded-xl shadow ring-1 ring-black ring-opacity-5 focus:outline-none"
+      class="absolute right-0 mt-2 z-10 w-full rounded-xl shadow ring-1 ring-black ring-opacity-5 focus:outline-none"
       :class="themeClass.dropdown"
     >
       <ul class="py-1 text-sm">

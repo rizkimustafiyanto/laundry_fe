@@ -12,7 +12,12 @@
       @page-change="changePage"
     >
       <template #default="{ items }">
-        <tr v-for="u in items" :key="u.id" class="border-b" :class="themeClass.trHover">
+        <tr
+          v-for="u in items"
+          :key="u.id"
+          class="border-b"
+          :class="[themeClass.trHover, themeClass.borderColor]"
+        >
           <td
             class="flex items-center px-6 py-4 whitespace-nowrap cursor-pointer"
             @click="showUserDetails(u)"
