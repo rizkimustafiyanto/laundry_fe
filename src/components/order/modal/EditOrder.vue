@@ -77,9 +77,8 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useOrderStore } from '@/stores/services/order'
-import { useUIStore } from '@/stores/component/ui'
 
 const props = defineProps({
   orderId: {
@@ -94,7 +93,6 @@ const props = defineProps({
 
 const modelValue = defineModel()
 const orderStore = useOrderStore()
-const ui = useUIStore()
 
 const form = ref({
   items: [],
@@ -124,42 +122,29 @@ const loadOrder = async () => {
     form.value = { items: [], notes: '' }
     return
   }
+  await orderStore.fetchOrderById(props.orderId)
+  const order = orderStore.selectedOrder
 
-  try {
-    await orderStore.fetchOrderById(props.orderId)
-    const order = orderStore.selectedOrder
+  form.value.items =
+    order.items?.map((i) => ({
+      serviceType: i.serviceType ?? 'CUCI_KERING',
+      itemType: i.itemType ?? '',
+      weightInKg: i.weightInKg ?? 0,
+      unitPrice: i.unitPrice ?? 0,
+      subtotal: i.subtotal ?? 0,
+    })) ?? []
 
-    form.value.items =
-      order.items?.map((i) => ({
-        serviceType: i.serviceType ?? 'CUCI_KERING',
-        itemType: i.itemType ?? '',
-        weightInKg: i.weightInKg ?? 0,
-        unitPrice: i.unitPrice ?? 0,
-        subtotal: i.subtotal ?? 0,
-      })) ?? []
-
-    form.value.notes = order?.notes ?? ''
-  } catch (err) {
-    ui.show('error', 'Gagal mengambil detail order.')
-  }
+  form.value.notes = order?.notes ?? ''
 }
 
 const loadServiceType = async () => {
-  try {
-    await orderStore.fetchServiceType()
-    serviceTypeOption.value = orderStore.serviceTypeList
-  } catch (err) {
-    console.log(err)
-  }
+  await orderStore.fetchServiceType()
+  serviceTypeOption.value = orderStore.serviceTypeList
 }
 
 const loadStatusOption = async () => {
-  try {
-    await orderStore.fetchFilterListStatus()
-    statusOption.value = orderStore.filterList
-  } catch (err) {
-    console.log(err)
-  }
+  await orderStore.fetchFilterListStatus()
+  statusOption.value = orderStore.filterList
 }
 
 onMounted(() => {
@@ -178,32 +163,27 @@ watch(
 )
 
 const submit = async () => {
-  try {
-    const preparedItems = form.value.items.map((i) => ({
-      serviceType: i.serviceType,
-      itemType: i.itemType,
-      weightInKg: i.weightInKg,
-      unitPrice: i.unitPrice,
-      subtotal: Math.round(i.weightInKg * i.unitPrice),
-    }))
+  const preparedItems = form.value.items.map((i) => ({
+    serviceType: i.serviceType,
+    itemType: i.itemType,
+    weightInKg: i.weightInKg,
+    unitPrice: i.unitPrice,
+    subtotal: Math.round(i.weightInKg * i.unitPrice),
+  }))
 
-    const payload = {
-      items: preparedItems,
-      notes: form.value.notes,
-      ...(props.orderTake
-        ? {
-            status: 'PICKED_UP',
-          }
-        : {
-            status: form.value.status,
-          }),
-    }
-
-    await orderStore.updateOrderDetail(props.orderId, payload)
-    ui.show('success', 'Transaksi berhasil diperbarui.')
-    modelValue.value = false
-  } catch (err) {
-    ui.show('error', `Gagal menyimpan transaksi. ${err}`)
+  const payload = {
+    items: preparedItems,
+    notes: form.value.notes,
+    ...(props.orderTake
+      ? {
+          status: 'PICKED_UP',
+        }
+      : {
+          status: form.value.status,
+        }),
   }
+
+  await orderStore.updateOrderDetail(props.orderId, payload)
+  modelValue.value = false
 }
 </script>

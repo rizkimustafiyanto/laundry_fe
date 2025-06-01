@@ -6,20 +6,24 @@
         <BaseCard variant="secondary">
           <h3 class="text-sm font-medium text-gray-400 mb-2">Status Cucian</h3>
           <p class="text-lg font-semibold">
-            {{ latestOrder?.status || 'Belum Ada Pesanan' }}
+            {{
+              ongoingOrders.length > 0
+                ? ongoingOrders.length + ' pesanan dalam proses'
+                : 'Tidak ada cucian diproses'
+            }}
           </p>
         </BaseCard>
+
         <BaseCard variant="secondary">
           <h3 class="text-sm font-medium text-gray-400 mb-2">Total Tagihan</h3>
-          <p class="text-lg font-semibold">Rp {{ formatCurrency(totalBill) }}</p>
+          <p class="text-lg font-semibold">{{ formatCurrency(totalPendingBill) }}</p>
         </BaseCard>
+
         <BaseCard variant="secondary">
           <h3 class="text-sm font-medium text-gray-400 mb-2">Estimasi Selesai</h3>
           <p class="text-lg font-semibold">
             {{
-              latestOrder?.estimatedCompletion
-                ? formatDate(latestOrder.estimatedCompletion)
-                : 'Belum Ada'
+              storeOngoingOrders.length ? formatDate(estimatedCompletion) : 'Tidak ada cucian aktif'
             }}
           </p>
         </BaseCard>
@@ -79,19 +83,16 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth/auth'
 import { useOrderStore } from '@/stores/services/order'
-import { format } from 'date-fns'
-import { id as idLocale } from 'date-fns/locale'
-import ManageOrderStatus from '@/components/order/ManageOrderStatus.vue'
-import EditOrderModal from '@/components/order/EditOrderModal.vue'
-import { useUIStore } from '@/stores/component/ui'
-import CreateOrderModal from '@/components/order/CreateOrderModal.vue'
+import { formatDate, formatCurrency } from '@/utils/formatters'
+import ManageOrderStatus from '@/components/order/component/ManageOrderStatus.vue'
+import EditOrderModal from '@/components/order/modal/EditOrder.vue'
+import CreateOrderModal from '@/components/order/modal/CreateOrder.vue'
 
 const authStore = useAuthStore()
 const orderStore = useOrderStore()
-const ui = useUIStore()
 
 const user = computed(() => authStore.user)
 const role = computed(() => authStore.role)
@@ -104,42 +105,41 @@ const userOrders = computed(() =>
   orderStore.orders.filter((order) => order.customer?.id === user.value?.id),
 )
 
-const latestOrder = computed(() => {
-  return userOrders.value.length
-    ? userOrders.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
-    : null
+const ongoingOrders = computed(() =>
+  userOrders.value.filter((order) => order.status !== 'COMPLETED'),
+)
+
+const storeOngoingOrders = computed(() =>
+  orderStore.orders.filter((order) => order.status !== 'COMPLETED'),
+)
+
+const totalPendingBill = computed(() => {
+  return ongoingOrders.value.reduce((sum, order) => {
+    const orderTotal = (order.items || []).reduce(
+      (itemSum, item) => itemSum + (item.subtotal || 0),
+      0,
+    )
+    return sum + orderTotal
+  }, 0)
 })
 
-const totalBill = computed(() => {
-  return userOrders.value
-    .filter((order) => order.status === 'COMPLETED' || order.status === 'DELIVERED')
-    .reduce((sum, order) => sum + (order.total || 0), 0)
+const estimatedCompletion = computed(() => {
+  const total = storeOngoingOrders.value.length
+  const daysNeeded = Math.ceil(total / 2)
+  const estimatedDate = new Date()
+  estimatedDate.setDate(estimatedDate.getDate() + daysNeeded)
+  return estimatedDate
 })
-
-function formatCurrency(value) {
-  return value.toLocaleString('id-ID')
-}
-
-function formatDate(dateStr) {
-  const date = new Date(dateStr)
-  return format(date, 'dd MMMM yyyy', { locale: idLocale })
-}
 
 const isSuperadmin = computed(() => role.value === 'SUPER_ADMIN')
 const isOwner = computed(() => role.value === 'OWNER')
 const isCustomer = computed(() => role.value === 'CUSTOMER')
 
 const requestPickup = async () => {
-  try {
-    await orderStore.createOrder({
-      customerId: user.value.id,
-      pickupRequested: true,
-    })
-    ui.show('success', 'Permintaan penjemputan berhasil dikirim!')
-    await orderStore.fetchAllOrders()
-  } catch (err) {
-    ui.show('error', 'Gagal mengirim permintaan penjemputan.')
-  }
+  await orderStore.createOrder({
+    customerId: user.value.id,
+    pickupRequested: true,
+  })
 }
 
 const pickupOrders = computed(() => orderStore.pickedUpRequest)
@@ -157,15 +157,5 @@ const openEditModal = (order, take = false) => {
   selectedOrder.value = order.id
   orderTake.value = take
   showEditModal.value = true
-}
-
-const markAsPickedUp = async (order) => {
-  try {
-    await orderStore.updateOrderStatus(order.id, 'PROCESS')
-    ui.show('success', `Status pesanan #${order.invoiceNumber} diubah ke PROCESS.`)
-    await orderStore.fetchAllOrders()
-  } catch (err) {
-    ui.show('error', 'Gagal memperbarui status pesanan.')
-  }
 }
 </script>

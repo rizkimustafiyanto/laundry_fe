@@ -105,13 +105,11 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, computed } from 'vue'
-import { useUIStore } from '@/stores/component/ui'
+import { reactive, onMounted, computed } from 'vue'
 import { useOrderStore } from '@/stores/services/order'
 import { useUserStore } from '@/stores/services/user'
 
 const modelValue = defineModel()
-const ui = useUIStore()
 const orderStore = useOrderStore()
 const userStore = useUserStore()
 const customers = computed(() => {
@@ -157,46 +155,33 @@ const addItem = () => {
   })
 }
 
-const loadServiceType = async () => {
-  try {
-    serviceTypeOption.value = orderStore.serviceTypeList
-  } catch (err) {
-    console.log(err)
-  }
-}
-
 const removeItem = (index) => {
   form.items.splice(index, 1)
 }
 
 const submitOrder = async () => {
-  try {
-    const preparedItems = form.items.map((item) => ({
-      itemType: item.itemType,
-      serviceType: item.serviceType,
-      weightInKg: item.weightInKg,
-      unitPrice: item.unitPrice,
-      subtotal: Math.round(item.weightInKg * item.unitPrice),
-    }))
+  const preparedItems = form.items.map((item) => ({
+    itemType: item.itemType,
+    serviceType: item.serviceType,
+    weightInKg: item.weightInKg,
+    unitPrice: item.unitPrice,
+    subtotal: Math.round(item.weightInKg * item.unitPrice),
+  }))
 
-    const payload = {
-      customerId: form.customerId,
-      pickupRequested: form.pickupRequested,
-      deliveryRequested: form.deliveryRequested,
-      notes: form.notes,
-      items: preparedItems,
-      ...(form.payment.paymentMethod
-        ? {
-            paymentData: form.payment,
-          }
-        : {}),
-    }
-
-    await orderStore.createOrder(payload)
-    ui.show('success', 'Pesanan berhasil dibuat.')
-  } catch (error) {
-    ui.show('error', 'Gagal membuat pesanan.')
+  const payload = {
+    customerId: form.customerId,
+    pickupRequested: form.pickupRequested,
+    deliveryRequested: form.deliveryRequested,
+    notes: form.notes,
+    items: preparedItems,
+    ...(form.payment.paymentMethod
+      ? {
+          paymentData: form.payment,
+        }
+      : {}),
   }
+
+  await orderStore.createOrder(payload)
 }
 
 onMounted(async () => {

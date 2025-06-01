@@ -62,7 +62,3 @@ const selectItem = (item) => {
   emit('select', item.value)
 }
 </script>
-
-<style scoped>
-/* Optional: You can add transitions or animations here if needed */
-</style>

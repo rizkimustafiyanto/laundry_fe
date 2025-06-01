@@ -108,8 +108,8 @@ const register = async () => {
     } else {
       ui.show('failed', result.message)
     }
-  } catch (error) {
-    ui.show('failed', 'Silakan coba lagi')
+  } catch (err) {
+    ui.show('failed', err.response?.message)
   }
 }
 

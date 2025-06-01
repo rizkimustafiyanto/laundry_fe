@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
 import socket from '@/plugins/socket'
+import { useUIStore } from '@/stores/component/ui.js'
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
@@ -21,8 +22,6 @@ export const useOrderStore = defineStore('order', {
     filterStatus: null,
     filterList: [],
     search: '',
-    loading: false,
-    error: null,
     serviceTypeList: [],
   }),
   getters: {
@@ -38,110 +37,86 @@ export const useOrderStore = defineStore('order', {
     },
   },
   actions: {
-    // Create order (without payment, payment added later)
     async createOrder(payload) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.post('/laundry/transactions', payload)
+        res = await api.post('/laundry/transactions', payload)
         this.orders.push(res.data)
+        useUIStore().show('success', res.data.message)
         return res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to create order'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to create order'
+        useUIStore().show('error', message)
       }
     },
 
-    // Update order status
     async updateOrderStatus(transactionId, newStatus) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.put(`/laundry/transactions/${transactionId}/status`, {
-          newStatus,
-        })
-        if (this.selectedOrder?.id === transactionId) {
-          this.selectedOrder = res.data
-        }
-        // Update the list of orders
+        res = await api.put(`/laundry/transactions/${transactionId}/status`, { newStatus })
+        if (this.selectedOrder?.id === transactionId) this.selectedOrder = res.data
         const index = this.orders.findIndex((o) => o.id === transactionId)
         if (index !== -1) this.orders[index] = res.data
+        useUIStore().show('success', res.data.message)
         return res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to update status'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to update status'
+        useUIStore().show('error', message)
       }
     },
 
     async deleteOrderSoft(transactionId) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.delete(`/laundry/transactions/${transactionId}/soft`)
+        res = await api.delete(`/laundry/transactions/${transactionId}/soft`)
+        useUIStore().show('success', res.data.message)
         return res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to delete'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to delete'
+        useUIStore().show('error', message)
       }
     },
 
     async deleteOrderHard(transactionId) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.delete(`/laundry/transactions/${transactionId}/hard`)
+        res = await api.delete(`/laundry/transactions/${transactionId}/hard`)
+        useUIStore().show('success', res.data.message)
         return res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to delete'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to delete'
+        useUIStore().show('error', message)
       }
     },
 
     async updateOrderDetail(transactionId, payload) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.put(`/laundry/transactions/${transactionId}/detail`, payload)
-        console.log(res)
+        res = await api.put(`/laundry/transactions/${transactionId}/detail`, payload)
+        useUIStore().show('success', res.data.message)
         return res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to update status'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to update detail'
+        useUIStore().show('error', message)
       }
     },
 
-    // Fetch order by ID
     async fetchOrderById(transactionId) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.get(`/laundry/transactions/${transactionId}`)
+        res = await api.get(`/laundry/transactions/${transactionId}`)
         this.selectedOrder = res.data
         return res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to fetch order'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to fetch order'
+        useUIStore().show('error', message)
       }
     },
 
-    // Fetch all orders with pagination
     async fetchAllOrders() {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.get('/laundry/transactions', {
+        res = await api.get('/laundry/transactions', {
           params: {
             page: this.pagination.page,
             limit: this.pagination.limit,
@@ -157,46 +132,37 @@ export const useOrderStore = defineStore('order', {
           (order) => order.status === 'REGISTERED' && order.pickupRequested === true,
         )
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to fetch orders'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to fetch orders'
+        useUIStore().show('error', message)
       }
     },
 
-    // Fetch order summary (daily totals, counts by status)
     async fetchOrderSummary() {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.get('/laundry/transactions/summary')
+        res = await api.get('/laundry/transactions/summary')
         this.summary = res.data
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to fetch summary'
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to fetch summary'
+        useUIStore().show('error', message)
       }
     },
 
-    // Fetch the list of statuses for filter options
     async fetchFilterListStatus() {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.get('/laundry/transactions/status-filter')
+        res = await api.get('/laundry/transactions/status-filter')
         this.filterList = res.data.map((item) => ({
           label: item.replace(/_/g, ' '),
           value: item,
         }))
         this.filterList.unshift({ label: 'ALL', value: '' })
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to fetch list'
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to fetch list'
+        useUIStore().show('error', message)
       }
     },
 
-    // Set filter status for orders
     setFilterStatus(status) {
       this.filterStatus = status
     },
@@ -209,31 +175,25 @@ export const useOrderStore = defineStore('order', {
           value: item,
         }))
       } catch (err) {
-        this.error = err.response.data.message || 'Failed to fetch list'
+        const message = err.response?.data?.message || 'Failed to fetch list'
+        useUIStore().show('error', message)
       }
     },
 
-    // Update payment for an order
     async addPaymentToOrder(transactionId, paymentData, totalAmount) {
-      this.loading = true
-      this.error = null
+      let res
       try {
-        const res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {
+        res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {
           paymentData,
           totalAmount,
         })
-
-        if (this.selectedOrder?.id === transactionId) {
-          this.selectedOrder = res.data
-        }
+        if (this.selectedOrder?.id === transactionId) this.selectedOrder = res.data
         const index = this.orders.findIndex((o) => o.id === transactionId)
         if (index !== -1) this.orders[index] = res.data
-        return res.data
+        useUIStore().show('success', res.data.message)
       } catch (err) {
-        this.error = err.response?.data?.message || 'Failed to add payment'
-        throw err
-      } finally {
-        this.loading = false
+        const message = err.response?.data?.message || 'Failed to add payment'
+        useUIStore().show('error', message)
       }
     },
 
@@ -242,14 +202,6 @@ export const useOrderStore = defineStore('order', {
         this.fetchAllOrders()
         this.fetchOrderSummary()
       })
-      // socket.on('user_updated', (updatedUser) => {
-      //   const updatedData = updatedUser.user
-      //   const index = this.users.data.findIndex((u) => u.id === updatedData.id)
-
-      //   if (index !== -1) {
-      //     this.users.data.splice(index, 1, updatedData)
-      //   }
-      // })
     },
   },
 })

@@ -43,7 +43,7 @@
 <script setup>
 import defaultAvatar from '@/assets/icons/user.png'
 
-const props = defineProps({
+defineProps({
   user: {
     type: Object,
     required: true,

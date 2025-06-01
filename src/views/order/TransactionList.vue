@@ -8,19 +8,22 @@
     <BaseCard variant="primary" type="grid" gridDirection="column">
       <template #grid>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <BaseCard
-            v-if="statusSummary.length > 0"
-            v-for="(count, status) in statusSummary"
-            :key="status"
-            variant="secondary"
-            type="single"
-          >
-            <div class="text-sm text-gray-400 capitalize">{{ status }}</div>
-            <div class="text-2xl font-bold">{{ count }}</div>
-          </BaseCard>
-          <BaseCard v-else variant="secondary" type="single">
-            <div class="text-sm text-gray-400 capitalize">No Transaction</div>
-          </BaseCard>
+          <template v-if="statusSummary.length > 0">
+            <BaseCard
+              v-for="(count, status) in statusSummary"
+              :key="status"
+              variant="secondary"
+              type="single"
+            >
+              <div class="text-sm text-gray-400 capitalize">{{ status }}</div>
+              <div class="text-2xl font-bold">{{ count }}</div>
+            </BaseCard>
+          </template>
+          <template v-else>
+            <BaseCard variant="secondary" type="single">
+              <div class="text-sm text-gray-400 capitalize">No Transaction</div>
+            </BaseCard>
+          </template>
         </div>
       </template>
     </BaseCard>
@@ -83,12 +86,10 @@
 import { onMounted, computed } from 'vue'
 import { useOrderStore } from '@/stores/services/order.js'
 import { useAuthStore } from '@/stores/auth/auth.js'
-import { useUIStore } from '@/stores/component/ui.js'
 import { useThemeClass } from '@/composables/useThemeClass.js'
 
 const orderStore = useOrderStore()
 const authStore = useAuthStore()
-const uiStore = useUIStore()
 const { themeClass } = useThemeClass()
 
 const statusOptions = computed(() =>
@@ -128,29 +129,14 @@ function formatDate(dateStr) {
 }
 
 async function updateOrderStatusToCancelled(orderId) {
-  try {
-    await orderStore.updateOrderStatus(orderId, 'CANCELLED')
-    uiStore.show('success', 'Pesanan berhasil dibatalkan!')
-  } catch (error) {
-    uiStore.show('error', 'Gagal membatalkan pesanan.')
-  }
+  await orderStore.updateOrderStatus(orderId, 'CANCELLED')
 }
 
 async function deleteOrder(orderId) {
-  try {
-    await orderStore.deleteOrderSoft(orderId)
-    uiStore.show('success', 'Pesanan berhasil dihapus!')
-  } catch (error) {
-    uiStore.show('error', 'Gagal menghapus pesanan.')
-  }
+  await orderStore.deleteOrderSoft(orderId)
 }
 
 async function hardDelete(orderId) {
-  try {
-    await orderStore.deleteOrderHard(orderId)
-    uiStore.show('success', 'Pesanan berhasil dihapus!')
-  } catch (error) {
-    uiStore.show('error', 'Gagal menghapus pesanan.')
-  }
+  await orderStore.deleteOrderHard(orderId)
 }
 </script>

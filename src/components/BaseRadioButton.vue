@@ -53,7 +53,3 @@ const wrapperClass = computed(() =>
   props.type === 'horizontal' ? 'flex flex-row flex-wrap' : 'flex flex-col',
 )
 </script>
-
-<style scoped>
-/* Additional styles if needed */
-</style>

@@ -93,7 +93,9 @@ const props = defineProps({
   label: String,
   modelValue: {
     type: [String, Number],
-    required: true,
+    required() {
+      return this.type !== 'file'
+    },
   },
   min: [String, Number],
   max: [String, Number],
