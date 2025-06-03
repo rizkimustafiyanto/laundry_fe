@@ -8,27 +8,19 @@
       required
     />
     <BaseInput
-      id="recipientName"
-      label="Nama Penerima"
-      v-model="localAddress.recipientName"
-      placeholder="Masukkan Nama Penerima"
-      required
-    />
-    <BaseInput
-      id="recipientPhone"
-      label="No. Telepon Penerima"
-      type="tel"
-      v-model="localAddress.recipientPhone"
-      required
-    />
-    <BaseInput
-      id="addressDetail"
+      id="addressLine"
       label="Detail Alamat"
       type="textarea"
-      v-model="localAddress.addressDetail"
+      v-model="localAddress.address_line"
       required
     />
-
+    <BaseInput
+      id="notes"
+      label="Catatan"
+      v-model="localAddress.notes"
+      placeholder="Masukkan Catatan"
+      required
+    />
     <div class="text-right mt-3">
       <BaseButton @click="saveAddress" label="Simpan Alamat" variant="primary" class="w-40" />
     </div>
@@ -45,21 +37,19 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['save-address'])
+const emit = defineEmits(['save-address', 'update:address'])
 
-// Buat salinan reactive dari props.address supaya bisa dimutasi
 const localAddress = reactive({ ...props.address })
 
-// Sync jika props.address berubah dari luar
 watch(
-  () => props.address,
-  (newVal) => {
-    Object.assign(localAddress, newVal)
+  localAddress,
+  (val) => {
+    emit('update:address', val)
   },
+  { deep: true },
 )
 
 const saveAddress = () => {
-  // Kirim data localAddress ke parent
-  emit('save-address', { ...localAddress })
+  emit('save-address')
 }
 </script>

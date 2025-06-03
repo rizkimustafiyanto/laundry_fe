@@ -24,18 +24,19 @@
       >
         <div>
           <h3 class="font-semibold text-lg">{{ address.label }}</h3>
-          <p><strong>Nama Penerima:</strong> {{ address.recipientName }}</p>
-          <p><strong>No. Telepon:</strong> {{ address.recipientPhone }}</p>
-          <p class="whitespace-pre-line">{{ address.addressDetail }}</p>
+          <p class="whitespace-pre-line">{{ address.address_line }}</p>
+          <p><strong>Catatan:</strong> {{ address.notes }}</p>
         </div>
         <div class="space-x-2">
           <BaseButton
+            v-if="!addressFormVisible"
             @click="$emit('edit-address', address)"
             label="Edit"
             variant="primary"
             class="w-40"
           />
           <BaseButton
+            v-if="!addressFormVisible"
             @click="$emit('delete-address', address.id)"
             label="Hapus"
             variant="danger"

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
 import socket from '@/plugins/socket'
-import { useUIStore } from '@/stores/component/ui.js'
+import { notifyError, notifySuccess } from '@/utils/notify'
 
 export const useUserStore = defineStore('users', {
   state: () => ({
@@ -17,19 +17,15 @@ export const useUserStore = defineStore('users', {
 
   actions: {
     async fetchProfile() {
-      let error = null
       try {
         const res = await api.get('/users/profile')
         this.profile = res.data
       } catch (err) {
-        error = err.response?.data?.message || 'Failed to fetch profile'
-      } finally {
-        error ? useUIStore().show('error', error) : ''
+        notifyError(err, 'Gagal mengambil profil')
       }
     },
 
     async fetchUsers(query = {}) {
-      let error = null
       if (query.page !== undefined) this.currentPage = query.page
       if (query.limit !== undefined) this.limit = query.limit
       if (query.search !== undefined) this.searchQuery = query.search
@@ -44,29 +40,24 @@ export const useUserStore = defineStore('users', {
         })
         this.users = res.data
       } catch (err) {
-        error = err.response?.data?.message || 'Failed to fetch users'
-      } finally {
-        error ? useUIStore().show('error', error) : ''
+        notifyError(err, 'Gagal mengambil daftar pengguna')
       }
     },
 
     async fetchUserById(id) {
-      let error = null
       try {
         const res = await api.get(`/users/list/${id}`)
         this.selectedUser = res.data
         return res.data
       } catch (err) {
-        error = err.response?.data?.message || 'Failed to fetch user by ID'
-      } finally {
-        error ? useUIStore().show('error', error) : ''
+        notifyError(err, 'Gagal mengambil pengguna berdasarkan ID')
       }
     },
 
     async updateUserById(id, data) {
-      let error = null
       try {
         const res = await api.put(`/users/list/${id}`, data)
+
         if (this.selectedUser?.id === id) {
           this.selectedUser = res.data
         }
@@ -76,18 +67,14 @@ export const useUserStore = defineStore('users', {
           this.users[index] = res.data
         }
 
+        notifySuccess('Pengguna berhasil diperbarui')
         return res.data
       } catch (err) {
-        error = err.response?.data?.message || 'Failed to update user'
-      } finally {
-        error
-          ? useUIStore().show('error', error)
-          : useUIStore().show('success', 'Pengguna berhasil diperbarui')
+        notifyError(err, 'Gagal memperbarui pengguna')
       }
     },
 
     async updateProfile(formData) {
-      let error = null
       try {
         const res = await api.put('/users/profile', formData, {
           headers: {
@@ -95,18 +82,14 @@ export const useUserStore = defineStore('users', {
           },
         })
         this.profile = res.data
+        notifySuccess('Profil berhasil diperbarui')
         return res.data
       } catch (err) {
-        error = err.response?.data?.message || 'Failed to update profile'
-      } finally {
-        error
-          ? useUIStore().show('error', error)
-          : useUIStore().show('success', 'Profil berhasil diperbarui')
+        notifyError(err, 'Gagal memperbarui profil')
       }
     },
 
     async fetchRoleOption() {
-      let error = null
       try {
         const res = await api.get('/users/role-option')
         this.roleOption = res.data.map((item) => ({
@@ -114,25 +97,44 @@ export const useUserStore = defineStore('users', {
           value: item,
         }))
       } catch (err) {
-        error = err.response?.data?.message || 'Failed to fetch role option'
-      } finally {
-        error ? useUIStore().show('error', error) : ''
+        notifyError(err, 'Gagal mengambil opsi peran')
       }
     },
 
     async fetchAddresses() {
-      let error = null
-      // try {
-      //   const res = await api.get('/users/role-option')
-      //   this.roleOption = res.data.map((item) => ({
-      //     label: item.replace(/_/g, ' '),
-      //     value: item,
-      //   }))
-      // } catch (err) {
-      //   error = err.response?.data?.message || 'Failed to fetch role option'
-      // } finally {
-      //   error ? useUIStore().show('error', error) : ''
-      // }
+      try {
+        const res = await api.get('/users/addresses/list')
+        this.addresses = res.data.data
+      } catch (err) {
+        notifyError(err, 'Gagal mengambil daftar alamat')
+      }
+    },
+
+    async createAddresses(payload) {
+      try {
+        await api.post('/users/addresses', payload)
+        notifySuccess('Alamat berhasil ditambahkan')
+      } catch (err) {
+        notifyError(err, 'Gagal menambahkan alamat')
+      }
+    },
+
+    async updateAddresses(id, payload) {
+      try {
+        await api.put(`/users/addresses/${id}`, payload)
+        notifySuccess('Alamat berhasil diubah')
+      } catch (err) {
+        notifyError(err, 'Gagal mengubah alamat')
+      }
+    },
+
+    async deleteAddresses(id) {
+      try {
+        await api.delete(`/users/addresses/${id}`)
+        notifySuccess('Alamat berhasil dihapus')
+      } catch (err) {
+        notifyError(err, 'Gagal menghapus alamat')
+      }
     },
 
     listenUserUpdates() {
@@ -146,6 +148,10 @@ export const useUserStore = defineStore('users', {
         if (index !== -1) {
           this.users.splice(index, 1, updatedData)
         }
+      })
+
+      socket.on('addresses_update', (data) => {
+        this.fetchAddresses()
       })
     },
   },

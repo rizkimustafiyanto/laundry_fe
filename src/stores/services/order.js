@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
 import socket from '@/plugins/socket'
-import { useUIStore } from '@/stores/component/ui.js'
+import { notifySuccess, notifyError } from '@/utils/notify'
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
@@ -38,85 +38,72 @@ export const useOrderStore = defineStore('order', {
   },
   actions: {
     async createOrder(payload) {
-      let res
       try {
-        res = await api.post('/laundry/transactions', payload)
+        const res = await api.post('/laundry/transactions', payload)
         this.orders.push(res.data)
-        useUIStore().show('success', res.data.message)
+        notifySuccess(res.data.message)
         return res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to create order'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal membuat pesanan')
       }
     },
 
     async updateOrderStatus(transactionId, newStatus) {
-      let res
       try {
-        res = await api.put(`/laundry/transactions/${transactionId}/status`, { newStatus })
+        const res = await api.put(`/laundry/transactions/${transactionId}/status`, { newStatus })
         if (this.selectedOrder?.id === transactionId) this.selectedOrder = res.data
         const index = this.orders.findIndex((o) => o.id === transactionId)
         if (index !== -1) this.orders[index] = res.data
-        useUIStore().show('success', res.data.message)
+        notifySuccess(res.data.message)
         return res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to update status'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal memperbarui status')
       }
     },
 
     async deleteOrderSoft(transactionId) {
-      let res
       try {
-        res = await api.delete(`/laundry/transactions/${transactionId}/soft`)
-        useUIStore().show('success', res.data.message)
+        const res = await api.delete(`/laundry/transactions/${transactionId}/soft`)
+        notifySuccess(res.data.message)
         return res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to delete'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal menghapus pesanan (soft delete)')
       }
     },
 
     async deleteOrderHard(transactionId) {
-      let res
       try {
-        res = await api.delete(`/laundry/transactions/${transactionId}/hard`)
-        useUIStore().show('success', res.data.message)
+        const res = await api.delete(`/laundry/transactions/${transactionId}/hard`)
+        notifySuccess(res.data.message)
         return res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to delete'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal menghapus pesanan secara permanen')
       }
     },
 
     async updateOrderDetail(transactionId, payload) {
-      let res
       try {
-        res = await api.put(`/laundry/transactions/${transactionId}/detail`, payload)
-        useUIStore().show('success', res.data.message)
+        const res = await api.put(`/laundry/transactions/${transactionId}/detail`, payload)
+        notifySuccess(res.data.message)
         return res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to update detail'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal memperbarui detail pesanan')
       }
     },
 
     async fetchOrderById(transactionId) {
-      let res
       try {
-        res = await api.get(`/laundry/transactions/${transactionId}`)
+        const res = await api.get(`/laundry/transactions/${transactionId}`)
         this.selectedOrder = res.data
         return res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to fetch order'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal mengambil detail pesanan')
       }
     },
 
     async fetchAllOrders() {
-      let res
       try {
-        res = await api.get('/laundry/transactions', {
+        const res = await api.get('/laundry/transactions', {
           params: {
             page: this.pagination.page,
             limit: this.pagination.limit,
@@ -132,34 +119,29 @@ export const useOrderStore = defineStore('order', {
           (order) => order.status === 'REGISTERED' && order.pickupRequested === true,
         )
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to fetch orders'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal mengambil daftar pesanan')
       }
     },
 
     async fetchOrderSummary() {
-      let res
       try {
-        res = await api.get('/laundry/transactions/summary')
+        const res = await api.get('/laundry/transactions/summary')
         this.summary = res.data
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to fetch summary'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal mengambil ringkasan pesanan')
       }
     },
 
     async fetchFilterListStatus() {
-      let res
       try {
-        res = await api.get('/laundry/transactions/status-filter')
+        const res = await api.get('/laundry/transactions/status-filter')
         this.filterList = res.data.map((item) => ({
           label: item.replace(/_/g, ' '),
           value: item,
         }))
         this.filterList.unshift({ label: 'ALL', value: '' })
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to fetch list'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal mengambil daftar filter status')
       }
     },
 
@@ -175,25 +157,22 @@ export const useOrderStore = defineStore('order', {
           value: item,
         }))
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to fetch list'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal mengambil daftar layanan')
       }
     },
 
     async addPaymentToOrder(transactionId, paymentData, totalAmount) {
-      let res
       try {
-        res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {
+        const res = await api.put(`/laundry/transactions/${transactionId}/add-payment`, {
           paymentData,
           totalAmount,
         })
         if (this.selectedOrder?.id === transactionId) this.selectedOrder = res.data
         const index = this.orders.findIndex((o) => o.id === transactionId)
         if (index !== -1) this.orders[index] = res.data
-        useUIStore().show('success', res.data.message)
+        notifySuccess(res.data.message)
       } catch (err) {
-        const message = err.response?.data?.message || 'Failed to add payment'
-        useUIStore().show('error', message)
+        notifyError(err, 'Gagal menambahkan pembayaran')
       }
     },
 
