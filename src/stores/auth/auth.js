@@ -38,14 +38,20 @@ export const useAuthStore = defineStore('user', {
     checkTokenValidity() {
       if (!this.token) return false
 
-      const decodedToken = JSON.parse(atob(this.token.split('.')[1]))
-      const currentTime = Date.now() / 1000
+      try {
+        const parts = this.token.split('.')
+        if (parts.length !== 3) return false
 
-      if (decodedToken.exp < currentTime) {
-        this.logout()
+        const payload = JSON.parse(atob(parts[1]))
+        const exp = payload.exp
+        if (!exp) return false
+
+        const currentTime = Math.floor(Date.now() / 1000)
+        return exp > currentTime
+      } catch (error) {
+        console.error('Invalid token format', error)
         return false
       }
-      return true
     },
 
     async register(payload) {

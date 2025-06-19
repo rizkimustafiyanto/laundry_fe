@@ -91,6 +91,11 @@ router.beforeEach((to, from, next) => {
     return next('/login')
   }
 
+  if (userStore.token && !userStore.checkTokenValidity()) {
+    userStore.logout()
+    return next('/login')
+  }
+
   if (to.meta.requiresUnauth && userStore.token) {
     return next('/home')
   }

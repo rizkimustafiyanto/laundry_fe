@@ -47,9 +47,4 @@ app.component('BaseModal', BaseModal)
 app.component('BaseLoadingSpinner', BaseLoadingSpinner)
 app.component('ResponseModal', ResponseModal)
 
-const authStore = useAuthStore()
-if (!authStore.checkTokenValidity()) {
-  router.push('/login')
-}
-
 app.mount('#app')
