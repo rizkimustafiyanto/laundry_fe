@@ -3,29 +3,6 @@
     <BaseCard class="space-y-4">
       <!-- Customer Selection -->
       <BaseSelect
-        label="Pilih Pelanggan"
-        v-model="form.customerId"
-        :options="customerOptions"
-        placeholder="-- Pilih Pelanggan --"
-        type="search"
-        :onSearch="searchCustomers"
-        required
-      />
-
-      <!-- Pickup & Delivery -->
-      <div class="flex gap-4">
-        <label class="flex items-center gap-2">
-          <input type="checkbox" v-model="form.pickupRequested" />
-          Minta Penjemputan
-        </label>
-        <label class="flex items-center gap-2">
-          <input type="checkbox" v-model="form.deliveryRequested" />
-          Minta Pengantaran
-        </label>
-      </div>
-
-      <BaseSelect
-        v-if="form.pickupRequested === true"
         label="Pilih Alamat Pengambilan"
         v-model="form.pickupAddressId"
         :options="addressOption"
@@ -41,6 +18,18 @@
         placeholder="-- Pilih Alamat Pengantaran --"
         required
       />
+
+      <!-- Pickup & Delivery -->
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" v-model="form.pickupRequested" disabled />
+          Minta Penjemputan
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" v-model="form.deliveryRequested" />
+          Minta Pengantaran
+        </label>
+      </div>
 
       <!-- Notes -->
       <BaseInput
@@ -73,9 +62,9 @@
               placeholder="-- Pilih Layanan --"
               required
             />
-            <BaseInput v-model.number="item.weightInKg" type="number" label="Berat (kg)" min="0" />
-            <BaseInput v-model.number="item.unitPrice" type="number" label="Harga/kg" min="0" />
+            <!-- <BaseInput v-model.number="item.unitPrice" type="number" label="Harga/kg" min="0" disabled /> -->
           </div>
+          <BaseInput v-model.number="item.weightInKg" type="number" label="Berat (kg)" min="0" />
           <div class="text-sm text-gray-500 dark:text-gray-300">
             Subtotal: Rp {{ item.subtotal.toLocaleString() }}
           </div>
@@ -124,24 +113,19 @@
 
 <script setup>
 import { reactive, onMounted, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useOrderStore } from '@/stores/services/order'
 import { useUserStore } from '@/stores/services/user'
+import { useAuthStore } from '@/stores/auth/auth'
 
 const modelValue = defineModel()
 const orderStore = useOrderStore()
 const userStore = useUserStore()
-const customers = computed(() => {
-  return Array.isArray(userStore.users.data) ? userStore.users.data : []
-})
 
-const searchCustomers = async (keyword) => {
-  await userStore.fetchUsers({ search: keyword })
-}
+const { user } = storeToRefs(useAuthStore())
 
-const customerOptions = computed(() => {
-  return Array.isArray(customers.value)
-    ? customers.value.map((c) => ({ label: c.name, value: c.id }))
-    : []
+const serviceTypeOption = computed(() => {
+  return Array.isArray(orderStore.serviceTypeList) ? orderStore.serviceTypeList : []
 })
 
 const addressOption = computed(() => {
@@ -151,13 +135,9 @@ const addressOption = computed(() => {
   }))
 })
 
-const serviceTypeOption = computed(() => {
-  return Array.isArray(orderStore.serviceTypeList) ? orderStore.serviceTypeList : []
-})
-
 const form = reactive({
-  customerId: '',
-  pickupRequested: false,
+  customerId: user.value.id,
+  pickupRequested: true,
   deliveryRequested: false,
   pickupAddressId: '',
   deliveryAddressId: '',

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-w-32 dropdown-wrapper" ref="dropdownRef">
+  <div class="relative min-w-32 p-1" ref="dropdownRef">
     <label v-if="label" :for="id" class="block mb-2 text-sm font-medium" :class="themeClass.label">
       {{ label }}
     </label>
@@ -128,9 +128,3 @@ onUnmounted(() => {
   document.removeEventListener('click', onClickOutside)
 })
 </script>
-
-<style scoped>
-.dropdown-wrapper {
-  position: relative;
-}
-</style>

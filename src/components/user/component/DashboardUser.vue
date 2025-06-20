@@ -79,6 +79,7 @@
       v-model="showEditModal"
     />
     <CreateOrderModal v-if="showCreateModal" v-model="showCreateModal" />
+    <CreatePickupOrder v-if="showPickupModal" v-model="showPickupModal" />
   </div>
 </template>
 
@@ -86,19 +87,23 @@
 import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth/auth'
 import { useOrderStore } from '@/stores/services/order'
+import { useUserStore } from '@/stores/services/user'
 import { formatDate, formatCurrency } from '@/utils/formatters'
 import ManageOrderStatus from '@/components/order/component/ManageOrderStatus.vue'
 import EditOrderModal from '@/components/order/modal/EditOrder.vue'
 import CreateOrderModal from '@/components/order/modal/CreateOrder.vue'
+import CreatePickupOrder from '@/components/order/modal/CreatePickupOrder.vue'
 
 const authStore = useAuthStore()
 const orderStore = useOrderStore()
+const userStore = useUserStore()
 
 const user = computed(() => authStore.user)
 const role = computed(() => authStore.role)
 
 onMounted(() => {
   orderStore.fetchAllOrders()
+  userStore.fetchAddresses()
 })
 
 const userOrders = computed(() =>
@@ -106,11 +111,11 @@ const userOrders = computed(() =>
 )
 
 const ongoingOrders = computed(() =>
-  userOrders.value.filter((order) => order.status !== 'COMPLETED'),
+  userOrders.value.filter((order) => !['COMPLETED', 'CANCELLED'].includes(order.status)),
 )
 
 const storeOngoingOrders = computed(() =>
-  orderStore.orders.filter((order) => order.status !== 'COMPLETED'),
+  orderStore.orders.filter((order) => !['COMPLETED', 'CANCELLED'].includes(order.status)),
 )
 
 const totalPendingBill = computed(() => {
@@ -135,22 +140,20 @@ const isSuperadmin = computed(() => role.value === 'SUPER_ADMIN')
 const isOwner = computed(() => role.value === 'OWNER')
 const isCustomer = computed(() => role.value === 'CUSTOMER')
 
-const requestPickup = async () => {
-  await orderStore.createOrder({
-    customerId: user.value.id,
-    pickupRequested: true,
-  })
-}
-
 const pickupOrders = computed(() => orderStore.pickedUpRequest)
 
 const showEditModal = ref(false)
 const showCreateModal = ref(false)
+const showPickupModal = ref(false)
 const selectedOrder = ref()
 const orderTake = ref()
 
 const createOrder = () => {
   showCreateModal.value = true
+}
+
+const requestPickup = () => {
+  showPickupModal.value = true
 }
 
 const openEditModal = (order, take = false) => {
