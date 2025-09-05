@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
-import HomeView from '@/views/Home.vue'
+import HomeView from '@/views/public/HomeView.vue'
 import LoginView from '@/views/auth/AuthLogin.vue'
 import RegisterView from '@/views/auth/AuthRegister.vue'
-import HomeViewUser from '@/views/user/HomeView.vue'
+import HomeViewUser from '@/views/dashboard/HomeView.vue'
 import Unauthorized from '@/views/error/UnauthorizedPage.vue'
 import ForgetPassword from '@/views/auth/ForgetPassword.vue'
 import ChangePassword from '@/views/auth/ChangePassword.vue'
-import Profile from '@/views/user/UserProfile.vue'
-import Dashboard from '@/components/user/component/DashboardUser.vue'
-import UserList from '@/components/user/component/UserList.vue'
-import TransactionList from '@/views/order/TransactionList.vue'
+import Profile from '@/views/user/ProfileView.vue'
+import Dashboard from '@/components/dashboard/DashboardPage.vue'
+import UserPage from '@/components/users/UserPage.vue'
+import TransactionList from '@/components/transaction/TransactionPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,7 +62,7 @@ const router = createRouter({
         {
           path: 'users',
           name: 'users',
-          component: UserList,
+          component: UserPage,
           meta: { roles: ['SUPER_ADMIN'] },
         },
         {

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <label v-if="label" class="block mb-2 text-sm font-medium" :class="themeClass.label">
+  <div class="relative">
+    <label v-if="label" class="block mb-2 font-medium" :class="themeClass.text.dark">
       {{ label }}
     </label>
     <div :class="wrapperClass">
@@ -18,9 +18,9 @@
           :checked="modelValue === option.value"
           @change="$emit('update:modelValue', option.value)"
           class="form-radio focus:ring-2"
-          :class="themeClass.radio"
+          :class="themeClass.input.dark"
         />
-        <span class="ml-2 text-sm" :class="themeClass.optionLabel">
+        <span class="ml-2" :class="themeClass.text.dark">
           {{ option.label }}
         </span>
       </label>

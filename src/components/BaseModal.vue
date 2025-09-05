@@ -8,17 +8,18 @@
       <transition name="modal-scale">
         <div
           :class="[
-            'bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full mx-4 relative max-h-[90vh] flex flex-col',
+            'rounded-2xl shadow-xl w-full mx-4 relative max-h-[90vh] flex flex-col',
             widthClass,
+            themeClass.baseDiv.secondary,
           ]"
           v-if="modelValue"
         >
           <!-- Header -->
           <div class="flex items-center justify-between px-6 pt-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 class="text-lg font-semibold" :class="themeClass.text.glass">
               {{ title }}
             </h3>
-            <button class="text-gray-500 hover:text-gray-700 dark:hover:text-white" @click="close">
+            <button :class="['p-1 rounded-full']" @click="close">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6"
@@ -33,7 +34,7 @@
           </div>
 
           <!-- Body scrollable -->
-          <div class="overflow-y-auto px-6 pb-6 pt-4">
+          <div class="overflow-y-auto px-6 pb-6 pt-4 scrollbar-none">
             <slot />
           </div>
         </div>
@@ -43,7 +44,10 @@
 </template>
 
 <script setup>
+import { useThemeClass } from '@/composables/useThemeClass'
 import { computed } from 'vue'
+
+const { themeClass } = useThemeClass()
 
 const emit = defineEmits(['update:modelValue'])
 

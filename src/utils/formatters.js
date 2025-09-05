@@ -98,6 +98,40 @@ export function formatAddress(alamatObj) {
     alamatObj.kecamatan,
     alamatObj.kota,
     alamatObj.provinsi,
-  ].filter(Boolean) // hilangkan yang undefined/null/empty
+  ].filter(Boolean)
   return parts.join(', ')
+}
+
+export function formatText(text) {
+  if (!text) return ''
+
+  return text
+    .replace(/_/g, ' ') // ganti underscore jadi spasi
+    .toLowerCase() // ubah semua ke huruf kecil
+    .replace(/\b\w/g, (c) => c.toUpperCase()) // kapital awal kata
+}
+
+export function mapMeta(meta = {}) {
+  return {
+    currentPage: meta.current_page || 1,
+    limit: meta.limit || 10,
+    totalData: meta.total_data || 0,
+    totalPages: meta.total_pages || 0,
+    hasNextPage: meta.hasNextPage || false,
+    hasPrevPage: meta.hasPrevPage || false,
+  }
+}
+
+export function toValueLabelOptions(data, valueKey = 'id', labelKey = 'name', formatter = null) {
+  if (!Array.isArray(data)) return []
+
+  return data.map((item) => {
+    const value = item[valueKey] ?? item
+    let label = item[labelKey] ?? item
+    if (formatter) label = formatter(label)
+    return {
+      value,
+      label: formatText(label),
+    }
+  })
 }

@@ -2,7 +2,7 @@
   <header
     class="bg-white dark:bg-gray-800 shadow-md px-6 py-4 flex justify-between items-center transition duration-300"
   >
-    <h1 class="text-2xl font-semibold text-blue-600 dark:text-blue-400" style="min-height: 2.25rem">
+    <h1 :class="['text-2xl font-semibold', themeClass.text.teal]" style="min-height: 2.25rem">
       {{ title }}
     </h1>
 
@@ -11,7 +11,7 @@
         <div v-if="item.children" class="relative">
           <button
             @click="toggleDropdown(item.key)"
-            :class="menuClass(item.key)"
+            :class="[menuClass(item.key)]"
             class="relative z-10 focus:outline-none"
           >
             {{ item.label }}
@@ -19,51 +19,52 @@
           <transition name="fade-scale">
             <div
               v-show="openDropdown === item.key"
-              class="absolute top-full left-0 mt-2 w-full bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-md z-20"
+              :class="[
+                'absolute top-full left-0 mt-2 w-full rounded-lg shadow-md z-20',
+                themeClass.borderColor,
+                themeClass.dropdown,
+              ]"
             >
               <button
                 v-for="child in item.children"
                 :key="child.key"
                 @click="selectDropdown(child.key)"
-                :class="menuClass(child.key)"
+                :class="[menuClass(child.key), 'w-full text-left']"
               >
                 {{ child.label }}
               </button>
             </div>
           </transition>
         </div>
-        <button v-else @click="selectDesktop(item.key)" :class="menuClass(item.key)">
+        <button v-else @click="selectDesktop(item.key)" :class="[menuClass(item.key)]">
           {{ item.label }}
         </button>
       </template>
 
-      <button
-        @click="toggleTheme"
-        class="text-gray-600 dark:text-yellow-300 hover:text-yellow-500 transition duration-150 ml-4"
-        title="Toggle Theme"
+      <div
+        :class="[themeClass.icon.warning]"
+        class="flex flex-row items-center justify-start p-0 m-0"
       >
-        <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
-        <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
-      </button>
+        <button @click="toggleTheme" title="Toggle Theme">
+          <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
+          <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
+        </button>
+      </div>
 
       <font-awesome-icon
         icon="right-from-bracket"
-        class="cursor-pointer text-gray-600 dark:text-red-400 hover:text-red-500 transition duration-150"
         @click="logout"
+        :class="['cursor-pointer', themeClass.icon.brown]"
         title="Logout"
       />
     </nav>
 
     <div class="md:hidden flex gap-6">
-      <button
-        @click="toggleTheme"
-        class="text-gray-600 dark:text-yellow-300 hover:text-yellow-500 transition duration-150"
-        title="Toggle Theme"
-      >
+      <button @click="toggleTheme" title="Toggle Theme" :class="themeClass.icon.orange">
         <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
         <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
       </button>
-      <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-600 dark:text-gray-300">
+      <button @click="mobileMenuOpen = !mobileMenuOpen">
         <font-awesome-icon :icon="['fas', 'bars']" class="w-6 h-6" />
       </button>
     </div>
@@ -72,13 +73,15 @@
   <transition name="fade-scale">
     <div
       v-show="mobileMenuOpen"
-      class="md:hidden bg-white dark:bg-gray-900 shadow px-4 py-4 space-y-2"
+      :class="['md:hidden shadow px-4 py-4 space-y-2', themeClass.baseDiv.muted]"
     >
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="space-y-1">
           <button
             @click="toggleMobileDropdown(item.key)"
-            class="w-full text-left font-medium text-gray-800 dark:text-gray-200 px-4 py-2 flex justify-between items-center rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+            :class="[
+              'w-full text-left font-medium px-4 py-2 flex justify-between items-center rounded',
+            ]"
           >
             {{ item.label }}
             <font-awesome-icon :icon="['fas', 'chevron-down']" class="w-4 h-4 ml-2" />
@@ -89,21 +92,24 @@
                 v-for="child in item.children"
                 :key="child.key"
                 @click="select(child.key)"
-                :class="menuClass(child.key, true)"
+                :class="[menuClass(child.key, true)]"
               >
                 {{ child.label }}
               </button>
             </div>
           </transition>
         </div>
-        <button v-else @click="select(item.key)" :class="menuClass(item.key, true)">
+        <button v-else @click="select(item.key)" :class="[menuClass(item.key, true)]">
           {{ item.label }}
         </button>
       </template>
 
       <button
         @click="logout"
-        class="flex items-center gap-2 text-red-600 dark:text-red-400 hover:underline w-full px-4 py-2 mt-2"
+        :class="[
+          'flex items-center gap-2 hover:underline w-full px-4 py-2 mt-2',
+          themeClass.buttonDanger,
+        ]"
       >
         <font-awesome-icon icon="right-from-bracket" class="w-4 h-4" />
         Logout
@@ -116,7 +122,10 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
-import { useThemeStore } from '@/stores/component/theme.js'
+import { useThemeStore } from '@/stores/utils/theme.js'
+import { useThemeClass } from '@/composables/useThemeClass.js'
+
+const { themeClass } = useThemeClass()
 
 const props = defineProps({
   active: String,
@@ -168,11 +177,7 @@ const selectDropdown = (key) => {
 const menuClass = (key, mobile = false) => {
   const base = mobile ? 'block w-full text-left px-4 py-2 rounded' : 'px-3 py-2 text-sm rounded'
   const isActive = props.active === key
-  return `${base} ${
-    isActive
-      ? 'bg-blue-600 text-white'
-      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-  }`
+  return `${base} ${isActive ? [themeClass.value.button.teal, 'rounded rounded-b-xl'] : themeClass.value.button.muted}`
 }
 
 const themeStore = useThemeStore()

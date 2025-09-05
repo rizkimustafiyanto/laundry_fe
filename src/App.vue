@@ -20,11 +20,11 @@
 </template>
 
 <script setup>
-import { useUIStore } from '@/stores/component/ui'
-import { useUserStore } from '@/stores/services/user'
-import { useOrderStore } from '@/stores/services/order'
-import { useLoadingStore } from './stores/component/loading'
-import { useThemeStore } from '@/stores/component/theme'
+import { useUIStore } from '@/stores/utils/ui'
+import { useUserStore } from '@/stores/services/user.service'
+import { useTransactionStore } from '@/stores/services/transaction.service'
+import { useLoadingStore } from './stores/utils/loading'
+import { useThemeStore } from '@/stores/utils/theme'
 
 const themeStore = useThemeStore()
 themeStore.applyTheme()
@@ -35,6 +35,6 @@ const loading = useLoadingStore()
 const userStore = useUserStore()
 userStore.listenUserUpdates()
 
-const orderStore = useOrderStore()
-orderStore.listenOrderUpdates()
+const transactionStore = useTransactionStore()
+transactionStore.listenOrderUpdates()
 </script>

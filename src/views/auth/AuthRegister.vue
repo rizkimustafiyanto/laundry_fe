@@ -1,11 +1,7 @@
 <template>
-  <BaseCard
-    type="single"
-    variant="primary"
-    class="min-h-screen flex items-center justify-center bg-gray-100 px-4"
-  >
+  <BaseCard type="single" variant="mist" class="min-h-screen flex items-center justify-center">
     <BaseCard type="single" variant="secondary" class="w-full max-w-sm">
-      <form @submit.prevent="register" class="space-y-6">
+      <form @submit.prevent="register" class="space-y-4">
         <h2 class="text-2xl font-bold text-center">Register</h2>
 
         <BaseInput
@@ -35,12 +31,7 @@
           required
         />
 
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-        >
-          Register
-        </button>
+        <BaseButton type="submit" label="Register" variant="primary" class="w-full" />
 
         <div class="text-center">
           <button type="button" @click="goToLogin" class="text-blue-600 hover:underline text-sm">
@@ -56,7 +47,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth'
-import { useUIStore } from '@/stores/component/ui'
+import { useUIStore } from '@/stores/utils/ui'
 
 const router = useRouter()
 const userStore = useAuthStore()

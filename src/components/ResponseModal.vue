@@ -1,19 +1,24 @@
 <template>
   <div v-if="visible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div
-      class="w-full max-w-md mx-4 p-6 rounded-2xl shadow-2xl text-center animate-fade-in bg-white dark:bg-gray-800"
+      :class="[
+        'w-full max-w-md mx-4 p-6 rounded-2xl shadow-2xl text-center animate-fade-in',
+        themeClass.baseDiv.secondary,
+      ]"
     >
       <font-awesome-icon
         :icon="status === 'success' ? ['far', 'thumbs-up'] : ['fas', 'exclamation-circle']"
         :class="[
           'text-5xl mb-4 transition-transform duration-300',
-          status === 'success' ? 'text-green-500 animate-pulse' : 'text-red-500 animate-shake',
+          status === 'success'
+            ? themeClass.icon.success + ' animate-pulse'
+            : themeClass.icon.red + ' animate-shake',
         ]"
       />
       <h2
         :class="[
           'text-2xl font-bold mb-2',
-          status === 'success' ? 'text-green-600' : 'text-red-600',
+          status === 'success' ? themeClass.text.success : themeClass.text.red,
         ]"
       >
         {{ status === 'success' ? 'SUCCESS' : 'FAILED' }}
@@ -21,7 +26,10 @@
       <p class="text-xl mb-6">{{ message }}</p>
       <button
         @click="$emit('close')"
-        class="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition duration-200"
+        :class="[
+          'inline-flex items-center justify-center px-5 py-2 rounded-lg font-semibold transition duration-200',
+          status === 'success' ? themeClass.button.success : themeClass.button.danger,
+        ]"
       >
         Tutup
       </button>
@@ -30,12 +38,16 @@
 </template>
 
 <script setup>
+import { useThemeClass } from '@/composables/useThemeClass.js'
+
 defineProps({
   visible: Boolean,
   status: String,
   message: String,
 })
 defineEmits(['close'])
+
+const { themeClass } = useThemeClass()
 </script>
 
 <style scoped>

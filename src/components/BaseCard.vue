@@ -5,18 +5,13 @@
       variantClass,
       type === 'grid' ? gridLayoutClass : 'p-4',
       classOverride,
+      themeClass.baseDiv,
     ]"
     :style="styleOverride"
   >
     <template v-if="type === 'grid'">
       <slot name="grid">
-        <div
-          :class="[
-            gridDirection === 'row'
-              ? 'flex flex-row flex-wrap gap-4'
-              : 'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3',
-          ]"
-        >
+        <div :class="['gap-4', gridClass]">
           <slot />
         </div>
       </slot>
@@ -45,10 +40,9 @@ const props = defineProps({
     default: 'column',
     validator: (val) => ['row', 'column'].includes(val),
   },
-  theme: {
-    type: String,
-    default: 'light',
-    validator: (val) => ['light', 'dark'].includes(val),
+  cols: {
+    type: Number,
+    default: 2,
   },
   width: {
     type: String,
@@ -69,7 +63,6 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'secondary',
-    validator: (val) => ['primary', 'secondary'].includes(val),
   },
 })
 
@@ -77,11 +70,17 @@ const gridLayoutClass = computed(() => {
   return `w-${props.width} h-${props.height} p-4`
 })
 
-const variantClass = computed(() => {
-  if (props.variant === 'primary') {
-    return themeClass.value.variantPrimary
-  } else {
-    return themeClass.value.variantSecondary
+const gridClass = computed(() => {
+  const map = {
+    1: 'grid grid-cols-1',
+    2: 'grid grid-cols-1 sm:grid-cols-2',
+    3: 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3',
+    4: 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
   }
+  return map[props.cols] || `grid grid-cols-1 sm:grid-cols-${props.cols}`
+})
+
+const variantClass = computed(() => {
+  return themeClass.value.baseDiv?.[props.variant] || themeClass.value.baseDiv.secondary
 })
 </script>

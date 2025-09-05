@@ -1,32 +1,36 @@
 <template>
   <div class="py-1">
-    <label v-if="label" :for="id" class="block mb-2 text-sm font-medium" :class="themeClass.label">
+    <label v-if="label" :for="id" class="block mb-2 font-medium" :class="themeClass.text.dark">
       {{ label }}
     </label>
 
     <div class="relative">
+      <!-- Icon kiri -->
       <div
-        v-if="icon && type !== 'textarea' && type !== 'file'"
+        v-if="icon && type !== 'textarea' && type !== 'file' && type !== 'date'"
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-        :class="themeClass.icon"
+        :class="themeClass.icon.primary"
       >
         <font-awesome-icon :icon="['fas', icon]" />
       </div>
 
+      <!-- Textarea -->
       <template v-if="type === 'textarea'">
         <textarea
           :id="id"
           :placeholder="placeholder"
           :value="modelValue"
           :disabled="disabled"
+          :autocomplete="autocomplete"
           :rows="rows"
           @input="$emit('update:modelValue', $event.target.value)"
           class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition resize-y min-h-[100px]"
-          :class="themeClass.input"
+          :class="themeClass.input.mist"
           :required="required"
         />
       </template>
 
+      <!-- File Input -->
       <template v-else-if="type === 'file'">
         <input
           :id="id"
@@ -34,11 +38,12 @@
           :disabled="disabled"
           @change="handleFileChange"
           class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
-          :class="themeClass.input"
+          :class="themeClass.input.mist"
           :required="required"
         />
       </template>
 
+      <!-- Number Input -->
       <template v-else-if="type === 'number'">
         <input
           :id="id"
@@ -48,13 +53,36 @@
           :min="min"
           :value="modelValue"
           :disabled="disabled"
-          @input="$emit('update:modelValue', $event.target.value)"
+          :autocomplete="autocomplete"
+          @input="
+            $emit(
+              'update:modelValue',
+              $event.target.value === '' ? '' : Number($event.target.value),
+            )
+          "
           class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input, themeClass.textColor]"
+          :class="[themeClass.input.mist, themeClass.text.primary]"
           :required="required"
         />
       </template>
 
+      <!-- Date Picker -->
+      <template v-else-if="type === 'date'">
+        <VueDatePicker
+          v-model="innerDate"
+          :id="id"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          :enable-time-picker="enableTimePicker"
+          :range="range"
+          :format="format"
+          :required="required"
+          :dark="themeClass.baseDiv === 'dark' ? true : false"
+          auto-apply
+        />
+      </template>
+
+      <!-- Default / Text / Password -->
       <template v-else>
         <input
           :id="id"
@@ -62,9 +90,10 @@
           :placeholder="placeholder"
           :value="modelValue"
           :disabled="disabled"
+          :autocomplete="autocomplete"
           @input="$emit('update:modelValue', $event.target.value)"
           class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input, { 'pl-10': icon, 'pr-10': isPassword }]"
+          :class="[themeClass.input.mist, { 'pl-10': icon, 'pr-10': isPassword }]"
           :required="required"
         />
 
@@ -72,7 +101,7 @@
           v-if="isPassword"
           type="button"
           class="absolute inset-y-0 right-0 flex items-center pr-3"
-          :class="themeClass.iconButton"
+          :class="themeClass.icon.primary"
           @click="togglePassword"
         >
           <font-awesome-icon :icon="showPassword ? ['fas', 'eye-slash'] : ['fas', 'eye']" />
@@ -83,8 +112,10 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useThemeClass } from '@/composables/useThemeClass.js'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const { themeClass } = useThemeClass()
 
@@ -92,10 +123,8 @@ const props = defineProps({
   id: String,
   label: String,
   modelValue: {
-    type: [String, Number],
-    required() {
-      return this.type !== 'file'
-    },
+    type: [String, Number, Date, Array],
+    default: '',
   },
   min: [String, Number],
   max: [String, Number],
@@ -114,17 +143,22 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  autocomplete: {
+    type: String,
+    default: 'off',
+  },
+  enableTimePicker: { type: Boolean, default: false },
+  range: { type: Boolean, default: false },
+  format: { type: String, default: 'yyyy-MM-dd' },
 })
 
 const emit = defineEmits(['update:modelValue', 'update:file'])
 
 const showPassword = ref(false)
-
 const isPassword = computed(() => props.type === 'password')
-const computedType = computed(() => {
-  if (isPassword.value) return showPassword.value ? 'text' : 'password'
-  return props.type
-})
+const computedType = computed(() =>
+  isPassword.value ? (showPassword.value ? 'text' : 'password') : props.type,
+)
 
 function togglePassword() {
   showPassword.value = !showPassword.value
@@ -132,17 +166,25 @@ function togglePassword() {
 
 function handleFileChange(event) {
   const file = event.target.files[0]
-  if (file) {
-    emit('update:file', file)
-  }
+  if (file) emit('update:file', file)
 }
+
+const innerDate = ref(props.modelValue)
+watch(innerDate, (val) => emit('update:modelValue', val))
+watch(
+  () => props.modelValue,
+  (val) => (innerDate.value = val),
+)
 </script>
 
 <style scoped>
-input[type='number']::-webkit-inner-spin-button {
+/* input[type='number']::-webkit-inner-spin-button {
   filter: invert(0%);
 }
 .dark input[type='number']::-webkit-inner-spin-button {
   filter: invert(100%);
+} */
+::v-deep(.dp__input) {
+  @apply w-full p-2.5 pl-10 border rounded-xl focus:outline-none focus:ring-2 transition border-gray-300 bg-white text-gray-900 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-gray-500;
 }
 </style>

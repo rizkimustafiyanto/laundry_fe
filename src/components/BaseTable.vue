@@ -1,150 +1,139 @@
 <template>
-  <div class="relative overflow-x-auto sm:rounded-lg p-4" :class="themeClass.baseDiv">
+  <div class="relative overflow-x-auto sm:rounded-lg p-4">
+    <!-- Search & Dropdown -->
     <div class="flex justify-between items-center pb-2">
-      <BaseInput
-        v-model="searchQuery"
-        :placeholder="'Cari...'"
-        :icon="'search'"
-        style="max-width: 30%"
-      />
-
+      <div class="flex flex-row gap-2">
+        <BaseInput
+          v-if="searchable"
+          :modelValue="searchQuery"
+          @update:modelValue="handleSearchQuery"
+          placeholder="Cari..."
+          :class="themeClass.input.mist"
+        />
+        <div v-if="limitable" class="hidden md:flex gap-2 items-center">
+          <select
+            v-model="localLimit"
+            @change="applyLimit"
+            class="px-2 py-3 text-sm"
+            :class="themeClass.select.mist"
+          >
+            <option v-for="n in [5, 10, 20, 50, 100]" :key="n" :value="n">
+              {{ n }}
+            </option>
+          </select>
+          <span :class="themeClass.text.secondary">: Tampilan Per Halaman</span>
+        </div>
+      </div>
       <BaseSelect
-        v-if="withDropdown"
+        v-if="choosable"
         :modelValue="selectedDropdownValue"
         @update:modelValue="handleDropdownSelect"
         :options="dropdownItems"
         :placeholder="dropdownLabel"
-        required
+        :class="themeClass.select.mist"
       />
     </div>
 
+    <!-- Table -->
     <div v-if="!loading && items?.length" class="w-full overflow-x-auto">
       <table
         class="w-full text-sm text-left rounded-xl border min-w-max"
-        :class="[themeClass.borderColor]"
+        :class="themeClass.borderColor"
       >
         <thead class="text-xs uppercase" :class="themeClass.thead">
           <tr>
-            <th v-for="(header, index) in headers" :key="index" class="px-6 py-3">
-              {{ header }}
+            <th v-for="(col, index) in computedColumns" :key="index" class="px-6 py-3">
+              {{ col.label }}
             </th>
           </tr>
         </thead>
         <tbody>
-          <slot :items="items"></slot>
+          <tr v-for="item in items" :key="item.id" class="border-b" :class="themeClass.trHover">
+            <td v-for="col in computedColumns" :key="col.key" class="px-6 py-4">
+              <slot :name="col.key" :value="item[col.key]" :item="item">
+                {{ item[col.key] }}
+              </slot>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <BaseLoadingSpinner v-else-if="loading" :type="'mini'" />
-    <div v-else class="text-center p-4" :class="themeClass.label">Tidak ada data ditemukan.</div>
+    <div v-else class="text-center p-4" :class="themeClass.text.secondary">
+      Tidak ada data ditemukan.
+    </div>
 
-    <nav
-      v-if="!loading && pagination && items?.length"
-      class="flex items-center justify-between pt-4"
-      aria-label="Table navigation"
-    >
-      <span class="text-sm" :class="themeClass.color1">
-        Menampilkan <span class="font-semibold">{{ pagination.from }}</span> -
-        <span class="font-semibold">{{ pagination.to }}</span> dari
-        <span class="font-semibold">{{ pagination.total }}</span>
-      </span>
-      <ul class="inline-flex -space-x-px text-sm h-8">
-        <li>
-          <button
-            :disabled="pagination.page <= 1"
-            @click="$emit('page-change', pagination.page - 1)"
-            class="px-3 h-8 rounded-s-lg disabled:opacity-50"
-            :class="[themeClass.color2, themeClass.borderColor]"
-          >
-            Previous
-          </button>
-        </li>
-        <li v-for="p in totalPages" :key="p">
-          <button
-            @click="$emit('page-change', p)"
-            :class="[
-              'px-3 h-8 border',
-              p === pagination.page
-                ? 'bg-blue-500 text-white dark:bg-blue-600 dark:text-white'
-                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
-              themeClass.borderColor,
-            ]"
-          >
-            {{ p }}
-          </button>
-        </li>
-        <li>
-          <button
-            :disabled="pagination.page >= totalPages"
-            @click="$emit('page-change', pagination.page + 1)"
-            class="px-3 h-8 rounded-e-lg disabled:opacity-50"
-            :class="[themeClass.color2, themeClass.borderColor]"
-          >
-            Next
-          </button>
-        </li>
-      </ul>
-    </nav>
+    <!-- Pagination -->
+    <BasePagination
+      v-if="!loading && items?.length && pagination"
+      :pagination="pagination"
+      @page-change="$emit('page-change', $event)"
+      :class="themeClass.baseDiv"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useThemeClass } from '@/composables/useThemeClass.js'
 import { createDebouncer } from '@/utils/debounce'
+import BasePagination from '@/components/BasePagination.vue'
+import BaseInput from '@/components/BaseInput.vue'
+import BaseSelect from '@/components/BaseSelect.vue'
+import BaseLoadingSpinner from '@/components/BaseLoadingSpinner.vue'
 
 const { themeClass } = useThemeClass()
 
 const props = defineProps({
-  modelValue: String,
   items: Array,
-  headers: Array,
+  columns: Array,
   loading: Boolean,
   pagination: Object,
-  withDropdown: {
-    type: Boolean,
-    default: false,
-  },
-  dropdownLabel: {
-    type: String,
-    default: 'Filter',
-  },
-  dropdownItems: {
-    type: Array,
-    default: () => [],
-  },
+  searchable: { type: Boolean, default: false },
+  choosable: { type: Boolean, default: false },
+  limitable: { type: Boolean, default: false },
+  dropdownLabel: { type: String, default: 'Filter' },
+  dropdownItems: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['update:modelValue', 'search', 'page-change', 'dropdown-select'])
+const emit = defineEmits([
+  'update:modelValue',
+  'search',
+  'page-change',
+  'dropdown-select',
+  'limit-change',
+])
 
-const searchQuery = ref(props.modelValue)
-
-watch(searchQuery, (val) => {
-  debouncedSearch(val)
-})
-
-watch(
-  () => props.modelValue,
-  (val) => {
-    if (val !== searchQuery.value) searchQuery.value = val
-  },
-)
+const searchQuery = ref('')
 
 const debouncedSearch = createDebouncer((val) => {
   emit('search', val)
-  emit('update:modelValue', val)
 }, 400)
 
-const selectedDropdownValue = ref(null)
+const handleSearchQuery = (value) => {
+  searchQuery.value = value
+  debouncedSearch(value)
+}
 
+const selectedDropdownValue = ref(null)
 const handleDropdownSelect = (value) => {
   selectedDropdownValue.value = value
   emit('dropdown-select', value)
 }
 
-const totalPages = computed(() => {
-  if (!props.pagination?.total || !props.pagination?.limit) return 1
-  return Math.ceil(props.pagination.total / props.pagination.limit)
+const localLimit = ref(props.pagination?.limit || 10)
+const applyLimit = () => {
+  emit('limit-change', localLimit.value)
+}
+
+const computedKeys = computed(() => (props.items?.length ? Object.keys(props.items[0]) : []))
+const computedColumns = computed(() => {
+  if (props.columns?.length)
+    return props.columns.map((c) => (typeof c === 'string' ? { key: c, label: c } : c))
+  return computedKeys.value.map((key) => ({
+    key,
+    label: key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
+  }))
 })
 </script>

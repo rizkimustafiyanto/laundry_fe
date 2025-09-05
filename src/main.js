@@ -3,7 +3,6 @@ import './assets/styles.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { useAuthStore } from '@/stores/auth/auth'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
@@ -13,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import App from './App.vue'
 import router from './router'
+import { useCompanyStore } from './stores/services/company.service'
 
 import BaseTable from './components/BaseTable.vue'
 import BaseNavbar from '@/components/BaseNavbar.vue'
@@ -47,4 +47,33 @@ app.component('BaseModal', BaseModal)
 app.component('BaseLoadingSpinner', BaseLoadingSpinner)
 app.component('ResponseModal', ResponseModal)
 
-app.mount('#app')
+async function initApp() {
+  const companyStore = useCompanyStore(pinia)
+
+  try {
+    await companyStore.fetchCompanies({ page: 1, limit: 1 })
+    const company = companyStore.companies[0]
+
+    if (company) {
+      if (company.name) {
+        document.title = company.name
+      }
+
+      if (company.faviconUrl) {
+        let link = document.querySelector("link[rel~='icon']")
+        if (!link) {
+          link = document.createElement('link')
+          link.rel = 'icon'
+          document.head.appendChild(link)
+        }
+        link.href = company.faviconUrl
+      }
+    }
+  } catch (err) {
+    console.error('Gagal mengambil company profile:', err)
+  }
+
+  app.mount('#app')
+}
+
+initApp()

@@ -1,4 +1,4 @@
-import { useUIStore } from '@/stores/component/ui'
+import { useUIStore } from '@/stores/utils/ui'
 
 export function notifySuccess(message) {
   useUIStore().show('success', message)

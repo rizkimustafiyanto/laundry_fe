@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
 
-export const useAuthStore = defineStore('user', {
+export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: JSON.parse(localStorage.getItem('user')) || null,
     token: localStorage.getItem('token') || null,
@@ -11,18 +11,28 @@ export const useAuthStore = defineStore('user', {
     async login(email, password) {
       try {
         const res = await api.post('/auth/login', { email, password })
-        this.user = res.data.user
-        this.token = res.data.token
-        this.role = res.data.user.role
 
-        localStorage.setItem('role', this.role)
+        const data = res.data.data
+
+        this.user = {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          photo: data.photo,
+          bio: data.bio,
+        }
+        this.token = data.token
+        this.role = data.role
+
         localStorage.setItem('user', JSON.stringify(this.user))
         localStorage.setItem('token', this.token)
+        localStorage.setItem('role', this.role)
 
         return {
           status: res.status,
-          message: 'Login berhasil',
-          user: res.data.user,
+          message: res.data.message,
+          user: this.user,
         }
       } catch (err) {
         const status = err.response?.status || 500
