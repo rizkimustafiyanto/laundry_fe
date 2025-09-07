@@ -36,7 +36,7 @@
       <BaseButton
         label="Pesan Sekarang"
         @click="showPickupModal = true"
-        :class="useThemeClass().themeClass.value.button.teal"
+        :class="themeClass.button.teal"
       />
     </BaseCard>
 
@@ -46,7 +46,7 @@
       <BaseButton
         label="Pesanan Dibuat"
         @click="showCreateModal = true"
-        :class="useThemeClass().themeClass.value.button.teal"
+        :class="[themeClass.button.teal, 'rounded-md']"
       />
     </BaseCard>
 
@@ -71,7 +71,7 @@
           label="Sudah Diambil"
           @click="openEditModal(order)"
           variant="success"
-          :class="useThemeClass().themeClass.value.button.teal"
+          :class="themeClass.button.teal"
         />
       </div>
     </BaseCard>
@@ -105,43 +105,35 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth/auth'
-import { useTransactionStore } from '@/stores/services/transaction.service'
-import { usePaymentStore } from '@/stores/services/payment.service'
-import { formatDate, formatCurrency } from '@/utils/formatters'
 import ManageOrderStatus from '@/components/dashboard/manage/OrderStatus.vue'
 import OrderForm from '@/components/dashboard/form/OrderForm.vue'
-import { useThemeClass } from '@/composables/useThemeClass'
 
 const authStore = useAuthStore()
 const transactionStore = useTransactionStore()
-const paymentStore = usePaymentStore()
+const runningPreview = useRunningPreviewStore()
+const themeClass = useThemeClass()
 
 const user = computed(() => authStore.user)
 const role = computed(() => authStore.role)
 
-// Fetch global data
 onMounted(() => {
-  transactionStore.fetchTransactions()
-  paymentStore.fetchRunningPreview()
+  transactionStore.fetchItems()
+  runningPreview.fetchRunningPreview()
 })
 
-// Orders for logged in customer
 const userOrders = computed(() =>
-  transactionStore.transactions.filter((o) => o.customerId === user.value?.id),
+  transactionStore.items.filter((o) => o.customerId === user.value?.id),
 )
 
 const ongoingOrders = computed(() =>
   userOrders.value.filter((o) => !['COMPLETED', 'CANCELLED'].includes(o.status)),
 )
 
-// All ongoing orders
 const storeOngoingOrders = computed(() =>
-  transactionStore.transactions.filter((o) => !['COMPLETED', 'CANCELLED'].includes(o.status)),
+  transactionStore.items.filter((o) => !['COMPLETED', 'CANCELLED'].includes(o.status)),
 )
 
-const totalPendingBill = computed(() => paymentStore.runningPreview)
+const totalPendingBill = computed(() => runningPreview.runningPreview)
 
 const estimatedCompletion = computed(() => {
   const total = storeOngoingOrders.value.length
@@ -151,17 +143,14 @@ const estimatedCompletion = computed(() => {
   return estimatedDate
 })
 
-// Roles
 const isSuperadmin = computed(() => role.value === 'SUPER_ADMIN')
 const isOwner = computed(() => role.value === 'OWNER')
 const isCustomer = computed(() => role.value === 'CUSTOMER')
 
-// Orders needing pickup
 const pickupOrders = computed(() =>
-  transactionStore.transactions.filter((o) => o.pickupRequested && o.status === 'REGISTERED'),
+  transactionStore.items.filter((o) => o.pickupRequested && o.status === 'REGISTERED'),
 )
 
-// Modal controls
 const showEditModal = ref(false)
 const showCreateModal = ref(false)
 const showPickupModal = ref(false)

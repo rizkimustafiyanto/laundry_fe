@@ -20,12 +20,6 @@
 </template>
 
 <script setup>
-import { useUIStore } from '@/stores/utils/ui'
-import { useUserStore } from '@/stores/services/user.service'
-import { useTransactionStore } from '@/stores/services/transaction.service'
-import { useLoadingStore } from './stores/utils/loading'
-import { useThemeStore } from '@/stores/utils/theme'
-
 const themeStore = useThemeStore()
 themeStore.applyTheme()
 

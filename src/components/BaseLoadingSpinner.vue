@@ -59,5 +59,5 @@ defineProps({
 })
 
 import { useThemeClass } from '@/composables/useThemeClass.js'
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 </script>

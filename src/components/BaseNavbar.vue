@@ -1,62 +1,86 @@
 <template>
   <header
-    class="bg-white dark:bg-gray-800 shadow-md px-6 py-4 flex justify-between items-center transition duration-300"
+    class="shadow-md px-6 py-4 flex justify-between items-center transition duration-300"
+    :class="themeClass.thead"
   >
     <h1 :class="['text-2xl font-semibold', themeClass.text.teal]" style="min-height: 2.25rem">
       {{ title }}
     </h1>
 
-    <nav class="hidden md:flex space-x-4 items-center">
+    <nav class="hidden md:flex items-center">
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="relative">
-          <button
+          <div
             @click="toggleDropdown(item.key)"
-            :class="[menuClass(item.key)]"
-            class="relative z-10 focus:outline-none"
+            :class="[
+              menuClass(item.key),
+              themeClass.hoverless.teal,
+              'cursor-pointer flex items-center gap-2',
+            ]"
+            class="z-10 focus:outline-none"
           >
+            <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
             {{ item.label }}
-          </button>
+          </div>
           <transition name="fade-scale">
             <div
               v-show="openDropdown === item.key"
               :class="[
-                'absolute top-full left-0 mt-2 w-full rounded-lg shadow-md z-20',
+                'absolute top-full mt-2 w-full rounded-lg shadow-md z-20',
                 themeClass.borderColor,
                 themeClass.dropdown,
               ]"
             >
-              <button
+              <div
                 v-for="child in item.children"
                 :key="child.key"
                 @click="selectDropdown(child.key)"
-                :class="[menuClass(child.key), 'w-full text-left']"
+                :class="[
+                  menuClass(child.key),
+                  'w-full text-left cursor-pointer flex items-center gap-2',
+                  themeClass.hoverless.teal,
+                ]"
               >
+                <font-awesome-icon v-if="child.icon" :icon="['fas', child.icon]" class="w-4 h-4" />
                 {{ child.label }}
-              </button>
+              </div>
             </div>
           </transition>
         </div>
-        <button v-else @click="selectDesktop(item.key)" :class="[menuClass(item.key)]">
+        <div
+          v-else
+          @click="selectDesktop(item.key)"
+          :class="[
+            menuClass(item.key),
+            themeClass.hoverless.teal,
+            'cursor-pointer flex items-center gap-2',
+          ]"
+        >
+          <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
           {{ item.label }}
-        </button>
+        </div>
       </template>
 
       <div
-        :class="[themeClass.icon.warning]"
-        class="flex flex-row items-center justify-start p-0 m-0"
+        class="flex items-center justify-center cursor-pointer px-3"
+        @click="toggleTheme"
+        :class="themeClass.icon.orange"
       >
-        <button @click="toggleTheme" title="Toggle Theme">
-          <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
-          <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
-        </button>
+        <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
+        <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
       </div>
 
-      <font-awesome-icon
-        icon="right-from-bracket"
+      <div
+        class="flex items-center justify-center cursor-pointer px-3"
         @click="logout"
-        :class="['cursor-pointer', themeClass.icon.brown]"
         title="Logout"
-      />
+      >
+        <font-awesome-icon
+          icon="right-from-bracket"
+          :class="themeClass.icon.brown"
+          class="w-5 h-5"
+        />
+      </div>
     </nav>
 
     <div class="md:hidden flex gap-6">
@@ -119,13 +143,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth/auth'
-import { useThemeStore } from '@/stores/utils/theme.js'
-import { useThemeClass } from '@/composables/useThemeClass.js'
-
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const props = defineProps({
   active: String,
@@ -176,8 +194,18 @@ const selectDropdown = (key) => {
 
 const menuClass = (key, mobile = false) => {
   const base = mobile ? 'block w-full text-left px-4 py-2 rounded' : 'px-3 py-2 text-sm rounded'
-  const isActive = props.active === key
-  return `${base} ${isActive ? [themeClass.value.button.teal, 'rounded rounded-b-xl'] : themeClass.value.button.muted}`
+
+  const isActive =
+    props.active === key ||
+    props.menuItems.some((item) =>
+      item.children?.some((child) => child.key === props.active && item.key === key),
+    )
+
+  return `${base} ${
+    isActive
+      ? [themeClass.value.button.teal, 'rounded rounded-b-xl']
+      : [themeClass.value.text.muted]
+  }`
 }
 
 const themeStore = useThemeStore()

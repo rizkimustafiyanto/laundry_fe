@@ -97,23 +97,13 @@
           />
         </div>
 
-        <BaseButton type="submit" label="Simpan Pesanan" variant="primary" class="w-full" />
+        <BaseButton type="submit" label="Simpan Pesanan" variant="success" class="w-full" />
       </form>
     </BaseCard>
   </BaseModal>
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, watch, onUnmounted } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useTransactionStore } from '@/stores/services/transaction.service'
-import { useUserStore } from '@/stores/services/user.service'
-import { useAuthStore } from '@/stores/auth/auth'
-import { useOptionsStore } from '@/stores/services/option.service'
-import { useAddressStore } from '@/stores/services/address.service'
-import { toValueLabelOptions } from '@/utils/formatters'
-import BaseCard from '@/components/BaseCard.vue'
-
 const props = defineProps({
   mode: { type: String, default: 'admin' },
   editMode: { type: Boolean, default: false },
@@ -122,7 +112,9 @@ const props = defineProps({
 
 const modelValue = defineModel()
 const transactionStore = useTransactionStore()
-const optionStore = useOptionsStore()
+const serviceType = useServiceTypeStore()
+const itemType = useItemTypeStore()
+const paymentMethodStore = usePaymentMethodStore()
 const addressStore = useAddressStore()
 const userStore = useUserStore()
 const { user } = storeToRefs(useAuthStore())
@@ -136,26 +128,24 @@ const modalTitle = computed(() => {
 })
 
 // ========== OPTIONS ==========
-const customers = computed(() => (Array.isArray(userStore.users) ? userStore.users : []))
+const customers = computed(() => (Array.isArray(userStore.items) ? userStore.items : []))
 const customerOptions = computed(() => customers.value.map((c) => ({ label: c.name, value: c.id })))
 const addressOption = computed(() =>
   toValueLabelOptions(
-    addressStore.addresses,
+    addressStore.items,
     'id',
     null,
     (a) => `${a.addressLine}, ${a.label} (${a.notes ?? '-'})`,
   ),
 )
 const serviceTypeOption = computed(() =>
-  Array.isArray(optionStore.serviceTypes) ? optionStore.serviceTypes : [],
+  Array.isArray(serviceType.options) ? serviceType.options : [],
 )
 
-const itemTypeOption = computed(() =>
-  Array.isArray(optionStore.itemTypes) ? optionStore.itemTypes : [],
-)
+const itemTypeOption = computed(() => (Array.isArray(itemType.options) ? itemType.options : []))
 
 const searchCustomers = async (keyword) => {
-  await userStore.fetchUsers({ search: keyword })
+  await userStore.fetchItems({ search: keyword })
 }
 
 // ========== FORM ==========
@@ -177,7 +167,7 @@ watch(
   () => form.customerId,
   async (newVal) => {
     if (newVal) {
-      await addressStore.fetchAddresses({ customerId: newVal })
+      await addressStore.fetchByCustomer(newVal)
     } else {
       addressStore.clearData()
     }
@@ -201,8 +191,8 @@ const removeItem = (index) => {
 
 const loadOrder = async () => {
   if (!props.orderId) return
-  await transactionStore.fetchTransactionById(props.orderId)
-  const order = transactionStore.selectedTransaction
+  await transactionStore.fetchItemById(props.orderId)
+  const order = transactionStore.item
 
   form.customerId = order.customerId
   form.pickupRequested = order.pickupRequested
@@ -230,7 +220,7 @@ const submitOrder = async () => {
     }))
 
   if (props.editMode && props.orderId) {
-    await transactionStore.updateTransaction(props.orderId, { items: preparedItems })
+    await transactionStore.updateItem(props.orderId, { items: preparedItems })
   } else {
     const payload = {
       customerId: form.customerId,
@@ -241,7 +231,7 @@ const submitOrder = async () => {
       notes: form.notes,
       items: preparedItems,
     }
-    await transactionStore.createTransaction(payload)
+    await transactionStore.createItem(payload)
   }
 
   modelValue.value = false
@@ -249,10 +239,10 @@ const submitOrder = async () => {
 
 // ========== HOOKS ==========
 onMounted(async () => {
-  if (isAdmin.value) await userStore.fetchUsers()
-  await optionStore.fetchServiceTypes()
-  await optionStore.fetchPaymentMethod()
-  await optionStore.fetchItemTypes()
+  if (isAdmin.value) await userStore.fetchItems()
+  await serviceType.fetchItems()
+  await itemType.fetchItems()
+  await paymentMethodStore.fetch()
 
   if (props.editMode && props.orderId) {
     await loadOrder()

@@ -47,7 +47,7 @@
 import { useThemeClass } from '@/composables/useThemeClass'
 import { computed } from 'vue'
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const emit = defineEmits(['update:modelValue'])
 

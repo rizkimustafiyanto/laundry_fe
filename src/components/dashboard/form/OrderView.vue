@@ -91,7 +91,7 @@
 
 <script setup>
 import { reactive, onMounted } from 'vue'
-import { useTransactionStore } from '@/stores/services/transaction.service'
+
 import { formatCurrency } from '@/utils/formatters'
 import { useThemeClass } from '@/composables/useThemeClass'
 
@@ -101,7 +101,7 @@ const props = defineProps({
 
 const modelValue = defineModel()
 const transactionStore = useTransactionStore()
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const form = reactive({
   customer: null,

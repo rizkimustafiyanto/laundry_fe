@@ -21,19 +21,24 @@
         class="absolute z-50 border rounded-xl shadow-lg max-h-60 overflow-auto scrollbar-none"
         :class="[themeClass.select.mist]"
       >
+        <!-- Searchable Input -->
         <BaseInput
           v-if="type === 'search'"
+          ref="searchInputRef"
           v-model="searchTerm"
           :placeholder="searchPlaceholder"
           :icon="'search'"
-          class="p-2 sticky top-0 z-10"
+          class="sticky py-0 top-0 z-10"
           :class="themeClass.input.dark"
+          rounded="lg"
         />
 
-        <div v-if="options.length === 0" class="px-4 py-2" :class="themeClass.text.dark">
+        <!-- Empty state -->
+        <div v-if="options.length === 0" class="px-4 py-2" :class="themeClass.baseDiv.dark">
           Tidak ada data
         </div>
 
+        <!-- Options -->
         <div
           v-for="option in options"
           :key="option.value"
@@ -49,13 +54,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onUnmounted, nextTick, reactive } from 'vue'
-import { useThemeClass } from '@/composables/useThemeClass.js'
-import { createDebouncer } from '@/utils/debounce'
-import BaseInput from '@/components/BaseInput.vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const props = defineProps({
   id: String,
@@ -76,6 +75,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const dropdownOpen = ref(false)
 const toggleRef = ref(null)
+const searchInputRef = ref(null)
 const searchTerm = ref('')
 const dropdownStyles = reactive({ top: '0px', left: '0px', width: 'auto' })
 
@@ -89,6 +89,9 @@ const toggleDropdown = async () => {
   if (dropdownOpen.value) {
     await nextTick()
     positionDropdown()
+    if (props.type === 'search' && searchInputRef.value?.focus) {
+      searchInputRef.value.focus()
+    }
   }
 }
 
@@ -121,10 +124,20 @@ watch(searchTerm, (val) => {
 })
 
 const onClickOutside = (e) => {
+  if (!toggleRef.value) return
+
+  if (
+    props.type === 'search' &&
+    (searchInputRef.value?.$el?.contains(e.target) || toggleRef.value.contains(e.target))
+  ) {
+    return
+  }
+
   if (toggleRef.value && !toggleRef.value.contains(e.target)) {
     dropdownOpen.value = false
   }
 }
+
 document.addEventListener('click', onClickOutside)
 onUnmounted(() => document.removeEventListener('click', onClickOutside))
 </script>

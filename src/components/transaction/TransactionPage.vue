@@ -19,39 +19,33 @@
       @search="handleSearch"
       @cancel="updateOrderStatusToCancelled"
       @delete="deleteOrder"
-      @hard-delete="hardDelete"
     />
   </div>
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
-import { useTransactionStore } from '@/stores/services/transaction.service.js'
-import { useOptionsStore } from '@/stores/services/option.service.js'
-import { useLoadingStore } from '@/stores/utils/loading.js'
-
 import SummaryCard from '@/components/transaction/manage/SummaryCard.vue'
 import StatusSummary from '@/components/transaction/manage/StatusSummary.vue'
 import TransactionTable from '@/components/transaction/manage/TransactionTable.vue'
 
 const transactionStore = useTransactionStore()
-const statusStore = useOptionsStore()
+const statusStore = useStatusStore()
 const loadingStore = useLoadingStore()
 
 const todayTransactions = computed(() => transactionStore.todayTransactions ?? 0)
 const completedTransactions = computed(() => transactionStore.completedTransactions ?? 0)
 const statusSummary = computed(() => transactionStore.runningTransactionsByStatus ?? [])
-const transactions = computed(() => transactionStore.transactions ?? [])
+const transactions = computed(() => transactionStore.items ?? [])
 const meta = computed(() => transactionStore.meta ?? {})
 const loading = computed(() => loadingStore.isMiniLoading)
-const statusOptions = computed(() => [{ label: 'All', value: '' }, ...statusStore.statuses])
+const statusOptions = computed(() => [{ label: 'All', value: '' }, ...statusStore.options])
 
 async function initPageData() {
-  if (!transactionStore.transactions?.length) {
-    await transactionStore.fetchTransactions()
+  if (!transactionStore.items?.length) {
+    await transactionStore.fetchItems()
   }
-  if (!statusStore.statuses?.length) {
-    await statusStore.fetchStatuses()
+  if (!statusStore.items?.length) {
+    await statusStore.fetch()
   }
 }
 
@@ -66,30 +60,26 @@ const columns = [
 ]
 
 function handlePageChange(newPage) {
-  transactionStore.fetchTransactions({ page: newPage })
+  transactionStore.fetchItems({ page: newPage })
 }
 
 function setFilterStatus(status) {
-  transactionStore.fetchTransactions({ page: 1, status })
+  transactionStore.setFilter('status', status)
 }
 
 const handleLimitChange = (newLimit) => {
-  transactionStore.fetchTransactions({ page: 1, limit: newLimit })
+  transactionStore.fetchItems({ limit: newLimit })
 }
 
 const handleSearch = (search) => {
-  transactionStore.fetchTransactions({ page: 1, search })
+  transactionStore.fetchItems({ search })
 }
 
 async function updateOrderStatusToCancelled(orderId) {
-  await transactionStore.updateOrderStatus(orderId, 'CANCELLED')
+  await transactionStore.updateTransactionStatus(orderId, 'CANCELLED')
 }
 
 async function deleteOrder(orderId) {
-  await transactionStore.deleteOrderSoft(orderId)
-}
-
-async function hardDelete(orderId) {
-  await transactionStore.deleteOrderHard(orderId)
+  await transactionStore.deleteItem(orderId)
 }
 </script>

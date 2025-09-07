@@ -1,23 +1,55 @@
+// src/utils/api.js
 import axios from 'axios'
+import { useLoadingStore } from '@/stores/utils/loading'
+
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
+const apiForm = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
 })
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    return Promise.reject(error)
-  },
-)
+const requestInterceptor = (config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
 
+  const loadingStore = useLoadingStore()
+  loadingStore.startMini()
+
+  return config
+}
+
+const requestErrorInterceptor = (error) => {
+  const loadingStore = useLoadingStore()
+  loadingStore.stopMini()
+  return Promise.reject(error)
+}
+
+const responseInterceptor = (response) => {
+  const loadingStore = useLoadingStore()
+  loadingStore.stopMini()
+  return response
+}
+
+const responseErrorInterceptor = (error) => {
+  const loadingStore = useLoadingStore()
+  loadingStore.stopMini()
+  return Promise.reject(error)
+}
+
+;[api, apiForm].forEach((instance) => {
+  instance.interceptors.request.use(requestInterceptor, requestErrorInterceptor)
+  instance.interceptors.response.use(responseInterceptor, responseErrorInterceptor)
+})
+
+export { api, apiForm }
 export default api

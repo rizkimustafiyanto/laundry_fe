@@ -21,7 +21,7 @@
           </p>
           <span
             class="inline-block text-sm px-2 py-1 mt-2 rounded-xl font-medium"
-            :class="themeClass.labelAccess"
+            :class="[themeClass.text.dark, themeClass.textless.dark]"
           >
             {{ formatText(profile?.role) }}
           </span>
@@ -46,16 +46,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useThemeClass } from '@/composables/useThemeClass'
-
-import { formatText } from '@/utils/formatters'
-import { useUserStore } from '@/stores/services/user.service'
-
 import ProfileForm from '../form/ProfileForm.vue'
 import defaultAvatar from '@/assets/icons/user.png'
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 defineProps({
   profile: { type: Object, default: () => {} },
@@ -84,7 +78,7 @@ const saveProfile = async (updatedProfile) => {
     payload.file = selectedFile.value
   }
 
-  await userStore.updateProfile(payload)
+  await userStore.updateItem(payload)
   editProfile.value = false
 }
 </script>

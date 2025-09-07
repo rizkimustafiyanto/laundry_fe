@@ -1,76 +1,29 @@
 // src/stores/charge.js
-import { defineStore } from 'pinia'
+import { createStoreBuilder } from './store.builder.service'
 import api from '@/utils/api'
-import { notifyError, notifySuccess } from '@/utils/notify'
 
-export const useChargeStore = defineStore('charge', {
-  state: () => ({
-    charges: [],
-    categories: [],
-    types: [],
-    selectedCharge: null,
-  }),
-
-  actions: {
-    async fetchCharges() {
-      try {
-        const res = await api.get('charges/')
-        this.charges = res.data.data
-        return res.data.data
-      } catch (err) {
-        notifyError(err, 'Gagal mengambil daftar charge')
-      }
-    },
-
-    async fetchChargeCategories() {
-      try {
-        const res = await api.get('charges/category')
-        this.categories = res.data.data
-        return res.data.data
-      } catch (err) {
-        notifyError(err, 'Gagal mengambil kategori charge')
-      }
-    },
-
-    async fetchChargeTypes() {
-      try {
-        const res = await api.get('charges/type')
-        this.types = res.data.data
-        return res.data.data
-      } catch (err) {
-        notifyError(err, 'Gagal mengambil tipe charge')
-      }
-    },
-
-    async fetchChargeById(id) {
-      try {
-        const res = await api.get(`/${id}`)
-        this.selectedCharge = res.data.data
-        return res.data.data
-      } catch (err) {
-        notifyError(err, 'Gagal mengambil charge')
-      }
-    },
-
+export const useChargeStore = createStoreBuilder({
+  storeId: 'chargeStore',
+  endpoint: '/charges',
+  defaultPayload: {
+    category: '',
+    type: '',
+    value: 0,
+    isEnabled: true,
+  },
+  customGetters: {
+    categories: (state) =>
+      state.items.map((c) => c.category).filter((v, i, a) => a.indexOf(v) === i),
+    types: (state) => state.items.map((c) => c.type).filter((v, i, a) => a.indexOf(v) === i),
+  },
+  customActions: {
     async upsertCharge(payload) {
-      try {
-        const res = await api.post('charges/', payload)
-        notifySuccess('Charge berhasil disimpan')
-        await this.fetchCharges() // refresh data
-        return res.data.data
-      } catch (err) {
-        notifyError(err, 'Gagal menyimpan charge')
+      if (payload.id) {
+        await api.put(`/charges/${payload.id}`, payload)
+      } else {
+        await api.post('/charges', payload)
       }
-    },
-
-    async deleteCharge(id) {
-      try {
-        await api.delete(`/${id}`)
-        notifySuccess('Charge berhasil dihapus')
-        this.charges = this.charges.filter((c) => c.id !== id)
-      } catch (err) {
-        notifyError(err, 'Gagal menghapus charge')
-      }
+      await this.fetchItems() // refresh list setelah create/update
     },
   },
 })

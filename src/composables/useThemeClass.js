@@ -75,15 +75,15 @@ export function useThemeClass() {
       dark: 'text-gray-100 bg-gray-900 border-gray-700 hover:bg-gray-800',
     },
     glass: {
-      light: 'text-white bg-white/20 border-white/30 hover:bg-white/30', // translucent white
+      light: 'text-white bg-white/20 border-white/30 hover:bg-white/30',
       dark: 'text-white bg-white/10 border-white/20 hover:bg-white/20',
     },
     mist: {
-      light: 'text-gray-800 bg-gray-100/40 border-gray-200/40 hover:bg-gray-100/50', // translucent gray
+      light: 'text-gray-800 bg-gray-100/40 border-gray-200/40 hover:bg-gray-100/50',
       dark: 'text-gray-200 bg-gray-800/40 border-gray-700/40 hover:bg-gray-800/50',
     },
     haze: {
-      light: 'text-blue-700 bg-blue-100/30 border-blue-200/30 hover:bg-blue-100/40', // soft translucent blue
+      light: 'text-blue-700 bg-blue-100/30 border-blue-200/30 hover:bg-blue-100/40',
       dark: 'text-blue-300 bg-blue-700/30 border-blue-500/30 hover:bg-blue-700/40',
     },
   }
@@ -109,6 +109,30 @@ export function useThemeClass() {
       thead: mode === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-gray-200 text-gray-700',
       trHover: mode === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-50',
       borderColor: mode === 'dark' ? 'border-gray-600' : 'border-gray-300',
+
+      border: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const borderColor = variants[key][mode].split(' ')[2]
+          const focusColor = borderColor.replace('border-', 'focus:ring-')
+          return [
+            key,
+            `border-${borderColor.replace('border-', '')} focus:ring-${focusColor.split(':')[1] || focusColor.split('-')[1]}`,
+          ]
+        }),
+      ),
+
+      borderless: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const borderColor = variants[key][mode].split(' ')[2]
+          const focusColor = borderColor.replace('border-', 'focus:ring-')
+
+          const borderColorValue = borderColor.replace('border-', '') + '/50'
+          const focusColorValue = (focusColor.split(':')[1] || focusColor.split('-')[1]) + '/50'
+
+          return [key, `border-${borderColorValue} focus:ring-${focusColorValue}`]
+        }),
+      ),
+
       dropdown:
         mode === 'dark'
           ? 'bg-gray-800 text-white ring-gray-700'
@@ -120,6 +144,14 @@ export function useThemeClass() {
         Object.keys(variants).map((key) => {
           const textColor = variants[key][mode].split(' ')[0]
           return [key, textColor]
+        }),
+      ),
+
+      textless: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const textColor = variants[key][mode].split(' ')[0]
+          const textWithOpacity = textColor ? `${textColor}/50` : ''
+          return [key, textWithOpacity]
         }),
       ),
 
@@ -138,6 +170,31 @@ export function useThemeClass() {
         Object.keys(variants).map((key) => {
           const hoverClass = variants[key][mode].split(' ').find((c) => c.startsWith('hover'))
           return [key, hoverClass || '']
+        }),
+      ),
+
+      hoverless: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const hoverClass = variants[key][mode].split(' ').find((c) => c.startsWith('hover'))
+          const hoverWithOpacity = hoverClass ? `${hoverClass}/50` : ''
+          return [key, hoverWithOpacity]
+        }),
+      ),
+
+      hoverText: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const textColor = variants[key][mode].split(' ').find((c) => c.startsWith('text-'))
+          const hoverTextClass = textColor ? textColor.replace('text-', 'hover:text-') : ''
+          return [key, hoverTextClass]
+        }),
+      ),
+
+      hoverTextLess: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const textColor = variants[key][mode].split(' ').find((c) => c.startsWith('text-'))
+          const hoverTextClass = textColor ? textColor.replace('text-', 'hover:text-') : ''
+          const hoverTextWithOpacity = hoverTextClass ? `${hoverTextClass}/50` : ''
+          return [key, hoverTextWithOpacity]
         }),
       ),
 
@@ -185,5 +242,5 @@ export function useThemeClass() {
     }
   })
 
-  return { themeClass }
+  return themeClass
 }

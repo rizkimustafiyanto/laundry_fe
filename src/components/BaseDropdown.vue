@@ -42,7 +42,7 @@
 import { ref } from 'vue'
 import { useThemeClass } from '@/composables/useThemeClass.js'
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const props = defineProps({
   label: String,

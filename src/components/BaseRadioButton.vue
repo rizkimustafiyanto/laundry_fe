@@ -32,7 +32,7 @@
 import { computed } from 'vue'
 import { useThemeClass } from '@/composables/useThemeClass.js'
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const props = defineProps({
   modelValue: [String, Number, Boolean],

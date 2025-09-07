@@ -43,8 +43,6 @@
 
 <script setup>
 import defaultAvatar from '@/assets/icons/user.png'
-import { useThemeClass } from '@/composables/useThemeClass'
-import { formatText } from '@/utils/formatters'
 
 defineProps({
   user: {
@@ -59,7 +57,7 @@ defineProps({
 
 const emit = defineEmits(['close'])
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const close = () => {
   emit('close')

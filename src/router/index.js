@@ -1,113 +1,134 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth/auth'
-import HomeView from '@/views/public/HomeView.vue'
+import PublicHomeView from '@/views/public/HomeView.vue'
 import LoginView from '@/views/auth/AuthLogin.vue'
 import RegisterView from '@/views/auth/AuthRegister.vue'
-import HomeViewUser from '@/views/dashboard/HomeView.vue'
-import Unauthorized from '@/views/error/UnauthorizedPage.vue'
-import ForgetPassword from '@/views/auth/ForgetPassword.vue'
-import ChangePassword from '@/views/auth/ChangePassword.vue'
-import Profile from '@/views/user/ProfileView.vue'
-import Dashboard from '@/components/dashboard/DashboardPage.vue'
-import UserPage from '@/components/users/UserPage.vue'
-import TransactionList from '@/components/transaction/TransactionPage.vue'
+import ForgetPasswordView from '@/views/auth/ForgetPassword.vue'
+import ChangePasswordView from '@/views/auth/ChangePassword.vue'
+
+import DashboardLayout from '@/views/dashboard/HomeView.vue'
+import DashboardHome from '@/components/dashboard/DashboardPage.vue'
+import UserManagementPage from '@/components/users/UserPage.vue'
+import ProfilePage from '@/views/user/ProfileView.vue'
+import TransactionPage from '@/components/transaction/TransactionPage.vue'
+import SettingsPage from '@/views/settings/SettingView.vue'
+
+import UnauthorizedPage from '@/views/error/UnauthorizedPage.vue'
+
+const routes = [
+  {
+    path: '/',
+    name: 'PublicHome',
+    component: PublicHomeView,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+    meta: { requiresUnauth: true },
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView,
+    meta: { requiresUnauth: true },
+  },
+  {
+    path: '/forget-password',
+    name: 'ForgetPassword',
+    component: ForgetPasswordView,
+    meta: { requiresUnauth: true },
+  },
+  {
+    path: '/change-password',
+    name: 'ChangePassword',
+    component: ChangePasswordView,
+    meta: { requiresUnauth: true },
+  },
+  {
+    path: '/unauthorized',
+    name: 'Unauthorized',
+    component: UnauthorizedPage,
+  },
+
+  {
+    path: '/dashboard',
+    component: DashboardLayout,
+    meta: { requiresAuth: true, roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'] },
+    children: [
+      {
+        path: '',
+        name: 'DashboardHome',
+        component: DashboardHome,
+        meta: { label: 'Dashboard', icon: 'gauge', roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'] },
+      },
+      {
+        path: 'users',
+        name: 'UserManagement',
+        component: UserManagementPage,
+        meta: {
+          label: 'Daftar User',
+          parent: 'User Management',
+          icon: 'users',
+          roles: ['SUPER_ADMIN'],
+        },
+      },
+      {
+        path: 'profile',
+        name: 'UserProfile',
+        component: ProfilePage,
+        meta: {
+          label: 'Profile',
+          parent: 'User Management',
+          icon: 'user',
+          roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'],
+        },
+      },
+      {
+        path: 'transactions',
+        name: 'Transactions',
+        component: TransactionPage,
+        meta: { label: 'Transaksi', icon: 'money-check-dollar', roles: ['SUPER_ADMIN', 'OWNER'] },
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: SettingsPage,
+        meta: { label: 'Setting', icon: 'gear', roles: ['SUPER_ADMIN', 'OWNER'] },
+      },
+    ],
+  },
+
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/unauthorized',
+  },
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
-      meta: { requiresUnauth: true },
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterView,
-      meta: { requiresUnauth: true },
-    },
-    {
-      path: '/forget-password',
-      name: 'forget-password',
-      component: ForgetPassword,
-      meta: { requiresUnauth: true },
-    },
-    {
-      path: '/change-password',
-      name: 'change-password',
-      component: ChangePassword,
-      meta: { requiresUnauth: true },
-    },
-    {
-      path: '/unauthorized',
-      name: 'unauthorized',
-      component: Unauthorized,
-    },
-    {
-      path: '/home',
-      component: HomeViewUser,
-      meta: { requiresAuth: true, roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'] },
-      children: [
-        {
-          path: '',
-          name: 'dashboard',
-          component: Dashboard,
-        },
-        {
-          path: 'users',
-          name: 'users',
-          component: UserPage,
-          meta: { roles: ['SUPER_ADMIN'] },
-        },
-        {
-          path: 'transactions',
-          name: 'transactions',
-          component: TransactionList,
-        },
-        {
-          path: 'profile',
-          name: 'profile',
-          component: Profile,
-        },
-      ],
-    },
-    {
-      path: '/:catchAll(.*)',
-      redirect: '/unauthorized',
-    },
-  ],
+  routes,
 })
 
 router.beforeEach((to, from, next) => {
-  const userStore = useAuthStore()
+  const authStore = useAuthStore()
 
-  if (to.name === 'change-password' && (!to.query.token || to.query.token === '')) {
-    return next('/login')
+  if (to.name === 'ChangePassword' && (!to.query.token || to.query.token === '')) {
+    return next({ name: 'Login' })
   }
 
-  if (userStore.token && !userStore.checkTokenValidity()) {
-    userStore.logout()
-    return next('/login')
+  if (authStore.token && !authStore.checkTokenValidity()) {
+    authStore.logout()
+    return next({ name: 'Login' })
   }
 
-  if (to.meta.requiresUnauth && userStore.token) {
-    return next('/home')
+  if (to.meta.requiresUnauth && authStore.token) {
+    return next({ name: 'DashboardHome' })
   }
 
   if (to.meta.requiresAuth) {
-    if (!userStore.token) {
-      return next('/login')
-    }
-
-    if (to.meta.roles && !to.meta.roles.includes(userStore.role)) {
-      return next('/unauthorized')
-    }
+    if (!authStore.token) return next({ name: 'Login' })
+    if (to.meta.roles && !to.meta.roles.includes(authStore.role))
+      return next({ name: 'Unauthorized' })
   }
 
   next()

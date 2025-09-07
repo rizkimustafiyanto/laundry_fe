@@ -7,7 +7,7 @@
         label="Jenis Kelamin"
         v-model="localProfile.gender"
         placeholder="Pilih Jenis Kelamin"
-        :options="optionGender"
+        :options="itemGender"
         required
       />
       <BaseInput
@@ -51,9 +51,6 @@
 </template>
 
 <script setup>
-import { useOptionsStore } from '@/stores/services/option.service'
-import { computed, onBeforeMount, reactive, watch } from 'vue'
-
 const props = defineProps({
   dataProfile: {
     type: Object,
@@ -75,8 +72,8 @@ const localProfile = reactive({
   ...props.dataProfile,
 })
 
-const optionStore = useOptionsStore()
-const optionGender = computed(() => optionStore.genders)
+const genderStore = useGendersStore()
+const { options: itemGender } = storeToRefs(genderStore)
 
 watch(
   () => props.dataProfile,
@@ -94,6 +91,6 @@ function handleFileSelected(fileEvent) {
 }
 
 onBeforeMount(async () => {
-  await optionStore.fetchGenders()
+  await genderStore.fetch()
 })
 </script>

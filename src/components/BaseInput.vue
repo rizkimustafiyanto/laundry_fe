@@ -24,8 +24,8 @@
           :autocomplete="autocomplete"
           :rows="rows"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition resize-y min-h-[100px]"
-          :class="themeClass.input.mist"
+          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition resize-y min-h-[100px]"
+          :class="[themeClass.input.mist, roundedClass]"
           :required="required"
         />
       </template>
@@ -33,12 +33,13 @@
       <!-- File Input -->
       <template v-else-if="type === 'file'">
         <input
+          ref="inputRef"
           :id="id"
           type="file"
           :disabled="disabled"
           @change="handleFileChange"
-          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
-          :class="themeClass.input.mist"
+          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input.mist, roundedClass]"
           :required="required"
         />
       </template>
@@ -46,6 +47,7 @@
       <!-- Number Input -->
       <template v-else-if="type === 'number'">
         <input
+          ref="inputRef"
           :id="id"
           type="number"
           :placeholder="placeholder"
@@ -60,8 +62,8 @@
               $event.target.value === '' ? '' : Number($event.target.value),
             )
           "
-          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, themeClass.text.primary]"
+          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input.mist, themeClass.text.primary, roundedClass]"
           :required="required"
         />
       </template>
@@ -77,14 +79,16 @@
           :range="range"
           :format="format"
           :required="required"
-          :dark="themeClass.baseDiv === 'dark' ? true : false"
+          :dark="themeClass.baseDiv === 'dark'"
           auto-apply
+          :class="roundedClass"
         />
       </template>
 
       <!-- Default / Text / Password -->
       <template v-else>
         <input
+          ref="inputRef"
           :id="id"
           :type="computedType"
           :placeholder="placeholder"
@@ -92,8 +96,8 @@
           :disabled="disabled"
           :autocomplete="autocomplete"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border rounded-xl focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, { 'pl-10': icon, 'pr-10': isPassword }]"
+          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input.mist, roundedClass, { 'pl-10': icon, 'pr-10': isPassword }]"
           :required="required"
         />
 
@@ -112,12 +116,10 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
-import { useThemeClass } from '@/composables/useThemeClass.js'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const props = defineProps({
   id: String,
@@ -150,6 +152,11 @@ const props = defineProps({
   enableTimePicker: { type: Boolean, default: false },
   range: { type: Boolean, default: false },
   format: { type: String, default: 'yyyy-MM-dd' },
+  rounded: {
+    type: String,
+    default: 'xl',
+    validator: (val) => ['none', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', 'full'].includes(val),
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'update:file'])
@@ -175,15 +182,18 @@ watch(
   () => props.modelValue,
   (val) => (innerDate.value = val),
 )
+
+const inputRef = ref(null)
+
+defineExpose({
+  focus: () => inputRef.value?.focus?.(),
+  $el: inputRef,
+})
+
+const roundedClass = computed(() => `rounded-${props.rounded}`)
 </script>
 
 <style scoped>
-/* input[type='number']::-webkit-inner-spin-button {
-  filter: invert(0%);
-}
-.dark input[type='number']::-webkit-inner-spin-button {
-  filter: invert(100%);
-} */
 ::v-deep(.dp__input) {
   @apply w-full p-2.5 pl-10 border rounded-xl focus:outline-none focus:ring-2 transition border-gray-300 bg-white text-gray-900 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-gray-500;
 }

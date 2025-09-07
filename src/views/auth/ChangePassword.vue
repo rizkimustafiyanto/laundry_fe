@@ -56,7 +56,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth/auth'
+
 import { useUIStore } from '@/stores/utils/ui'
 
 const route = useRoute()

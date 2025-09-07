@@ -83,7 +83,7 @@ import BaseInput from '@/components/BaseInput.vue'
 import BaseSelect from '@/components/BaseSelect.vue'
 import BaseLoadingSpinner from '@/components/BaseLoadingSpinner.vue'
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 
 const props = defineProps({
   items: Array,

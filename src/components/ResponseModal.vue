@@ -47,7 +47,7 @@ defineProps({
 })
 defineEmits(['close'])
 
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 </script>
 
 <style scoped>

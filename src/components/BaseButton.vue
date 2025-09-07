@@ -67,7 +67,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['click'])
-const { themeClass } = useThemeClass()
+const themeClass = useThemeClass()
 const isDebouncing = ref(false)
 
 const showOnlyIcon = computed(() => props.icon && !props.label)

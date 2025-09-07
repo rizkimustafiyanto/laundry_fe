@@ -1,3 +1,21 @@
+<script setup>
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { buildMenu } from '@/utils/menu.builder'
+
+const route = useRoute()
+const router = useRouter()
+const userStore = useAuthStore()
+
+const role = computed(() => userStore.role)
+
+const filteredMenuItems = computed(() => buildMenu(role.value))
+
+function navigateTo(path) {
+  router.push(path)
+}
+</script>
+
 <template>
   <div class="min-h-screen">
     <BaseNavbar
@@ -16,39 +34,3 @@
     </main>
   </div>
 </template>
-
-<script setup>
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth/auth'
-
-const route = useRoute()
-const router = useRouter()
-const userStore = useAuthStore()
-
-const role = computed(() => userStore.role)
-
-const menuItems = [
-  { key: '/home', label: 'Dashboard' },
-  {
-    key: '/home/users',
-    label: 'User Management',
-    children: [
-      { key: '/home/users', label: 'Daftar User' },
-      { key: '/home/profile', label: 'Profile' },
-    ],
-  },
-  { key: '/home/transactions', label: 'Transaksi' },
-]
-
-const filteredMenuItems = computed(() => {
-  if (role.value === 'SUPER_ADMIN') {
-    return menuItems
-  }
-  return menuItems.filter((item) => item.key !== '/home/users')
-})
-
-function navigateTo(path) {
-  router.push(path)
-}
-</script>

@@ -40,7 +40,6 @@
 
 <script setup>
 import BaseButton from '@/components/BaseButton.vue'
-import BaseCard from '@/components/BaseCard.vue'
 import { formatDate } from '@/utils/formatters.js'
 
 defineProps({

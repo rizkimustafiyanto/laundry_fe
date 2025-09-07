@@ -4,6 +4,14 @@ import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
 import pluginOxlint from 'eslint-plugin-oxlint'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+import fs from 'fs'
+
+let autoImportGlobals = {}
+try {
+  autoImportGlobals = JSON.parse(fs.readFileSync('./.eslintrc-auto-import.json', 'utf-8'))
+} catch (e) {
+  console.log(e)
+}
 
 export default defineConfig([
   {
@@ -17,6 +25,23 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.browser,
+        ref: 'readonly',
+        reactive: 'readonly',
+        computed: 'readonly',
+        watch: 'readonly',
+        onMounted: 'readonly',
+        onBeforeMount: 'readonly',
+        onBeforeUnmount: 'readonly',
+        onUnmounted: 'readonly',
+        provide: 'readonly',
+        inject: 'readonly',
+        nextTick: 'readonly',
+        useRouter: 'readonly',
+        useRoute: 'readonly',
+        defineStore: 'readonly',
+        storeToRefs: 'readonly',
+        __BASE_URL__: 'readonly',
+        ...autoImportGlobals.globals,
       },
     },
   },

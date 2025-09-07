@@ -39,9 +39,6 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, watch } from 'vue'
-import { useOptionsStore } from '@/stores/services/option.service'
-
 const props = defineProps({
   user: { type: Object, default: null },
   showRole: {
@@ -53,8 +50,8 @@ const props = defineProps({
 const emit = defineEmits(['save'])
 const modalOpen = defineModel()
 
-const optionStore = useOptionsStore()
-const roleOptions = computed(() => optionStore.roles)
+const roleStore = useRolesStore()
+const roleOptions = computed(() => roleStore.options)
 
 const form = reactive({ ...props.user })
 
@@ -71,6 +68,6 @@ function handleSubmit() {
 }
 
 onMounted(async () => {
-  await optionStore.fetchRoles()
+  await roleStore.fetch()
 })
 </script>

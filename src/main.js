@@ -12,7 +12,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import App from './App.vue'
 import router from './router'
-import { useCompanyStore } from './stores/services/company.service'
 
 import BaseTable from './components/BaseTable.vue'
 import BaseNavbar from '@/components/BaseNavbar.vue'
@@ -25,6 +24,7 @@ import BaseRadioButton from './components/BaseRadioButton.vue'
 import BaseModal from './components/BaseModal.vue'
 import BaseLoadingSpinner from './components/BaseLoadingSpinner.vue'
 import ResponseModal from './components/ResponseModal.vue'
+import BasePagination from './components/BasePagination.vue'
 
 library.add(fas, far, fab)
 
@@ -35,38 +35,39 @@ app.use(pinia)
 app.use(router)
 
 app.component('font-awesome-icon', FontAwesomeIcon)
-app.component('BaseTable', BaseTable)
-app.component('BaseNavbar', BaseNavbar)
-app.component('BaseInput', BaseInput)
-app.component('BaseDropdown', BaseDropdown)
-app.component('BaseCard', BaseCard)
-app.component('BaseSelect', BaseSelect)
 app.component('BaseButton', BaseButton)
-app.component('BaseRadioButton', BaseRadioButton)
-app.component('BaseModal', BaseModal)
+app.component('BaseCard', BaseCard)
+app.component('BaseDropdown', BaseDropdown)
+app.component('BaseInput', BaseInput)
 app.component('BaseLoadingSpinner', BaseLoadingSpinner)
+app.component('BaseModal', BaseModal)
+app.component('BaseNavbar', BaseNavbar)
+app.component('BasePagination', BasePagination)
+app.component('BaseRadioButton', BaseRadioButton)
+app.component('BaseSelect', BaseSelect)
+app.component('BaseTable', BaseTable)
 app.component('ResponseModal', ResponseModal)
 
 async function initApp() {
-  const companyStore = useCompanyStore(pinia)
+  const companyStore = useCompanyProfileStore(pinia)
 
   try {
-    await companyStore.fetchCompanies({ page: 1, limit: 1 })
-    const company = companyStore.companies[0]
+    await companyStore.fetchItems({ page: 1, limit: 1 })
+    const company = companyStore.items[0]
 
     if (company) {
       if (company.name) {
         document.title = company.name
       }
 
-      if (company.faviconUrl) {
+      if (company.logoUrl) {
         let link = document.querySelector("link[rel~='icon']")
         if (!link) {
           link = document.createElement('link')
           link.rel = 'icon'
           document.head.appendChild(link)
         }
-        link.href = company.faviconUrl
+        link.href = `${__BASE_URL__}${company.logoUrl}`
       }
     }
   } catch (err) {

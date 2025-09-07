@@ -29,15 +29,12 @@
         required
       />
 
-      <BaseButton type="submit" label="Simpan Alamat" variant="primary" class="w-full mt-4" />
+      <BaseButton type="submit" label="Simpan Alamat" variant="success" class="w-full mt-4" />
     </form>
   </BaseModal>
 </template>
 
 <script setup>
-import BaseModal from '@/components/BaseModal.vue'
-import { reactive, watch } from 'vue'
-
 const props = defineProps({
   address: { type: Object, default: null },
   mode: { type: String, required: true },
