@@ -10,11 +10,12 @@
     :style="styleOverride"
   >
     <template v-if="type === 'grid'">
-      <slot name="grid">
-        <div :class="['gap-4', gridClass]">
-          <slot />
-        </div>
-      </slot>
+      <div v-if="gridDirection === 'row'" :class="[gridClass, `gap-${gap}`]">
+        <slot />
+      </div>
+      <div v-else :class="[`flex flex-col gap-${gap}`]">
+        <slot />
+      </div>
     </template>
 
     <template v-else>
@@ -37,7 +38,7 @@ const props = defineProps({
   },
   gridDirection: {
     type: String,
-    default: 'column',
+    default: 'row',
     validator: (val) => ['row', 'column'].includes(val),
   },
   cols: {
@@ -51,6 +52,10 @@ const props = defineProps({
   height: {
     type: String,
     default: 'auto',
+  },
+  gap: {
+    type: Number,
+    default: 6,
   },
   classOverride: {
     type: String,

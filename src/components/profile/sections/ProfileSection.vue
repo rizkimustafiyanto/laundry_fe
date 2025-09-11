@@ -8,7 +8,7 @@
     <div class="flex flex-col py-4 gap-4">
       <div class="flex items-center gap-5 mb-4 md:mb-0">
         <img
-          :src="profile?.photo || defaultAvatar"
+          :src="profileSrc"
           alt="Foto Profil"
           class="w-28 h-28 rounded-full object-cover ring-2 ring-indigo-500"
         />
@@ -51,7 +51,7 @@ import defaultAvatar from '@/assets/icons/user.png'
 
 const themeClass = useThemeClass()
 
-defineProps({
+const props = defineProps({
   profile: { type: Object, default: () => {} },
 })
 
@@ -76,9 +76,24 @@ const saveProfile = async (updatedProfile) => {
 
   if (selectedFile.value) {
     payload.file = selectedFile.value
+    await userStore.updateProfileWithItem(payload)
+  } else {
+    await userStore.updateProfile(payload)
   }
-
-  await userStore.updateItem(payload)
   editProfile.value = false
 }
+
+const profileSrc = ref(defaultAvatar)
+
+watch(
+  () => props.profile,
+  (newVal) => {
+    if (newVal) {
+      profileSrc.value = newVal.photo ? `${__BASE_URL__}${newVal.photo}` : defaultAvatar
+    } else {
+      profileSrc.value = defaultAvatar
+    }
+  },
+  { immediate: true },
+)
 </script>

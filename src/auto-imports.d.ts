@@ -6,7 +6,13 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const Autoplay: (typeof import('swiper'))['Autoplay']
+  const EffectFade: (typeof import('swiper'))['EffectFade']
   const EffectScope: (typeof import('vue'))['EffectScope']
+  const Navigation: (typeof import('swiper'))['Navigation']
+  const Pagination: (typeof import('swiper'))['Pagination']
+  const Swiper: (typeof import('swiper/vue'))['Swiper']
+  const SwiperSlide: (typeof import('swiper/vue'))['SwiperSlide']
   const acceptHMRUpdate: (typeof import('pinia'))['acceptHMRUpdate']
   const api: (typeof import('./utils/api.js'))['default']
   const apiForm: (typeof import('./utils/api.js'))['apiForm']
@@ -35,6 +41,7 @@ declare global {
   const getCurrentScope: (typeof import('vue'))['getCurrentScope']
   const getCurrentWatcher: (typeof import('vue'))['getCurrentWatcher']
   const h: (typeof import('vue'))['h']
+  const initApp: (typeof import('./composables/useInitApp.js'))['initApp']
   const inject: (typeof import('vue'))['inject']
   const isProxy: (typeof import('vue'))['isProxy']
   const isReactive: (typeof import('vue'))['isReactive']
@@ -186,6 +193,7 @@ declare module 'vue' {
     readonly getCurrentScope: UnwrapRef<(typeof import('vue'))['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<(typeof import('vue'))['getCurrentWatcher']>
     readonly h: UnwrapRef<(typeof import('vue'))['h']>
+    readonly initApp: UnwrapRef<(typeof import('./composables/useInitApp.js'))['initApp']>
     readonly inject: UnwrapRef<(typeof import('vue'))['inject']>
     readonly isProxy: UnwrapRef<(typeof import('vue'))['isProxy']>
     readonly isReactive: UnwrapRef<(typeof import('vue'))['isReactive']>

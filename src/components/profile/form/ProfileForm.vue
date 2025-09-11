@@ -44,6 +44,7 @@
         label="Foto Profil"
         type="file"
         @update:file="handleFileSelected"
+        :required="false"
       />
       <BaseButton type="submit" label="Simpan" variant="success" class="w-full" />
     </form>

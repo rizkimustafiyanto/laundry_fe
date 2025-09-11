@@ -70,16 +70,16 @@ const login = async () => {
 
     switch (userStore.role) {
       case 'SUPER_ADMIN':
-        router.push('/home')
+        router.push('/dashboard')
         break
       case 'OWNER':
-        router.push('/owner/dashboard')
+        router.push('/dashboard')
         break
       case 'CUSTOMER':
-        router.push('/customer/dashboard')
+        router.push('/dashboard')
         break
       default:
-        router.push('/unauthorized')
+        router.push('/dashboard')
     }
   } else {
     ui.show('failed', result.message)

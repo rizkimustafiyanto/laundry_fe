@@ -1,73 +1,107 @@
 <template>
-  <div class="bg-white p-6 rounded shadow">
-    <h2 class="text-xl font-semibold mb-4">Company Gallery</h2>
+  <div>
+    <BaseSlider
+      v-model:selected="selectedSlide"
+      :slides="items"
+      :slidesPerView="1"
+      :showCaption="true"
+      :pagination="{ clickable: true }"
+      @slideClick="goToPage"
+      class="mb-3"
+    />
 
-    <form @submit.prevent="submitForm" enctype="multipart/form-data" class="space-y-4">
-      <input v-model="formPayload.title" placeholder="Title" class="w-full p-2 border rounded" />
-      <textarea
-        v-model="formPayload.description"
-        placeholder="Description"
-        class="w-full p-2 border rounded"
-      ></textarea>
-      <input type="file" @change="handleFileUpload" class="w-full" />
-
-      <div class="flex space-x-2">
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          {{ item?.id ? 'Update' : 'Create' }}
-        </button>
-        <button
-          type="button"
-          @click="resetForm"
-          class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-        >
-          Reset
-        </button>
-      </div>
-    </form>
-
-    <ul class="mt-6 space-y-2">
-      <li
-        v-for="g in items"
-        :key="g.id"
-        class="flex justify-between items-center p-2 border rounded"
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        v-for="item in items"
+        :key="item.id"
+        class="p-4 rounded-xl shadow-md relative"
+        :class="themeClass.baseDiv.glass"
       >
-        <div class="flex items-center space-x-2">
-          <img v-if="g.image" :src="g.image" alt="image" class="w-12 h-12 object-cover rounded" />
-          <span>{{ g.title }} - {{ g.description }}</span>
+        <img
+          :src="`${__BASE_URL__}${item.imageUrl}`"
+          alt="gallery"
+          class="w-full h-48 object-cover rounded-lg mb-3"
+        />
+        <h3 class="text-lg font-semibold mb-2">{{ item.caption }}</h3>
+
+        <div class="flex justify-end space-x-2">
+          <BaseButton @click="openEditModal(item)" icon="edit" size="sm" variant="secondary" />
+          <BaseButton @click="deleteItem(item.id)" icon="trash" size="sm" variant="danger" />
         </div>
-        <div class="space-x-2">
-          <button @click="edit(g.id)" class="px-2 py-1 bg-yellow-400 rounded hover:bg-yellow-500">
-            Edit
-          </button>
-          <button
-            @click="deleteItem(g.id)"
-            class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Delete
-          </button>
-        </div>
-      </li>
-    </ul>
+      </div>
+
+      <div
+        class="flex items-center justify-center p-4 rounded-xl border-2 border-dashed cursor-pointer"
+        :class="[themeClass.borderColor.secondary, themeClass.hover.secondary]"
+        @click="openEditModal(null)"
+      >
+        <span :class="themeClass.text.secondary">+ Add New Gallery</span>
+      </div>
+    </div>
+
+    <CompanyGalleryForm
+      v-model="modalOpen"
+      :item="currentItem"
+      :mode="modalMode"
+      @save="handleSave"
+      @edit="handleEdit"
+      @saveWithFormData="handleSaveWithFormData"
+      @editWithFormData="handleEditWithFormData"
+    />
   </div>
 </template>
 
 <script setup>
+import CompanyGalleryForm from '../form/CompanyGalleryForm.vue'
+
 const store = useCompanyGalleryStore()
-const { items, formPayload, item } = storeToRefs(store)
+const { items } = storeToRefs(store)
+const themeClass = useThemeClass()
 
-const submitForm = async () => {
-  const payload = new FormData()
-  for (const key in formPayload.value) payload.append(key, formPayload.value[key])
+const modalOpen = ref(false)
+const modalMode = ref('edit')
+const currentItem = ref(null)
+const selectedSlide = ref(null)
 
-  if (item.value?.id) await store.updateItemWithFormData(item.value.id, payload)
-  else await store.createItemWithFormData(payload)
+const openEditModal = (item) => {
+  modalMode.value = item ? 'edit' : 'create'
+  currentItem.value = item ? { ...item } : null
+  modalOpen.value = true
 }
 
-const resetForm = () => store.resetForm()
-const edit = (id) => store.fetchItemById(id)
-const handleFileUpload = (e) => {
-  formPayload.value.image = e.target.files[0]
+const handleSave = async () => {
+  await store.createItem()
+  modalOpen.value = false
 }
 
-store.fetchItems()
+const handleEdit = async () => {
+  await store.updateItem(currentItem.value.id)
+  modalOpen.value = false
+}
+
+const handleSaveWithFormData = async (formData) => {
+  await store.createItemWithFormData(formData)
+  modalOpen.value = false
+}
+
+const handleEditWithFormData = async (formData) => {
+  await store.updateItemWithFormData(currentItem.value.id, formData)
+  modalOpen.value = false
+}
+
+const deleteItem = (id) => store.deleteItem(id)
+
+const goToPage = (slide) => {
+  if (slide.link) {
+    window.open(slide.link, '_blank')
+  } else {
+    openEditModal(slide)
+  }
+}
+
+onBeforeMount(async () => {
+  if (!items.value.length) {
+    await store.fetchItems()
+  }
+})
 </script>

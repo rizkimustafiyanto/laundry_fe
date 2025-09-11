@@ -11,9 +11,9 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <HeadSection />
     <BodySection />
-    <FootSection />
+    <FootSection class="mt-12" />
   </div>
 </template>

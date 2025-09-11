@@ -1,48 +1,122 @@
 <template>
-  <div class="max-w-full mx-auto text-center mt-24">
-    <h1 class="text-4xl md:text-full font-extrabold text-blue-700 mb-4">
-      Selamat Datang di LaundryKuy
+  <div class="max-w-full mx-auto text-center mt-24 px-4 space-y-5">
+    <!-- Judul -->
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4" :class="themeClass.text.secondary">
+      Selamat Datang di {{ companyName }}
     </h1>
-    <p class="text-lg md:text-xl text-gray-600 mb-8">
-      Solusi laundry cepat, bersih, dan terpercaya untuk kebutuhan harian Anda.
+
+    <!-- Deskripsi -->
+    <p class="text-lg md:text-xl pb-8" :class="themeClass.text.secondary">
+      {{ companyAbout }}
     </p>
 
-    <div class="mb-12">
+    <!-- Logo -->
+    <div class="pb-12">
       <img
-        src="@/assets/logo.svg"
-        alt="Laundry Hero"
+        :src="companyLogo"
+        :alt="companyName + ' Logo'"
         class="rounded-2xl shadow-lg mx-auto max-h-20 object-cover"
+        @error="onLogoError"
       />
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6 text-left">
-      <div class="p-6 bg-white rounded-xl shadow hover:shadow-md transition">
-        <h3 class="text-xl font-semibold text-blue-600 mb-2">Layanan Antar Jemput</h3>
-        <p class="text-gray-600">
-          Kami jemput cucian Anda langsung ke rumah dan antar kembali setelah bersih dan wangi.
+    <!-- Services -->
+    <BaseCard type="grid" :cols="3" gridDirection="row" variant="secondary">
+      <BaseCard
+        v-for="(service, index) in services"
+        :key="index"
+        variant="glass"
+        classOverride="p-6 hover:shadow-md transition"
+      >
+        <h3 :class="['text-xl font-semibold mb-2', themeClass.text.teal]">
+          {{ service.title }}
+        </h3>
+        <p :class="themeClass.text.secondary">
+          {{ service.description }}
         </p>
-      </div>
-      <div class="p-6 bg-white rounded-xl shadow hover:shadow-md transition">
-        <h3 class="text-xl font-semibold text-blue-600 mb-2">Cuci Kering & Lipat</h3>
-        <p class="text-gray-600">
-          Pakaian Anda dicuci dan dilipat rapi, siap langsung masuk lemari.
-        </p>
-      </div>
-      <div class="p-6 bg-white rounded-xl shadow hover:shadow-md transition">
-        <h3 class="text-xl font-semibold text-blue-600 mb-2">Layanan Kilat 24 Jam</h3>
-        <p class="text-gray-600">
-          Butuh cepat? Gunakan layanan express kami yang selesai dalam 24 jam.
-        </p>
-      </div>
+      </BaseCard>
+    </BaseCard>
+
+    <!-- Galleries (Testimoni/Foto) -->
+    <div v-if="companyGalleries.length" class="py-6">
+      <h2 class="text-2xl font-bold mb-6" :class="themeClass.text.secondary">Galeri Kami</h2>
+      <BaseSlider
+        :slides="companyGalleries"
+        captionMode="outside"
+        captionVariant="muted"
+        image-mode="fill"
+      />
     </div>
 
-    <div class="mt-12">
+    <!-- CTA -->
+    <div class="pt-12">
       <a
-        href="#"
-        class="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition"
+        :href="ctaLink"
+        class="inline-block px-6 py-3 rounded-lg shadow font-semibold transition"
+        :class="[themeClass.button.teal, themeClass.hoverless.teal]"
       >
-        Pesan Sekarang
+        {{ ctaLabel }}
       </a>
     </div>
   </div>
 </template>
+
+<script setup>
+import defaultLogo from '@/assets/logo.svg'
+
+const store = useCompanyProfileStore()
+const { items } = storeToRefs(store)
+const themeClass = useThemeClass()
+
+const companyLogo = ref(defaultLogo)
+const companyName = ref('LaundryKuy')
+const companyAbout = ref(
+  'Solusi laundry cepat, bersih, dan terpercaya untuk kebutuhan harian Anda.',
+)
+const ctaLabel = ref('Pesan Sekarang')
+const ctaLink = ref('#')
+
+// galleries khusus untuk slider
+const companyGalleries = ref([])
+
+const services = ref([
+  {
+    title: 'Layanan Antar Jemput',
+    description:
+      'Kami jemput cucian Anda langsung ke rumah dan antar kembali setelah bersih dan wangi.',
+  },
+  {
+    title: 'Cuci Kering & Lipat',
+    description: 'Pakaian Anda dicuci dan dilipat rapi, siap langsung masuk lemari.',
+  },
+  {
+    title: 'Layanan Kilat 24 Jam',
+    description: 'Butuh cepat? Gunakan layanan express kami yang selesai dalam 24 jam.',
+  },
+])
+
+watch(
+  items,
+  (newItems) => {
+    if (newItems && newItems.length > 0) {
+      const company = newItems[0]
+      companyLogo.value = company.logoUrl ? `${__BASE_URL__}${company.logoUrl}` : defaultLogo
+      companyName.value = company.name || 'LaundryKuy'
+      companyAbout.value = company.about || companyAbout.value
+
+      // mapping galleries untuk slider
+      if (company.galleries && company.galleries.length > 0) {
+        companyGalleries.value = company.galleries.filter((g) => !g.deletedAt)
+      }
+
+      ctaLabel.value = 'Pesan Sekarang'
+      ctaLink.value = '/dashboard'
+    }
+  },
+  { immediate: true },
+)
+
+function onLogoError(event) {
+  event.target.src = defaultLogo
+}
+</script>

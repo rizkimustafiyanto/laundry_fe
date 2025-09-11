@@ -3,7 +3,6 @@ import './assets/styles.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
@@ -12,19 +11,21 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import App from './App.vue'
 import router from './router'
+import { initApp } from './composables/useInitApp'
 
-import BaseTable from './components/BaseTable.vue'
-import BaseNavbar from '@/components/BaseNavbar.vue'
-import BaseInput from './components/BaseInput.vue'
-import BaseSelect from './components/BaseSelect.vue'
 import BaseButton from './components/BaseButton.vue'
 import BaseCard from './components/BaseCard.vue'
 import BaseDropdown from './components/BaseDropdown.vue'
-import BaseRadioButton from './components/BaseRadioButton.vue'
-import BaseModal from './components/BaseModal.vue'
+import BaseInput from './components/BaseInput.vue'
 import BaseLoadingSpinner from './components/BaseLoadingSpinner.vue'
-import ResponseModal from './components/ResponseModal.vue'
+import BaseModal from './components/BaseModal.vue'
+import BaseNavbar from './components/BaseNavbar.vue'
 import BasePagination from './components/BasePagination.vue'
+import BaseRadioButton from './components/BaseRadioButton.vue'
+import BaseSelect from './components/BaseSelect.vue'
+import BaseTable from './components/BaseTable.vue'
+import ResponseModal from './components/ResponseModal.vue'
+import BaseSlider from './components/BaseSlider.vue'
 
 library.add(fas, far, fab)
 
@@ -33,8 +34,8 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
-
 app.component('font-awesome-icon', FontAwesomeIcon)
+
 app.component('BaseButton', BaseButton)
 app.component('BaseCard', BaseCard)
 app.component('BaseDropdown', BaseDropdown)
@@ -45,36 +46,16 @@ app.component('BaseNavbar', BaseNavbar)
 app.component('BasePagination', BasePagination)
 app.component('BaseRadioButton', BaseRadioButton)
 app.component('BaseSelect', BaseSelect)
+app.component('BaseSlider', BaseSlider)
 app.component('BaseTable', BaseTable)
 app.component('ResponseModal', ResponseModal)
 
-async function initApp() {
-  const companyStore = useCompanyProfileStore(pinia)
+// ========================
+// Global config
+// ========================
+app.config.globalProperties.__BASE_URL__ = __BASE_URL__
 
-  try {
-    await companyStore.fetchItems({ page: 1, limit: 1 })
-    const company = companyStore.items[0]
-
-    if (company) {
-      if (company.name) {
-        document.title = company.name
-      }
-
-      if (company.logoUrl) {
-        let link = document.querySelector("link[rel~='icon']")
-        if (!link) {
-          link = document.createElement('link')
-          link.rel = 'icon'
-          document.head.appendChild(link)
-        }
-        link.href = `${__BASE_URL__}${company.logoUrl}`
-      }
-    }
-  } catch (err) {
-    console.error('Gagal mengambil company profile:', err)
-  }
-
-  app.mount('#app')
-}
-
-initApp()
+// ========================
+// Initialize App and mount
+// ========================
+initApp(pinia).finally(() => app.mount('#app'))

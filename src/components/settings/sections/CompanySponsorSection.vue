@@ -1,77 +1,115 @@
 <template>
-  <div class="bg-white p-6 rounded shadow">
+  <div :class="[themeClass.baseDiv.glass, 'p-6 rounded-xl shadow-lg backdrop-blur-md']">
     <h2 class="text-xl font-semibold mb-4">Company Sponsor</h2>
 
-    <form @submit.prevent="submitForm" enctype="multipart/form-data" class="space-y-4">
-      <input
-        v-model="formPayload.name"
-        placeholder="Sponsor Name"
-        class="w-full p-2 border rounded"
-      />
-      <input
-        v-model="formPayload.website"
-        placeholder="Website"
-        class="w-full p-2 border rounded"
-      />
-      <input type="file" @change="handleFileUpload" class="w-full" />
-
-      <div class="flex space-x-2">
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          {{ item?.id ? 'Update' : 'Create' }}
-        </button>
-        <button
-          type="button"
-          @click="resetForm"
-          class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-        >
-          Reset
-        </button>
-      </div>
-    </form>
-
-    <ul class="mt-6 space-y-2">
-      <li
-        v-for="s in items"
-        :key="s.id"
-        class="flex justify-between items-center p-2 border rounded"
+    <div class="space-y-4 mb-6">
+      <div
+        v-for="item in items"
+        :key="item.id"
+        :class="[
+          themeClass.baseDiv.secondary,
+          'p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3',
+        ]"
       >
-        <div class="flex items-center space-x-2">
-          <img v-if="s.logo" :src="s.logo" alt="logo" class="w-12 h-12 object-cover rounded" />
-          <span>{{ s.name }} - {{ s.website }}</span>
+        <div class="flex items-center gap-4 w-full sm:w-auto">
+          <img
+            v-if="item.logoUrl"
+            :src="`${__BASE_URL__}${item.logoUrl}`"
+            alt="Logo"
+            class="w-12 h-12 object-contain rounded"
+          />
+          <div class="break-words">
+            <h3 class="font-semibold">{{ item.sponsorName }}</h3>
+            <a
+              v-if="item.websiteUrl"
+              :href="item.websiteUrl"
+              target="_blank"
+              class="text-sm text-blue-500 hover:underline"
+            >
+              {{ item.websiteUrl }}
+            </a>
+          </div>
         </div>
-        <div class="space-x-2">
-          <button @click="edit(s.id)" class="px-2 py-1 bg-yellow-400 rounded hover:bg-yellow-500">
-            Edit
-          </button>
-          <button
-            @click="deleteItem(s.id)"
-            class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Delete
-          </button>
+
+        <div class="flex flex-wrap gap-2 mt-2 sm:mt-0">
+          <BaseButton
+            variant="warning"
+            class="w-full sm:w-20"
+            :icon="'edit'"
+            v-if="true"
+            @click="openEditModal(item)"
+          />
+          <BaseButton
+            variant="danger"
+            class="w-full sm:w-20"
+            :icon="'trash'"
+            v-if="true"
+            @click="deleteItem(item.id)"
+          />
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
+
+    <BaseButton variant="primary" class="w-full mb-4" :icon="'plus'" @click="openEditModal(null)" />
+
+    <CompanySponsorForm
+      v-model="modalOpen"
+      :item="currentItem"
+      :mode="modalMode"
+      @save="handleSave"
+      @edit="handleEdit"
+      @saveWithFormData="handleSaveWithFormData"
+      @editWithFormData="handleEditWithFormData"
+    />
   </div>
 </template>
 
 <script setup>
+import CompanySponsorForm from '../form/CompanySponsorForm.vue'
+
 const store = useCompanySponsorStore()
-const { items, formPayload, item } = storeToRefs(store)
+const { items } = storeToRefs(store)
+const themeClass = useThemeClass()
 
-const submitForm = async () => {
-  const payload = new FormData()
-  for (const key in formPayload.value) payload.append(key, formPayload.value[key])
+const modalOpen = ref(false)
+const modalMode = ref('edit')
+const currentItem = ref(null)
 
-  if (item.value?.id) await store.updateItemWithFormData(item.value.id, payload)
-  else await store.createItemWithFormData(payload)
+const openEditModal = (item) => {
+  modalMode.value = item ? 'edit' : 'create'
+  currentItem.value = item ? { ...item } : null
+  modalOpen.value = true
 }
 
-const resetForm = () => store.resetForm()
-const edit = (id) => store.fetchItemById(id)
-const handleFileUpload = (e) => {
-  formPayload.value.logo = e.target.files[0]
+const handleSave = async () => {
+  await store.createItem()
+  modalOpen.value = false
 }
 
-store.fetchItems()
+const handleEdit = async () => {
+  await store.updateItem(currentItem.value.id)
+  modalOpen.value = false
+}
+
+const handleSaveWithFormData = async (formData) => {
+  await store.createItemWithFormData(formData)
+  modalOpen.value = false
+}
+
+const handleEditWithFormData = async (formData) => {
+  await store.updateItemWithFormData(currentItem.value.id, formData)
+  modalOpen.value = false
+}
+
+const deleteItem = async (id) => {
+  if (confirm('Are you sure you want to delete this sponsor?')) {
+    await store.deleteItem(id)
+  }
+}
+
+onBeforeMount(async () => {
+  if (!items.value.length) {
+    await store.fetchItems()
+  }
+})
 </script>

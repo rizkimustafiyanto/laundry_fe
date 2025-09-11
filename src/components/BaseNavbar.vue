@@ -3,7 +3,11 @@
     class="shadow-md px-6 py-4 flex justify-between items-center transition duration-300"
     :class="themeClass.thead"
   >
-    <h1 :class="['text-2xl font-semibold', themeClass.text.teal]" style="min-height: 2.25rem">
+    <h1
+      :class="['text-2xl font-semibold cursor-pointer', themeClass.text.teal]"
+      style="min-height: 2.25rem"
+      @click="$router.push('/')"
+    >
       {{ title }}
     </h1>
 

@@ -1,73 +1,105 @@
 <template>
-  <div class="bg-white p-6 rounded shadow">
-    <h2 class="text-xl font-semibold mb-4">Company Gallery</h2>
-
-    <form @submit.prevent="submitForm" enctype="multipart/form-data" class="space-y-4">
-      <input v-model="formPayload.title" placeholder="Title" class="w-full p-2 border rounded" />
-      <textarea
-        v-model="formPayload.description"
-        placeholder="Description"
-        class="w-full p-2 border rounded"
-      ></textarea>
-      <input type="file" @change="handleFileUpload" class="w-full" />
+  <BaseModal
+    v-model="modalOpen"
+    :title="mode === 'create' ? 'Add New Gallery' : 'Edit Gallery'"
+    size="md"
+  >
+    <form @submit.prevent="submitForm" class="space-y-4">
+      <div>
+        <BaseInput label="Image" type="file" @update:file="handleFileUpload" :required="false" />
+        <div v-if="imagePreview" class="mt-2">
+          <img :src="imagePreview" alt="Image Preview" class="h-16 w-16 object-cover rounded" />
+        </div>
+      </div>
+      <BaseInput
+        type="textarea"
+        label="Caption"
+        autocomplete="off"
+        v-model="formPayload.caption"
+        placeholder="Caption"
+      />
 
       <div class="flex space-x-2">
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          {{ item?.id ? 'Update' : 'Create' }}
-        </button>
-        <button
-          type="button"
-          @click="resetForm"
-          class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-        >
-          Reset
-        </button>
+        <BaseButton type="submit" variant="teal" class="w-full" label="Simpan" />
+        <BaseButton variant="warning" class="w-full" label="Cancel" @click="resetForm" />
       </div>
     </form>
-
-    <ul class="mt-6 space-y-2">
-      <li
-        v-for="g in items"
-        :key="g.id"
-        class="flex justify-between items-center p-2 border rounded"
-      >
-        <div class="flex items-center space-x-2">
-          <img v-if="g.image" :src="g.image" alt="image" class="w-12 h-12 object-cover rounded" />
-          <span>{{ g.title }} - {{ g.description }}</span>
-        </div>
-        <div class="space-x-2">
-          <button @click="edit(g.id)" class="px-2 py-1 bg-yellow-400 rounded hover:bg-yellow-500">
-            Edit
-          </button>
-          <button
-            @click="deleteItem(g.id)"
-            class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Delete
-          </button>
-        </div>
-      </li>
-    </ul>
-  </div>
+  </BaseModal>
 </template>
 
 <script setup>
+const props = defineProps({
+  item: { type: Object, default: null },
+  mode: { type: String, required: true },
+})
+
+const emit = defineEmits(['save', 'edit', 'saveWithFormData', 'editWithFormData'])
+const modalOpen = ref(false)
+
 const store = useCompanyGalleryStore()
-const { items, formPayload, item } = storeToRefs(store)
+const profileStore = useCompanyProfileStore()
+const companyId = computed(() => profileStore.items[0]?.id || null)
 
-const submitForm = async () => {
-  const payload = new FormData()
-  for (const key in formPayload.value) payload.append(key, formPayload.value[key])
+const formPayload = reactive({ ...store.formPayload })
 
-  if (item.value?.id) await store.updateItemWithFormData(item.value.id, payload)
-  else await store.createItemWithFormData(payload)
+const imagePreview = ref(null)
+const fileObj = ref(null)
+
+watch(
+  () => props.item,
+  (newItem) => {
+    if (props.mode === 'edit' && newItem) {
+      Object.keys(store.formPayload || {}).forEach((key) => {
+        formPayload[key] = newItem[key] || ''
+      })
+      imagePreview.value = newItem.logoUrl ? `${__BASE_URL__}${newItem.logoUrl}` : null
+      fileObj.value = null
+    } else if (props.mode === 'create') {
+      Object.keys(store.formPayload || {}).forEach((key) => {
+        formPayload[key] = store.formPayload[key]
+      })
+      imagePreview.value = null
+      fileObj.value = null
+    }
+  },
+  { immediate: true },
+)
+
+function handleFileUpload(file) {
+  if (file) {
+    fileObj.value = file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
 }
 
-const resetForm = () => store.resetForm()
-const edit = (id) => store.fetchItemById(id)
-const handleFileUpload = (e) => {
-  formPayload.value.image = e.target.files[0]
+function submitForm() {
+  modalOpen.value = false
+  formPayload.companyId = companyId.value
+
+  if (fileObj.value) {
+    const formData = new FormData()
+    Object.keys(formPayload).forEach((key) => {
+      if (key === 'imageUrl') {
+        formData.append('imageUrl', fileObj.value)
+      } else {
+        formData.append(key, formPayload[key])
+      }
+    })
+    emit(props.mode === 'create' ? 'saveWithFormData' : 'editWithFormData', formData)
+  } else {
+    store.formPayload = formPayload
+    emit(props.mode === 'create' ? 'save' : 'edit')
+  }
 }
 
-store.fetchItems()
+function resetForm() {
+  modalOpen.value = false
+  store.resetForm()
+  imagePreview.value = null
+  fileObj.value = null
+}
 </script>

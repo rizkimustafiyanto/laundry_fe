@@ -44,6 +44,7 @@
     "getCurrentScope": "readonly",
     "getCurrentWatcher": "readonly",
     "h": "readonly",
+    "initApp": "readonly",
     "inject": "readonly",
     "isProxy": "readonly",
     "isReactive": "readonly",

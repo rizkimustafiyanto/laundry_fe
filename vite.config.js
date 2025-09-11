@@ -10,16 +10,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue(),
-      vueDevTools(),
+      mode === 'development' && vueDevTools(),
       AutoImport({
-        imports: [
-          'vue',
-          'vue-router',
-          'pinia',
-        ],
+        imports: ['vue', 'vue-router', 'pinia'],
         dts: 'src/auto-imports.d.ts',
         vueTemplate: true,
         dirs: [
+          'src/components',
           'src/composables',
           'src/stores/**',
           'src/utils',
@@ -30,7 +27,7 @@ export default defineConfig(({ mode }) => {
           globalsPropValue: 'readonly',
         },
       }),
-    ],
+    ].filter(Boolean),
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -38,7 +35,7 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       __BASE_URL__: JSON.stringify(env.VITE_API_URL),
-      __APP_ENV__: JSON.stringify(env.APP_ENV)
+      __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
   }
 })

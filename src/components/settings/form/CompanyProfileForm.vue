@@ -1,31 +1,49 @@
 <template>
   <BaseModal v-model="modalOpen" :title="mode === 'create' ? 'Create' : 'Edit'" size="md">
     <form @submit.prevent="submitForm" class="space-y-4">
-      <BaseInput label="Name" v-model="formPayload.name" placeholder="Name" />
-      <BaseInput label="About" v-model="formPayload.about" placeholder="About" />
-      <BaseInput label="Email" v-model="formPayload.email" placeholder="Email" />
-      <BaseInput label="Phone" v-model="formPayload.phone" placeholder="Phone" />
-      <BaseInput label="Address" v-model="formPayload.address" placeholder="Address" />
+      <BaseInput label="Name" autocomplete="off" v-model="formPayload.name" placeholder="Name" />
+      <BaseInput label="About" autocomplete="off" v-model="formPayload.about" placeholder="About" />
+      <BaseInput label="Email" autocomplete="off" v-model="formPayload.email" placeholder="Email" />
+      <BaseInput label="Phone" autocomplete="off" v-model="formPayload.phone" placeholder="Phone" />
+      <BaseInput
+        label="Address"
+        autocomplete="off"
+        v-model="formPayload.address"
+        placeholder="Address"
+      />
       <BaseInput
         label="Facebook URL"
+        autocomplete="off"
         v-model="formPayload.facebookUrl"
         placeholder="Facebook URL"
       />
       <BaseInput
         label="Instagram URL"
+        autocomplete="off"
         v-model="formPayload.instagramUrl"
         placeholder="Instagram URL"
       />
-      <BaseInput label="Twitter URL" v-model="formPayload.twitterUrl" placeholder="Twitter URL" />
+      <BaseInput
+        label="Twitter URL"
+        autocomplete="off"
+        v-model="formPayload.twitterUrl"
+        placeholder="Twitter URL"
+      />
       <BaseInput
         label="LinkedIn URL"
+        autocomplete="off"
         v-model="formPayload.linkedinUrl"
         placeholder="LinkedIn URL"
       />
-      <BaseInput label="TikTok URL" v-model="formPayload.tiktokUrl" placeholder="TikTok URL" />
+      <BaseInput
+        label="TikTok URL"
+        autocomplete="off"
+        v-model="formPayload.tiktokUrl"
+        placeholder="TikTok URL"
+      />
 
       <div>
-        <BaseInput label="Image" type="file" @update:file="handleFileUpload" />
+        <BaseInput label="Image" type="file" @update:file="handleFileUpload" :required="false" />
         <div v-if="logoPreview" class="mt-2">
           <img :src="logoPreview" alt="Logo Preview" class="h-16 w-16 object-cover rounded" />
         </div>
@@ -100,7 +118,8 @@ function submitForm() {
     })
     emit(props.mode === 'create' ? 'saveWithFormData' : 'editWithFormData', formData)
   } else {
-    emit(props.mode === 'create' ? 'save' : 'edit', { ...formPayload })
+    store.formPayload = formPayload
+    emit(props.mode === 'create' ? 'save' : 'edit')
   }
 }
 

@@ -1,6 +1,4 @@
 // src/stores/users.js
-import { createStoreBuilder } from './store.builder.service'
-import api from '@/utils/api'
 import socket from '@/plugins/socket'
 
 export const useUserStore = createStoreBuilder({
@@ -28,14 +26,27 @@ export const useUserStore = createStoreBuilder({
     },
 
     async updateProfile(payload) {
-      const formData = new FormData()
-      for (const key in payload) {
-        formData.append(key, payload[key])
+      try {
+        const res = await api.put('/users/profile', payload)
+        this.item = res.data.data
+        notifySuccess('Data berhasil diperbarui')
+      } catch (err) {
+        notifyError(err, `Gagal memperbarui profile`)
       }
-      const res = await api.put('/users/profile', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      this.item = res.data.data
+    },
+
+    async updateProfileWithItem(payload) {
+      try {
+        const formData = new FormData()
+        for (const key in payload) {
+          formData.append(key, payload[key])
+        }
+        const res = await apiForm.put('/users/profile', formData)
+        this.item = res.data.data
+        notifySuccess('Data berhasil diperbarui')
+      } catch (err) {
+        notifyError(err, `Gagal memperbarui profile`)
+      }
     },
 
     listenUserUpdates() {
