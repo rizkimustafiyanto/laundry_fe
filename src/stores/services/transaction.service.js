@@ -2,6 +2,7 @@
 import { createStoreBuilder } from './store.builder.service'
 import api from '@/utils/api'
 import socket from '@/plugins/socket'
+import { notifyError, notifySuccess } from '@/utils/notify'
 
 export const useTransactionStore = createStoreBuilder({
   storeId: 'transactionStore',
@@ -16,11 +17,6 @@ export const useTransactionStore = createStoreBuilder({
     items: [],
     payment: {
       amountPaid: 0,
-      serviceCharge: 0,
-      deliveryFee: 0,
-      pickupFee: 0,
-      tax: 0,
-      discount: 0,
       paymentMethod: '',
       note: '',
     },
@@ -35,9 +31,7 @@ export const useTransactionStore = createStoreBuilder({
     completedTransactions: (state) =>
       state.items.filter((t) => t.status.toLowerCase() === 'completed').length,
     runningTransactionsByStatus: (state) => {
-      const runningTransactions = state.items.filter(
-        (t) => !['completed', 'cancelled'].includes(t.status.toLowerCase()),
-      )
+      const runningTransactions = state.items
       const grouped = runningTransactions.reduce((acc, t) => {
         acc[t.status] = (acc[t.status] || 0) + 1
         return acc
@@ -48,21 +42,40 @@ export const useTransactionStore = createStoreBuilder({
   },
   customActions: {
     async fetchByStatus(status) {
-      await this.fetchItems({ page: 1 }, { status: status })
+      try {
+        await this.fetchItems({ page: 1 }, { status })
+      } catch (err) {
+        notifyError(err, 'Gagal mengambil transaksi berdasarkan status')
+      }
     },
 
     async fetchTransactionById(transactionId) {
-      const res = await api.get(`/transactions/${transactionId}`)
-      this.item = res.data.data
+      try {
+        const res = await api.get(`/transactions/${transactionId}`)
+        this.item = res.data.data
+      } catch (err) {
+        notifyError(err, 'Gagal mengambil detail transaksi')
+      }
     },
 
     async updateTransactionStatus(transactionId, status) {
-      await api.put(`/transactions/${transactionId}/status`, { status })
+      try {
+        await api.put(`/transactions/${transactionId}/status`, { status })
+        notifySuccess(`Status transaksi berhasil diubah ke ${status}`)
+      } catch (err) {
+        notifyError(err, 'Gagal memperbarui status transaksi')
+      }
     },
 
     async exportTransactions(payload) {
-      const res = await api.post('/transactions/export', payload, { responseType: 'blob' })
-      return res.data
+      try {
+        const res = await api.post('/transactions/export', payload, { responseType: 'blob' })
+        notifySuccess('Export transaksi berhasil')
+        return res.data
+      } catch (err) {
+        notifyError(err, 'Gagal mengekspor transaksi')
+        throw err
+      }
     },
 
     listenOrderUpdates() {
@@ -73,6 +86,9 @@ export const useTransactionStore = createStoreBuilder({
         } else {
           this.items.push(updatedTransaction)
         }
+        notifySuccess(
+          `Transaksi #${updatedTransaction.invoiceNumber || updatedTransaction.id} diperbarui`,
+        )
       })
     },
   },

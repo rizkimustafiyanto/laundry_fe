@@ -8,3 +8,12 @@ export function notifyError(error, fallback = 'Terjadi kesalahan') {
   const message = error.response?.data?.message || fallback
   useUIStore().show('error', message)
 }
+
+export async function notifyConfirm({ title, message, requireReason = false }) {
+  const ui = useUIStore()
+  return ui.confirm({
+    title,
+    message,
+    requireReason,
+  })
+}

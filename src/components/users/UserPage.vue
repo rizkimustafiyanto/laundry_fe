@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-xl font-semibold mb-4">Daftar User</h2>
 
-    <BaseCard variant="glass">
+    <BaseCard variant="secondary">
       <BaseTable
         :items="items"
         :columns="columns"
@@ -15,10 +15,14 @@
       >
         <template #name_email="{ item }">
           <div class="flex items-center cursor-pointer" @click="showUserDetails(item.id)">
-            <img class="w-10 h-10 rounded-full" :src="item.photo ?? defaultAvatar" />
+            <img
+              class="w-10 h-10 rounded-full"
+              :src="`${__BASE_URL__}${item.photo}`"
+              @error="$event.target.src = defaultAvatar"
+            />
             <div class="ps-3">
-              <div :class="themeClass.labelName">{{ item.name }}</div>
-              <div :class="themeClass.labelMail">{{ item.email }}</div>
+              <div :class="themeClass.text.dark">{{ item.name }}</div>
+              <div :class="themeClass.text.stone">{{ item.email }}</div>
             </div>
           </div>
         </template>

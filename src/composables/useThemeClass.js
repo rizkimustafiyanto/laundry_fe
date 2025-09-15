@@ -6,6 +6,9 @@ export function useThemeClass() {
   const theme = computed(() => themeStore.theme || 'light')
 
   const variants = {
+    // =========================
+    // Basic solid colors (no opacity) - untuk warna utama, solid, hover biasa
+    // =========================
     primary: {
       light: 'text-blue-700 bg-blue-50 border-blue-200 hover:bg-blue-100',
       dark: 'text-blue-200 bg-blue-700 border-blue-500 hover:bg-blue-600',
@@ -30,10 +33,65 @@ export function useThemeClass() {
       light: 'text-cyan-700 bg-cyan-50 border-cyan-200 hover:bg-cyan-100',
       dark: 'text-cyan-300 bg-cyan-800 border-cyan-600 hover:bg-cyan-700',
     },
-    pink: {
-      light: 'text-pink-700 bg-pink-50 border-pink-200 hover:bg-pink-100',
-      dark: 'text-pink-300 bg-pink-800 border-pink-600 hover:bg-pink-700',
+
+    // =========================
+    // Pastel / soft / glass / mist (safe with opacity)
+    // Bisa dipakai untuk textless, backgroundless, borderless, hoverless
+    // =========================
+    glass: {
+      light: 'text-white bg-white/20 border-white/30 hover:bg-white/30',
+      dark: 'text-white bg-white/10 border-white/20 hover:bg-white/20',
     },
+    mist: {
+      light: 'text-gray-800 bg-gray-100/40 border-gray-200/40 hover:bg-gray-100/50',
+      dark: 'text-gray-200 bg-gray-800/40 border-gray-700/40 hover:bg-gray-800/50',
+    },
+    haze: {
+      light: 'text-blue-700 bg-blue-100/30 border-blue-200/30 hover:bg-blue-100/40',
+      dark: 'text-blue-300 bg-blue-700/30 border-blue-500/30 hover:bg-blue-700/40',
+    },
+    smooth: {
+      light: 'text-gray-700 bg-gray-100/40 border-gray-200/30 hover:bg-gray-200/50',
+      dark: 'text-gray-200 bg-gray-700/40 border-gray-600/30 hover:bg-gray-600/50',
+    },
+    softBlue: {
+      light: 'text-blue-800 bg-blue-100/40 border-blue-200/30 hover:bg-blue-200/50',
+      dark: 'text-blue-200 bg-blue-800/40 border-blue-600/30 hover:bg-blue-700/50',
+    },
+    softGreen: {
+      light: 'text-green-800 bg-green-100/40 border-green-200/30 hover:bg-green-200/50',
+      dark: 'text-green-200 bg-green-800/40 border-green-600/30 hover:bg-green-700/50',
+    },
+    softPink: {
+      light: 'text-pink-800 bg-pink-100/40 border-pink-200/30 hover:bg-pink-200/50',
+      dark: 'text-pink-200 bg-pink-800/40 border-pink-600/30 hover:bg-pink-700/50',
+    },
+    pastel: {
+      light: 'text-violet-700 bg-violet-100/40 border-violet-200/30 hover:bg-violet-200/50',
+      dark: 'text-violet-200 bg-violet-800/40 border-violet-600/30 hover:bg-violet-700/50',
+    },
+    airy: {
+      light: 'text-sky-700 bg-sky-50/40 border-sky-200/30 hover:bg-sky-100/50',
+      dark: 'text-sky-200 bg-sky-900/30 border-sky-700/30 hover:bg-sky-800/50',
+    },
+
+    // =========================
+    // Meta / transparent (opacity optional)
+    // Bisa pakai untuk textless, hoverless
+    // =========================
+    meta: {
+      light: 'text-gray-500 bg-transparent border-transparent hover:text-gray-600',
+      dark: 'text-gray-400 bg-transparent border-transparent hover:text-gray-300',
+    },
+    subtleMeta: {
+      light: 'text-slate-500 bg-transparent border-transparent hover:text-slate-600',
+      dark: 'text-slate-400 bg-transparent border-transparent hover:text-slate-300',
+    },
+
+    // =========================
+    // Dark / stone / lilac / teal / orange etc (mostly solid)
+    // Tidak disarankan pakai opacity
+    // =========================
     stone: {
       light: 'text-stone-700 bg-stone-50 border-stone-200 hover:bg-stone-100',
       dark: 'text-stone-300 bg-stone-800 border-stone-600 hover:bg-stone-700',
@@ -74,23 +132,30 @@ export function useThemeClass() {
       light: 'text-gray-800 bg-gray-100 border-gray-300 hover:bg-gray-200',
       dark: 'text-gray-100 bg-gray-900 border-gray-700 hover:bg-gray-800',
     },
-    glass: {
-      light: 'text-white bg-white/20 border-white/30 hover:bg-white/30',
-      dark: 'text-white bg-white/10 border-white/20 hover:bg-white/20',
+
+    // =========================
+    // Warna baru yang bisa dipakai opacity (textless, borderless, backgroundless)
+    // =========================
+    softTeal: {
+      light: 'text-teal-800 bg-teal-100/40 border-teal-200/30 hover:bg-teal-200/50',
+      dark: 'text-teal-200 bg-teal-800/40 border-teal-600/30 hover:bg-teal-700/50',
     },
-    mist: {
-      light: 'text-gray-800 bg-gray-100/40 border-gray-200/40 hover:bg-gray-100/50',
-      dark: 'text-gray-200 bg-gray-800/40 border-gray-700/40 hover:bg-gray-800/50',
+    softOrange: {
+      light: 'text-orange-800 bg-orange-100/40 border-orange-200/30 hover:bg-orange-200/50',
+      dark: 'text-orange-200 bg-orange-800/40 border-orange-600/30 hover:bg-orange-700/50',
     },
-    haze: {
-      light: 'text-blue-700 bg-blue-100/30 border-blue-200/30 hover:bg-blue-100/40',
-      dark: 'text-blue-300 bg-blue-700/30 border-blue-500/30 hover:bg-blue-700/40',
+    softViolet: {
+      light: 'text-violet-800 bg-violet-100/40 border-violet-200/30 hover:bg-violet-200/50',
+      dark: 'text-violet-200 bg-violet-800/40 border-violet-600/30 hover:bg-violet-700/50',
     },
   }
 
   const themeClass = computed(() => {
     const mode = theme.value === 'dark' ? 'dark' : 'light'
 
+    // =========================
+    // Base Div Variants
+    // =========================
     const baseDivVariants = {}
     for (const key in variants) {
       baseDivVariants[key] =
@@ -100,16 +165,25 @@ export function useThemeClass() {
     }
 
     return {
+      // =========================
+      // Base Div Classes
+      // =========================
       baseDiv: {
         default: mode === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900',
         ...baseDivVariants,
         muted: mode === 'dark' ? 'bg-gray-800/50 text-white' : 'bg-gray-200/50 text-gray-900',
       },
 
-      thead: mode === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-gray-200 text-gray-700',
+      // =========================
+      // Table Classes
+      // =========================
+      thead: mode === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-gray-200/50 text-gray-700',
       trHover: mode === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-50',
-      borderColor: mode === 'dark' ? 'border-gray-600' : 'border-gray-300',
 
+      // =========================
+      // Border Classes
+      // =========================
+      borderColor: mode === 'dark' ? 'border-gray-600' : 'border-gray-300',
       border: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const borderColor = variants[key][mode].split(' ')[2]
@@ -120,84 +194,80 @@ export function useThemeClass() {
           ]
         }),
       ),
-
       borderless: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const borderColor = variants[key][mode].split(' ')[2]
           const focusColor = borderColor.replace('border-', 'focus:ring-')
-
           const borderColorValue = borderColor.replace('border-', '') + '/50'
           const focusColorValue = (focusColor.split(':')[1] || focusColor.split('-')[1]) + '/50'
-
           return [key, `border-${borderColorValue} focus:ring-${focusColorValue}`]
         }),
       ),
 
-      dropdown:
-        mode === 'dark'
-          ? 'bg-gray-800 text-white ring-gray-700'
-          : 'bg-white text-gray-700 ring-gray-300',
+      // =========================
+      // Background Variants
+      // =========================
+      background: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const bgColor = variants[key][mode].split(' ')[1]
+          return [key, `bg-${bgColor.replace('bg-', '')}`]
+        }),
+      ),
+      backgroundless: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const classes = variants[key][mode].split(' ')
+          const bgClass = classes.find((c) => c.startsWith('bg-'))
+          return [key, bgClass ? `${bgClass}/20` : '']
+        }),
+      ),
 
-      label: Object.fromEntries(Object.keys(variants).map((key) => [key, variants[key][mode]])),
-
+      // =========================
+      // Text Variants
+      // =========================
       text: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const textColor = variants[key][mode].split(' ')[0]
           return [key, textColor]
         }),
       ),
-
       textless: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const textColor = variants[key][mode].split(' ')[0]
-          const textWithOpacity = textColor ? `${textColor}/50` : ''
-          return [key, textWithOpacity]
+          return [key, textColor ? `${textColor}/50` : '']
         }),
       ),
-
-      button: Object.fromEntries(Object.keys(variants).map((key) => [key, variants[key][mode]])),
-
-      item: Object.fromEntries(Object.keys(variants).map((key) => [key, variants[key][mode]])),
-
-      icon: Object.fromEntries(
+      hoverText: Object.fromEntries(
         Object.keys(variants).map((key) => {
-          const textColor = variants[key][mode].split(' ')[0]
-          return [key, textColor]
+          const textColor = variants[key][mode].split(' ').find((c) => c.startsWith('text-'))
+          return [key, textColor ? textColor.replace('text-', 'hover:text-') : '']
+        }),
+      ),
+      hoverTextLess: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const textColor = variants[key][mode].split(' ').find((c) => c.startsWith('text-'))
+          return [key, textColor ? `${textColor.replace('text-', 'hover:text-')}/50` : '']
         }),
       ),
 
+      // =========================
+      // Hover & Interaction
+      // =========================
       hover: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const hoverClass = variants[key][mode].split(' ').find((c) => c.startsWith('hover'))
           return [key, hoverClass || '']
         }),
       ),
-
       hoverless: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const hoverClass = variants[key][mode].split(' ').find((c) => c.startsWith('hover'))
-          const hoverWithOpacity = hoverClass ? `${hoverClass}/50` : ''
-          return [key, hoverWithOpacity]
+          return [key, hoverClass ? `${hoverClass}/50` : '']
         }),
       ),
 
-      hoverText: Object.fromEntries(
-        Object.keys(variants).map((key) => {
-          const textColor = variants[key][mode].split(' ').find((c) => c.startsWith('text-'))
-          const hoverTextClass = textColor ? textColor.replace('text-', 'hover:text-') : ''
-          return [key, hoverTextClass]
-        }),
-      ),
-
-      hoverTextLess: Object.fromEntries(
-        Object.keys(variants).map((key) => {
-          const textColor = variants[key][mode].split(' ').find((c) => c.startsWith('text-'))
-          const hoverTextClass = textColor ? textColor.replace('text-', 'hover:text-') : ''
-          const hoverTextWithOpacity = hoverTextClass ? `${hoverTextClass}/50` : ''
-          return [key, hoverTextWithOpacity]
-        }),
-      ),
-
+      // =========================
+      // Inputs & Forms
+      // =========================
       input: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const bgColor = variants[key][mode].split(' ')[1]
@@ -210,7 +280,6 @@ export function useThemeClass() {
           ]
         }),
       ),
-
       select: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const bgColor = variants[key][mode].split(' ')[1]
@@ -224,19 +293,54 @@ export function useThemeClass() {
         }),
       ),
 
+      // =========================
+      // Buttons, Items & Icons
+      // =========================
+      button: Object.fromEntries(Object.keys(variants).map((key) => [key, variants[key][mode]])),
+      item: Object.fromEntries(Object.keys(variants).map((key) => [key, variants[key][mode]])),
+      icon: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const textColor = variants[key][mode].split(' ')[0]
+          return [key, textColor]
+        }),
+      ),
+
+      // =========================
+      // Labels & Dropdowns
+      // =========================
+      dropdown:
+        mode === 'dark'
+          ? 'bg-gray-800 text-white ring-gray-700'
+          : 'bg-white text-gray-700 ring-gray-300',
+
+      // =========================
+      // Tooltip
+      // =========================
       tooltip: {
         primary: mode === 'dark' ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-800',
         dark: mode === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-700 text-gray-200',
       },
 
+      // =========================
+      // Scrollbar
+      // =========================
       scrollbar: Object.fromEntries(
         Object.keys(variants).map((key) => {
           const classes = variants[key][mode].split(' ')
           const textClass = classes.find((c) => c.startsWith('text-')) || 'text-gray-700'
-
           const thumbColor = textClass.replace('text-', '')
-
           return [key, `scrollbar-thin scrollbar-thumb-${thumbColor} scrollbar-track-transparent`]
+        }),
+      ),
+
+      // =========================
+      // Ring Color (untuk focus ring)
+      // =========================
+      ring: Object.fromEntries(
+        Object.keys(variants).map((key) => {
+          const borderColor = variants[key][mode].split(' ')[2]
+          const ringColor = borderColor.replace('border-', '')
+          return [key, `ring-${ringColor}`]
         }),
       ),
     }

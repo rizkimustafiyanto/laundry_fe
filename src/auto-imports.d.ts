@@ -40,6 +40,7 @@ declare global {
   const getCurrentInstance: (typeof import('vue'))['getCurrentInstance']
   const getCurrentScope: (typeof import('vue'))['getCurrentScope']
   const getCurrentWatcher: (typeof import('vue'))['getCurrentWatcher']
+  const getValidOptions: (typeof import('./utils/pricing.helper.js'))['getValidOptions']
   const h: (typeof import('vue'))['h']
   const initApp: (typeof import('./composables/useInitApp.js'))['initApp']
   const inject: (typeof import('vue'))['inject']
@@ -57,6 +58,7 @@ declare global {
   const mapWritableState: (typeof import('pinia'))['mapWritableState']
   const markRaw: (typeof import('vue'))['markRaw']
   const nextTick: (typeof import('vue'))['nextTick']
+  const notifyConfirm: (typeof import('./utils/notify.js'))['notifyConfirm']
   const notifyError: (typeof import('./utils/notify.js'))['notifyError']
   const notifySuccess: (typeof import('./utils/notify.js'))['notifySuccess']
   const onActivated: (typeof import('vue'))['onActivated']
@@ -129,6 +131,7 @@ declare global {
   const useTransactionStore: (typeof import('./stores/services/transaction.service.js'))['useTransactionStore']
   const useUIStore: (typeof import('./stores/utils/ui.js'))['useUIStore']
   const useUserStore: (typeof import('./stores/services/user.service.js'))['useUserStore']
+  const useValidOptions: (typeof import('./utils/pricing.helper.js'))['useValidOptions']
   const watch: (typeof import('vue'))['watch']
   const watchEffect: (typeof import('vue'))['watchEffect']
   const watchPostEffect: (typeof import('vue'))['watchPostEffect']
@@ -192,6 +195,9 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<(typeof import('vue'))['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<(typeof import('vue'))['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<(typeof import('vue'))['getCurrentWatcher']>
+    readonly getValidOptions: UnwrapRef<
+      (typeof import('./utils/pricing.helper.js'))['getValidOptions']
+    >
     readonly h: UnwrapRef<(typeof import('vue'))['h']>
     readonly initApp: UnwrapRef<(typeof import('./composables/useInitApp.js'))['initApp']>
     readonly inject: UnwrapRef<(typeof import('vue'))['inject']>
@@ -211,6 +217,7 @@ declare module 'vue' {
     readonly mapWritableState: UnwrapRef<(typeof import('pinia'))['mapWritableState']>
     readonly markRaw: UnwrapRef<(typeof import('vue'))['markRaw']>
     readonly nextTick: UnwrapRef<(typeof import('vue'))['nextTick']>
+    readonly notifyConfirm: UnwrapRef<(typeof import('./utils/notify.js'))['notifyConfirm']>
     readonly notifyError: UnwrapRef<(typeof import('./utils/notify.js'))['notifyError']>
     readonly notifySuccess: UnwrapRef<(typeof import('./utils/notify.js'))['notifySuccess']>
     readonly onActivated: UnwrapRef<(typeof import('vue'))['onActivated']>
@@ -324,6 +331,9 @@ declare module 'vue' {
     readonly useUIStore: UnwrapRef<(typeof import('./stores/utils/ui.js'))['useUIStore']>
     readonly useUserStore: UnwrapRef<
       (typeof import('./stores/services/user.service.js'))['useUserStore']
+    >
+    readonly useValidOptions: UnwrapRef<
+      (typeof import('./utils/pricing.helper.js'))['useValidOptions']
     >
     readonly watch: UnwrapRef<(typeof import('vue'))['watch']>
     readonly watchEffect: UnwrapRef<(typeof import('vue'))['watchEffect']>

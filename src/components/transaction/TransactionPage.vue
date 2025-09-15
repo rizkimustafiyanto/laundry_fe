@@ -1,25 +1,47 @@
 <template>
-  <div class="space-y-6">
-    <BaseCard type="grid" :cols="2" variant="glass">
-      <SummaryCard title="Transaksi Hari Ini" :value="todayTransactions" />
-      <SummaryCard title="Transaksi Selesai" :value="completedTransactions" />
-    </BaseCard>
+  <div>
+    <div class="space-y-6">
+      <BaseCard type="grid" :cols="2" variant="secondary">
+        <SummaryCard title="Transaksi Hari Ini" :value="todayTransactions" />
+        <SummaryCard title="Transaksi Selesai" :value="completedTransactions" />
+      </BaseCard>
 
-    <StatusSummary :statusSummary="statusSummary" />
+      <StatusSummary :statusSummary="statusSummary" />
 
-    <TransactionTable
-      :transactions="transactions"
-      :columns="columns"
-      :meta="meta"
-      :loading="loading"
-      :statusOptions="statusOptions"
-      @page-change="handlePageChange"
-      @dropdown-select="setFilterStatus"
-      @limit-change="handleLimitChange"
-      @search="handleSearch"
-      @cancel="updateOrderStatusToCancelled"
-      @delete="deleteOrder"
+      <TransactionTable
+        :transactions="transactions"
+        :columns="columns"
+        :meta="meta"
+        :loading="loading"
+        :statusOptions="statusOptions"
+        @page-change="handlePageChange"
+        @dropdown-select="setFilterStatus"
+        @limit-change="handleLimitChange"
+        @search="handleSearch"
+        @view="handleView"
+        @edit="handleEdit"
+        @edit-payment="handleEditPayment"
+        @delete="deleteOrder"
+      />
+    </div>
+
+    <OrderForm
+      v-if="showEditModal"
+      v-model="showEditModal"
+      :orderId="idValueSelected"
+      :editMode="true"
+      mode="manualpickup"
     />
+
+    <OrderForm
+      v-if="showPaymentModal"
+      v-model="showPaymentModal"
+      :orderId="idValueSelected"
+      :editMode="true"
+      mode="paymentorder"
+    />
+
+    <OrderView v-if="openViewModalValue" v-model="openViewModalValue" :orderId="idValueSelected" />
   </div>
 </template>
 
@@ -27,30 +49,45 @@
 import SummaryCard from '@/components/transaction/manage/SummaryCard.vue'
 import StatusSummary from '@/components/transaction/manage/StatusSummary.vue'
 import TransactionTable from '@/components/transaction/manage/TransactionTable.vue'
+import OrderForm from '@/components/dashboard/form/OrderForm.vue'
+import OrderView from '@/components/dashboard/form/OrderView.vue'
 
 const transactionStore = useTransactionStore()
 const statusStore = useStatusStore()
-const loadingStore = useLoadingStore()
+
+// ===== STATE =====
+const idValueSelected = ref(null)
+const showEditModal = ref(false)
+const showPaymentModal = ref(false)
+const openViewModalValue = ref(false)
+const loading = ref(false) // <<=== tambahkan state loading
 
 const todayTransactions = computed(() => transactionStore.todayTransactions ?? 0)
 const completedTransactions = computed(() => transactionStore.completedTransactions ?? 0)
 const statusSummary = computed(() => transactionStore.runningTransactionsByStatus ?? [])
 const transactions = computed(() => transactionStore.items ?? [])
 const meta = computed(() => transactionStore.meta ?? {})
-const loading = computed(() => loadingStore.isMiniLoading)
 const statusOptions = computed(() => [{ label: 'All', value: '' }, ...statusStore.options])
 
+// ===== INIT =====
 async function initPageData() {
-  if (!transactionStore.items?.length) {
-    await transactionStore.fetchItems()
-  }
-  if (!statusStore.items?.length) {
-    await statusStore.fetch()
+  try {
+    loading.value = true
+    if (!transactionStore.items?.length) {
+      await transactionStore.fetchItems()
+    }
+    if (!statusStore.items?.length) {
+      await statusStore.fetch()
+    }
+  } catch (err) {
+    notifyError(err, 'Gagal memuat data awal')
+  } finally {
+    loading.value = false
   }
 }
-
 onMounted(initPageData)
 
+// ===== TABLE COLUMNS =====
 const columns = [
   { key: 'invoiceNumber', label: 'Invoice' },
   { key: 'customer', label: 'Customer' },
@@ -59,27 +96,76 @@ const columns = [
   { key: 'actions', label: 'Aksi' },
 ]
 
-function handlePageChange(newPage) {
-  transactionStore.fetchItems({ page: newPage })
+// ===== HANDLERS =====
+async function handlePageChange(newPage) {
+  try {
+    loading.value = true
+    await transactionStore.fetchItems({ page: newPage })
+  } catch (err) {
+    notifyError(err, 'Gagal mengganti halaman')
+  } finally {
+    loading.value = false
+  }
 }
 
-function setFilterStatus(status) {
-  transactionStore.setFilter('status', status)
+async function setFilterStatus(status) {
+  try {
+    loading.value = true
+    transactionStore.setFilter('status', status)
+    await transactionStore.fetchItems({ page: 1 }) // reset ke halaman 1
+  } catch (err) {
+    notifyError(err, 'Gagal filter status')
+  } finally {
+    loading.value = false
+  }
 }
 
-const handleLimitChange = (newLimit) => {
-  transactionStore.fetchItems({ limit: newLimit })
+async function handleLimitChange(newLimit) {
+  try {
+    loading.value = true
+    await transactionStore.fetchItems({ limit: newLimit })
+  } catch (err) {
+    notifyError(err, 'Gagal mengganti limit')
+  } finally {
+    loading.value = false
+  }
 }
 
-const handleSearch = (search) => {
-  transactionStore.fetchItems({ search })
-}
-
-async function updateOrderStatusToCancelled(orderId) {
-  await transactionStore.updateTransactionStatus(orderId, 'CANCELLED')
+async function handleSearch(search) {
+  try {
+    loading.value = true
+    await transactionStore.fetchItems({ search })
+  } catch (err) {
+    notifyError(err, 'Gagal mencari data')
+  } finally {
+    loading.value = false
+  }
 }
 
 async function deleteOrder(orderId) {
-  await transactionStore.deleteItem(orderId)
+  try {
+    loading.value = true
+    await transactionStore.deleteItem(orderId)
+    await transactionStore.fetchItems()
+  } catch (err) {
+    notifyError(err, 'Gagal menghapus pesanan')
+  } finally {
+    loading.value = false
+  }
+}
+
+function handleView(orderId) {
+  idValueSelected.value = orderId
+  openViewModalValue.value = true
+}
+
+function handleEdit(orderId) {
+  idValueSelected.value = orderId
+  showEditModal.value = true
+}
+
+function handleEditPayment(orderId) {
+  idValueSelected.value = orderId
+  showPaymentModal.value = true
 }
 </script>

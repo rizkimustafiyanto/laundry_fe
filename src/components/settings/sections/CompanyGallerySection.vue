@@ -15,7 +15,7 @@
         v-for="item in items"
         :key="item.id"
         class="p-4 rounded-xl shadow-md relative"
-        :class="themeClass.baseDiv.glass"
+        :class="themeClass.baseDiv.secondary"
       >
         <img
           :src="`${__BASE_URL__}${item.imageUrl}`"
@@ -25,14 +25,14 @@
         <h3 class="text-lg font-semibold mb-2">{{ item.caption }}</h3>
 
         <div class="flex justify-end space-x-2">
-          <BaseButton @click="openEditModal(item)" icon="edit" size="sm" variant="secondary" />
+          <BaseButton @click="openEditModal(item)" icon="edit" size="sm" variant="mist" />
           <BaseButton @click="deleteItem(item.id)" icon="trash" size="sm" variant="danger" />
         </div>
       </div>
 
       <div
         class="flex items-center justify-center p-4 rounded-xl border-2 border-dashed cursor-pointer"
-        :class="[themeClass.borderColor.secondary, themeClass.hover.secondary]"
+        :class="[themeClass.border.dark, themeClass.hover.secondary]"
         @click="openEditModal(null)"
       >
         <span :class="themeClass.text.secondary">+ Add New Gallery</span>

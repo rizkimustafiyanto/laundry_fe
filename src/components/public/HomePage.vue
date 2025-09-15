@@ -13,7 +13,9 @@ onBeforeMount(() => {
 <template>
   <div class="w-full">
     <HeadSection />
-    <BodySection />
-    <FootSection class="mt-12" />
+    <main class="pt-8 md:pt-8">
+      <BodySection />
+      <FootSection class="mt-12" />
+    </main>
   </div>
 </template>

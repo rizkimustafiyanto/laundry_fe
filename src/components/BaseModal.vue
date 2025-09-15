@@ -7,19 +7,22 @@
     >
       <transition name="modal-scale">
         <div
+          v-if="modelValue"
           :class="[
             'rounded-2xl shadow-xl w-full mx-4 relative max-h-[90vh] flex flex-col',
             widthClass,
-            themeClass.baseDiv.secondary,
+            themeClass.baseDiv[variant],
           ]"
-          v-if="modelValue"
         >
-          <!-- Header -->
-          <div class="flex items-center justify-between px-6 pt-6">
-            <h3 class="text-lg font-semibold" :class="themeClass.text.glass">
+          <div class="flex items-center justify-between px-6 pt-6 pb-4">
+            <h3 class="text-lg font-semibold" :class="themeClass.text.secondary">
               {{ title }}
             </h3>
-            <button :class="['p-1 rounded-full']" @click="close">
+            <button
+              class="p-1 rounded-full hover:opacity-80 transition"
+              @click="close"
+              :class="themeClass.text.secondary"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6"
@@ -33,8 +36,7 @@
             </button>
           </div>
 
-          <!-- Body scrollable -->
-          <div class="overflow-y-auto px-6 pb-6 pt-4 scrollbar-none">
+          <div class="overflow-y-auto px-6 pb-6 scrollbar-none">
             <slot />
           </div>
         </div>
@@ -65,6 +67,10 @@ const props = defineProps({
     default: 'lg',
     validator: (val) =>
       ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl'].includes(val),
+  },
+  variant: {
+    type: String,
+    default: 'secondary',
   },
 })
 

@@ -117,6 +117,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (authStore.token && !authStore.checkTokenValidity()) {
+    notifyError('', `Token is expired! Please re-login`)
     authStore.logout()
     return next({ name: 'Login' })
   }

@@ -44,8 +44,12 @@
 
       <div>
         <BaseInput label="Image" type="file" @update:file="handleFileUpload" :required="false" />
-        <div v-if="logoPreview" class="mt-2">
-          <img :src="logoPreview" alt="Logo Preview" class="h-16 w-16 object-cover rounded" />
+        <div v-if="logoPreview" class="mt-2 flex justify-center items-center">
+          <img
+            :src="`${__BASE_URL__}${logoPreview}`"
+            alt="Logo Preview"
+            class="h-20 w-20 object-cover rounded shadow"
+          />
         </div>
       </div>
 
@@ -80,7 +84,7 @@ watch(
       Object.keys(store.formPayload || {}).forEach((key) => {
         formPayload[key] = newItem[key] || ''
       })
-      logoPreview.value = newItem.logoUrl ? `${__BASE_URL__}${newItem.logoUrl}` : null
+      logoPreview.value = newItem.logoUrl ? newItem.logoUrl : null
       fileObj.value = null
     } else if (props.mode === 'create') {
       Object.keys(store.formPayload || {}).forEach((key) => {

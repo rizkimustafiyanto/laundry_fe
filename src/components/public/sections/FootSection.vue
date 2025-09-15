@@ -4,7 +4,6 @@
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-0"
       >
-        <!-- Company Info -->
         <div class="flex flex-col items-start space-y-4">
           <img
             :src="`${__BASE_URL__}${company.logoUrl}`"
@@ -15,14 +14,12 @@
           <p class="text-sm max-w-xs">{{ company.about }}</p>
         </div>
 
-        <!-- Contact Info -->
         <div class="flex flex-col space-y-2 text-sm">
           <div><span class="font-semibold">Email:</span> {{ company.email }}</div>
           <div><span class="font-semibold">Phone:</span> {{ company.phone }}</div>
           <div><span class="font-semibold">Address:</span> {{ company.address }}</div>
         </div>
 
-        <!-- Social Media -->
         <div class="flex flex-col space-y-2">
           <span class="font-semibold">Follow Us</span>
           <div class="flex space-x-3">
@@ -64,7 +61,6 @@
           </div>
         </div>
 
-        <!-- Sponsors -->
         <div v-if="company.sponsors?.length" class="flex flex-col space-y-2">
           <span class="font-semibold">Sponsors</span>
           <div class="flex space-x-3">
@@ -84,7 +80,6 @@
         </div>
       </div>
 
-      <!-- Copyright -->
       <div class="mt-8 text-center text-sm text-gray-400">
         &copy; {{ new Date().getFullYear() }} {{ company.name }}. All rights reserved.
       </div>

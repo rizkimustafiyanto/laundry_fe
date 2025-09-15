@@ -1,25 +1,29 @@
 <template>
-  <BaseModal v-model="modelValue" title="Detail Transaksi" size="md">
-    <BaseCard class="p-6 font-mono text-sm shadow-md" :class="themeClass.baseDiv.dark">
-      <!-- Header -->
+  <BaseModal
+    v-model="modelValue"
+    :title="isPaymentMode ? 'Pembayaran Transaksi' : 'Detail Transaksi'"
+    size="md"
+  >
+    <BaseLoadingSpinner v-if="isPrepare" :type="'mini'" />
+    <BaseCard v-else class="p-6 font-mono text-sm shadow-md" :class="themeClass.baseDiv.dark">
       <div class="text-center mb-4">
-        <h2 class="text-lg font-bold">Laundry Express</h2>
-        <p class="text-gray-500 dark:text-gray-400">Konfirmasi Sebelum Pembayaran</p>
+        <h2 class="text-lg font-bold">{{ appName }}</h2>
+        <p :class="themeClass.text.secondary">
+          {{ isPaymentMode ? 'Konfirmasi & Lakukan Pembayaran' : 'Rincian Transaksi' }}
+        </p>
       </div>
 
-      <hr class="border-dashed border-gray-300 dark:border-gray-700 mb-4" />
+      <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <!-- Customer Info -->
-      <div class="space-y-1">
+      <section class="space-y-1">
         <h3 class="font-semibold">👤 Pelanggan</h3>
         <p>Nama: {{ form.customer?.name }}</p>
         <p>Email: {{ form.customer?.email }}</p>
-      </div>
+      </section>
 
-      <hr class="my-3 border-dashed border-gray-300 dark:border-gray-700" />
+      <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <!-- Items -->
-      <div>
+      <section>
         <h3 class="font-semibold mb-2">🧺 Item Laundry</h3>
         <div
           v-for="(item, index) in form.items"
@@ -34,89 +38,130 @@
             Berat: {{ item.weightInKg }} kg × {{ formatCurrency(item.unitPrice) }}
           </div>
         </div>
-      </div>
+      </section>
 
-      <hr class="my-3 border-dashed border-gray-300 dark:border-gray-700" />
+      <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <!-- Invoice Details -->
-      <div class="space-y-1">
+      <section class="space-y-1">
         <h3 class="font-semibold">💳 Rincian Pembayaran</h3>
 
-        <div class="flex justify-between">
-          <span>Subtotal</span>
-          <span>{{ formatCurrency(form.invoice?.subtotal) }}</span>
+        <div class="flex justify-between" v-for="(val, key) in invoiceDetails" :key="key">
+          <span>{{ val.label }}</span>
+          <span :class="val.isDiscount ? 'text-red-500' : ''">
+            {{ val.isDiscount ? '-' : '' }}{{ formatCurrency(val.value) }}
+          </span>
         </div>
 
-        <div class="flex justify-between">
-          <span>Service Fee</span>
-          <span>{{ formatCurrency(form.invoice?.serviceCharge) }}</span>
-        </div>
-
-        <div class="flex justify-between">
-          <span>Pickup Fee</span>
-          <span>{{ formatCurrency(form.invoice?.pickupFee) }}</span>
-        </div>
-
-        <div class="flex justify-between">
-          <span>Delivery Fee</span>
-          <span>{{ formatCurrency(form.invoice?.deliveryFee) }}</span>
-        </div>
-
-        <div class="flex justify-between">
-          <span>Tax</span>
-          <span>{{ formatCurrency(form.invoice?.tax) }}</span>
-        </div>
-
-        <div class="flex justify-between">
-          <span>Discount</span>
-          <span>-{{ formatCurrency(form.invoice?.discount) }}</span>
-        </div>
-
-        <!-- Grand Total -->
         <div class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-lg">
           <span>Total Harus Dibayar</span>
           <span>{{ formatCurrency(form.invoice?.grandTotal) }}</span>
         </div>
-      </div>
+      </section>
 
-      <hr class="my-4 border-dashed border-gray-300 dark:border-gray-700" />
+      <section v-if="!isPaidCompleted && mode !== 'view'" class="mt-4 space-y-3">
+        <h3 class="font-semibold">🧾 Input Pembayaran</h3>
 
-      <!-- Footer -->
+        <BaseSelect
+          v-model="paymentStore.formPayload.paymentMethod"
+          label="Metode Pembayaran"
+          :options="paymentOptions"
+          placeholder="-- Pilih Pembayaran --"
+        />
+
+        <BaseButton class="w-full" @click="submitPayment">Konfirmasi Bayar</BaseButton>
+      </section>
+
+      <section
+        v-if="isPaidCompleted"
+        class="mt-6 border-t border-dashed pt-4 text-center space-y-2"
+      >
+        <h3 class="font-bold text-green-600">✅ TRANSAKSI SELESAI</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          Terima kasih telah menggunakan layanan {{ appName }} 🙏
+        </p>
+        <div class="text-xs text-gray-500 dark:text-gray-400">
+          Status: <span class="font-semibold">PAID</span><br />
+          Tanggal: {{ form.payment.paidAt ? formatDate(form.payment.paidAt) : 'No Paid' }}
+        </div>
+      </section>
+
+      <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
+
       <div class="text-center text-xs text-gray-500 dark:text-gray-400">
-        Mohon pastikan rincian benar sebelum melanjutkan pembayaran 🙏
+        {{
+          isPaymentMode && !isPaidCompleted
+            ? 'Mohon pastikan rincian benar sebelum melanjutkan pembayaran 🙏'
+            : 'Detail transaksi untuk pengecekan 🙏'
+        }}
       </div>
     </BaseCard>
   </BaseModal>
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue'
-
-import { formatCurrency } from '@/utils/formatters'
-import { useThemeClass } from '@/composables/useThemeClass'
-
 const props = defineProps({
   orderId: { type: String, required: true },
+  mode: { type: String, default: 'view' },
 })
 
 const modelValue = defineModel()
 const transactionStore = useTransactionStore()
+const paymentStore = usePaymentStore()
 const themeClass = useThemeClass()
+const paymentMethodStore = usePaymentMethodStore()
+const storeCompany = useCompanyProfileStore()
+
+const isPrepare = ref(true)
+
+const appName = computed(() => storeCompany.items[0]?.name || 'Laundry App')
 
 const form = reactive({
   customer: null,
   items: [],
-  invoice: null, // ganti payment -> invoice
+  invoice: null,
+  status: null,
+  payment: [],
 })
 
+const isPaymentMode = computed(() => props.mode === 'payment')
+const paymentOptions = computed(() => paymentMethodStore.options)
+
+const invoiceDetails = computed(() => [
+  { label: 'Subtotal', value: form.invoice?.subtotal },
+  { label: 'Service Fee', value: form.invoice?.serviceCharge },
+  { label: 'Pickup Fee', value: form.invoice?.pickupFee },
+  { label: 'Delivery Fee', value: form.invoice?.deliveryFee },
+  { label: 'Tax', value: form.invoice?.tax },
+  { label: 'Discount', value: form.invoice?.discount, isDiscount: true },
+])
+
+const isPaidCompleted = computed(() => form.payment && form.payment.status === 'PAID')
+
 const loadOrder = async () => {
-  if (!props.orderId) return
-  await transactionStore.fetchTransactionById(props.orderId)
-  const order = transactionStore.selectedTransaction
-  form.customer = order.customer
-  form.items = order.items
-  form.invoice = order.invoice
+  try {
+    isPrepare.value = true
+    if (!props.orderId) return
+    await paymentMethodStore.fetch()
+    await transactionStore.fetchTransactionById(props.orderId)
+    const order = transactionStore.item
+    form.customer = order.customer
+    form.items = order.items
+    form.invoice = order.invoice
+    form.status = order.status
+    form.payment = order.payment
+  } finally {
+    isPrepare.value = false
+  }
 }
 
-onMounted(loadOrder)
+const submitPayment = async () => {
+  paymentStore.formPayload.amountPaid = form.invoice?.grandTotal
+  await paymentStore.addPayment(props.orderId, paymentStore.formPayload)
+  modelValue.value = false
+}
+
+onMounted(() => {
+  loadOrder()
+  paymentStore.resetForm()
+})
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div class="flex flex-col gap-4">
     <ProfileSection :profile="profile" />
     <AddressSection :addresses="items" />
   </div>

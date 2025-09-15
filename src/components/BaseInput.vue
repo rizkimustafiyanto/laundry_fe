@@ -70,18 +70,18 @@
 
       <!-- Date Picker -->
       <template v-else-if="type === 'date'">
-        <VueDatePicker
-          v-model="innerDate"
+        <input
+          ref="inputRef"
           :id="id"
+          :type="computedType"
           :placeholder="placeholder"
+          :value="modelValue"
           :disabled="disabled"
-          :enable-time-picker="enableTimePicker"
-          :range="range"
-          :format="format"
+          :autocomplete="autocomplete"
+          @input="$emit('update:modelValue', $event.target.value)"
+          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input.mist, roundedClass, { 'pl-10': icon, 'pr-10': isPassword }]"
           :required="required"
-          :dark="themeClass.baseDiv === 'dark'"
-          auto-apply
-          :class="roundedClass"
         />
       </template>
 
@@ -116,9 +116,6 @@
 </template>
 
 <script setup>
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
-
 const themeClass = useThemeClass()
 
 const props = defineProps({
@@ -176,13 +173,6 @@ function handleFileChange(event) {
   if (file) emit('update:file', file)
 }
 
-const innerDate = ref(props.modelValue)
-watch(innerDate, (val) => emit('update:modelValue', val))
-watch(
-  () => props.modelValue,
-  (val) => (innerDate.value = val),
-)
-
 const inputRef = ref(null)
 
 defineExpose({
@@ -192,9 +182,3 @@ defineExpose({
 
 const roundedClass = computed(() => `rounded-${props.rounded}`)
 </script>
-
-<style scoped>
-::v-deep(.dp__input) {
-  @apply w-full p-2.5 pl-10 border rounded-xl focus:outline-none focus:ring-2 transition border-gray-300 bg-white text-gray-900 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-gray-500;
-}
-</style>

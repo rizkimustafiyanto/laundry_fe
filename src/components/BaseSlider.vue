@@ -45,7 +45,7 @@ defineProps({
   },
   fixedHeight: {
     type: String,
-    default: 'h-60 sm:h-72 md:h-80',
+    default: 'min-h-[15rem] sm:min-h-[18rem] md:min-h-[20rem]',
   },
   effect: {
     type: String,
@@ -92,7 +92,7 @@ const handleClick = (slide) => {
           <img
             :src="`${__BASE_URL__}${slide.imageUrl}`"
             :alt="slide.caption || 'slide image'"
-            class="w-full"
+            class="w-full rounded-xl"
             :class="[fixedHeight, `object-${imageMode}`]"
           />
 

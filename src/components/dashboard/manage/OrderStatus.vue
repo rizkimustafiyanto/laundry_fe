@@ -4,11 +4,11 @@
     <div v-else-if="filteredOrders.length === 0 && !loading" :class="themeClass.text.dark">
       Belum ada pesanan.
     </div>
-    <div v-else>
+    <div class="space-y-2" v-else>
       <BaseCard
         v-for="order in filteredOrders"
         :key="order.id"
-        class="p-2 rounded-lg space-y-2"
+        class="p-2 rounded-lg"
         variant="secondary"
       >
         <div class="flex justify-between items-center">
@@ -16,21 +16,31 @@
             <div class="font-semibold">#{{ order.invoiceNumber }}</div>
             <div class="text-sm text-gray-500">Status: {{ statusDraft[order.id] }}</div>
           </div>
-          <div class="flex gap-2">
+          <div class="flex gap-2 items-center">
             <BaseSelect
               v-model="statusDraft[order.id]"
               :options="statusOption"
+              class="text-xs"
               placeholder="Pilih Status"
+            />
+            <BaseButton
+              v-if="!['COMPLETED', 'CANCELLED'].includes(order.status)"
+              size="sm"
+              @click="emit('onPayment', order.id)"
+              variant="teal"
+              icon="dollar"
             />
             <BaseButton
               v-if="isStatusChanged(order.id)"
               icon="save"
+              size="md"
               @click="updateStatus(order.id)"
-              variant="success"
+              variant="primary"
             />
             <BaseButton
               v-if="isCancelledOrder(statusDraft[order.id])"
               icon="stop"
+              size="md"
               @click="cancelOrder(order.id)"
               variant="danger"
             />
@@ -38,7 +48,7 @@
         </div>
       </BaseCard>
     </div>
-    <OrderView v-if="showModalDetail" v-model="showModalDetail" :orderId="selectedOrderId" />
+
     <BasePagination
       v-if="pagination.totalData > 0"
       :pagination="pagination"
@@ -50,8 +60,6 @@
 </template>
 
 <script setup>
-import OrderView from '@/components/dashboard/form/OrderView.vue'
-
 const statusStore = useStatusStore()
 const transactionStore = useTransactionStore()
 const loadingStore = useLoadingStore()
@@ -59,7 +67,8 @@ const themeClass = useThemeClass()
 
 const originalStatuses = reactive({})
 const statusDraft = reactive({})
-const filteredOrders = ref([])
+
+const filteredOrders = computed(() => transactionStore.items)
 
 const pagination = computed(() => ({
   currentPage: transactionStore.meta.currentPage,
@@ -69,35 +78,29 @@ const pagination = computed(() => ({
 
 const loading = computed(() => loadingStore.isLoading)
 
+const emit = defineEmits(['view', 'onPayment'])
+
 onMounted(async () => {
   await statusStore.fetchItems()
 })
 
-watch(
-  () => transactionStore.items,
-  (newOrders) => {
-    filteredOrders.value = newOrders
-
-    newOrders.forEach((order) => {
-      if (!(order.id in originalStatuses)) {
-        originalStatuses[order.id] = order.status
-        statusDraft[order.id] = order.status
-      }
-    })
-  },
-  { immediate: true },
-)
-
-const showModalDetail = ref(false)
-const selectedOrderId = ref('')
+watchEffect(() => {
+  filteredOrders.value.forEach((order) => {
+    if (!(order.id in originalStatuses)) {
+      originalStatuses[order.id] = order.status
+    }
+    if (!(order.id in statusDraft)) {
+      statusDraft[order.id] = order.status
+    }
+  })
+})
 
 const fetchTransactionPage = async (page = 1) => {
   await transactionStore.fetchItems({ page, limit: transactionStore.meta.limit })
 }
 
 const openDetail = (orderId) => {
-  selectedOrderId.value = orderId
-  showModalDetail.value = true
+  emit('view', orderId)
 }
 
 const isStatusChanged = (id) => statusDraft[id] !== originalStatuses[id]
@@ -110,13 +113,24 @@ const updateStatus = async (id) => {
 }
 
 const cancelOrder = async (id) => {
-  statusDraft[id] = 'CANCELLED'
-  await updateStatus(id)
+  try {
+    await notifyConfirm({
+      title: 'Batalkan Pesanan',
+      message: 'Apakah Anda yakin ingin membatalkan pesanan ini?',
+      requireReason: true,
+    })
+
+    statusDraft[id] = 'CANCELLED'
+    await transactionStore.updateTransactionStatus(id, statusDraft[id])
+    originalStatuses[id] = statusDraft[id]
+  } catch (error) {
+    if (error !== 'cancelled') {
+      notifyError(error, 'Cancel process gagal')
+    }
+  }
 }
 
 const handlePageChange = (page) => fetchTransactionPage(page)
 
-const statusOption = computed(() =>
-  statusStore.options.filter((q) => q.label.toLowerCase() !== 'all'),
-)
+const statusOption = computed(() => statusStore.options)
 </script>

@@ -47,11 +47,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useUIStore } from '@/stores/utils/ui'
-
 const router = useRouter()
 const userStore = useAuthStore()
-const ui = useUIStore()
 
 const name = ref('')
 const email = ref('')
@@ -91,16 +88,11 @@ const register = async () => {
 
   try {
     const result = await userStore.register(payload)
-
-    if (result.status === 201) {
-      ui.show('success', `Selamat datang, ${result.user.name}`)
-      resetForm()
-      goToLogin()
-    } else {
-      ui.show('failed', result.message)
-    }
+    notifySuccess(`Selamat datang, ${result.user.name}`)
+    resetForm()
+    goToLogin()
   } catch (err) {
-    ui.show('failed', err.response?.message)
+    notifyError(err, 'Unexpected Error!')
   }
 }
 

@@ -3,14 +3,14 @@
     <div
       v-if="items.length === 0 || !items"
       class="p-6 rounded-xl shadow-lg backdrop-blur-md flex justify-center items-center"
-      :class="[themeClass.baseDiv.glass]"
+      :class="[themeClass.baseDiv.secondary]"
     >
-      <BaseButton @click="openEditModal()" label="Create Company" size="md" variant="secondary" />
+      <BaseButton @click="openEditModal()" label="Create Company" size="md" variant="mist" />
     </div>
     <div
       v-else
       class="p-6 rounded-xl shadow-lg backdrop-blur-md relative"
-      :class="[themeClass.baseDiv.glass]"
+      :class="[themeClass.baseDiv.secondary]"
     >
       <div class="hidden md:flex absolute top-4 right-4 space-x-2">
         <BaseButton

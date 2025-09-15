@@ -57,12 +57,9 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { useUIStore } from '@/stores/utils/ui'
-
 const route = useRoute()
 const router = useRouter()
 const userStore = useAuthStore()
-const ui = useUIStore()
 
 const token = ref(route.query.token || '')
 const newPassword = ref('')
@@ -84,10 +81,10 @@ const handleSubmit = async () => {
   const response = await userStore.changePassword(payload)
 
   if (response.status === 200) {
-    ui.show('success', `Congratulation, ${response.message}`)
+    notifySuccess(`Congratulation, ${response.message}`)
     router.push('/login')
   } else {
-    ui.show('failed', response.message)
+    notifyError('failed', response.message)
   }
 }
 </script>

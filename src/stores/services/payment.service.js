@@ -1,5 +1,6 @@
 import { createStoreBuilder } from './store.builder.service'
 import api from '@/utils/api'
+import { notifySuccess, notifyError } from '@/utils/notify'
 
 export const usePaymentStore = createStoreBuilder({
   storeId: 'paymentStore',
@@ -11,18 +12,36 @@ export const usePaymentStore = createStoreBuilder({
   },
   customActions: {
     async addPayment(transactionId, payload) {
-      const res = await api.post(`/payments/${transactionId}/payment`, payload)
-      return res.data.data
+      try {
+        const res = await api.post(`/payments/${transactionId}/payment`, payload)
+        notifySuccess('Pembayaran berhasil ditambahkan')
+        return res.data.data
+      } catch (error) {
+        notifyError(error, 'Gagal menambahkan pembayaran')
+        throw error
+      }
     },
 
     async refundPayment(transactionId, note = null) {
-      const res = await api.post(`/payments/${transactionId}/refund`, { note })
-      return res.data.data
+      try {
+        const res = await api.post(`/payments/${transactionId}/refund`, { note })
+        notifySuccess('Refund berhasil diproses')
+        return res.data.data
+      } catch (error) {
+        notifyError(error, 'Gagal memproses refund')
+        throw error
+      }
     },
 
     async voidPayment(transactionId) {
-      const res = await api.post(`/payments/${transactionId}/void`)
-      return res.data.data
+      try {
+        const res = await api.post(`/payments/${transactionId}/void`)
+        notifySuccess('Pembayaran berhasil dibatalkan')
+        return res.data.data
+      } catch (error) {
+        notifyError(error, 'Gagal membatalkan pembayaran')
+        throw error
+      }
     },
   },
 })
@@ -33,8 +52,13 @@ export const useRunningPreviewStore = createStoreBuilder({
   defaultPayload: {},
   customActions: {
     async fetchRunningPreview() {
-      const res = await api.get('/payments/preview/running')
-      this.item = res.data.data
+      try {
+        const res = await api.get('/payments/preview/running')
+        this.item = res.data.data
+      } catch (error) {
+        notifyError(error, 'Gagal memuat preview pembayaran berjalan')
+        throw error
+      }
     },
   },
 })
@@ -45,13 +69,23 @@ export const useTransactionPreviewStore = createStoreBuilder({
   defaultPayload: {},
   customActions: {
     async fetchTransactionPreview(transactionId) {
-      const res = await api.get(`/payments/${transactionId}/preview`)
-      this.item = res.data.data
+      try {
+        const res = await api.get(`/payments/${transactionId}/preview`)
+        this.item = res.data.data
+      } catch (error) {
+        notifyError(error, 'Gagal memuat preview transaksi')
+        throw error
+      }
     },
 
     async fetchInvoiceStatus(transactionId) {
-      const res = await api.get(`/payments/${transactionId}/status`)
-      this.item = res.data.data
+      try {
+        const res = await api.get(`/payments/${transactionId}/status`)
+        this.item = res.data.data
+      } catch (error) {
+        notifyError(error, 'Gagal memuat status invoice')
+        throw error
+      }
     },
   },
 })

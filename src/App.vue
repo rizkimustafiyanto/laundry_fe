@@ -16,6 +16,7 @@
       :message="ui.modalMessage"
       @close="ui.hide"
     />
+    <BaseConfirmation />
   </div>
 </template>
 

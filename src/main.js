@@ -13,8 +13,10 @@ import App from './App.vue'
 import router from './router'
 import { initApp } from './composables/useInitApp'
 
+import BaseBadge from './components/BaseBadge.vue'
 import BaseButton from './components/BaseButton.vue'
 import BaseCard from './components/BaseCard.vue'
+import BaseConfirmation from './components/BaseConfirmation.vue'
 import BaseDropdown from './components/BaseDropdown.vue'
 import BaseInput from './components/BaseInput.vue'
 import BaseLoadingSpinner from './components/BaseLoadingSpinner.vue'
@@ -36,8 +38,10 @@ app.use(pinia)
 app.use(router)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
+app.component('BaseBadge', BaseBadge)
 app.component('BaseButton', BaseButton)
 app.component('BaseCard', BaseCard)
+app.component('BaseConfirmation', BaseConfirmation)
 app.component('BaseDropdown', BaseDropdown)
 app.component('BaseInput', BaseInput)
 app.component('BaseLoadingSpinner', BaseLoadingSpinner)

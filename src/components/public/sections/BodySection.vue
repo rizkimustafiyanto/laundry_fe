@@ -25,7 +25,7 @@
       <BaseCard
         v-for="(service, index) in services"
         :key="index"
-        variant="glass"
+        variant="mist"
         classOverride="p-6 hover:shadow-md transition"
       >
         <h3 :class="['text-xl font-semibold mb-2', themeClass.text.teal]">
@@ -40,12 +40,15 @@
     <!-- Galleries (Testimoni/Foto) -->
     <div v-if="companyGalleries.length" class="py-6">
       <h2 class="text-2xl font-bold mb-6" :class="themeClass.text.secondary">Galeri Kami</h2>
-      <BaseSlider
-        :slides="companyGalleries"
-        captionMode="outside"
-        captionVariant="muted"
-        image-mode="fill"
-      />
+      <div class="px-8">
+        <BaseSlider
+          :slides="companyGalleries"
+          captionMode="outside"
+          captionVariant="muted"
+          image-mode="cover"
+          fixed-height="max-h-[15rem] sm:max-h-[18rem] md:max-h-[25rem] min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]"
+        />
+      </div>
     </div>
 
     <!-- CTA -->

@@ -11,13 +11,15 @@ const role = computed(() => userStore.role)
 
 const filteredMenuItems = computed(() => buildMenu(role.value))
 
+const themeClass = useThemeClass()
+
 function navigateTo(path) {
   router.push(path)
 }
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div :class="['min-h-screen', themeClass.thead]">
     <BaseNavbar
       title="Admin Panel"
       :active="route.path"

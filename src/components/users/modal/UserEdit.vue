@@ -32,7 +32,7 @@
             label="Status"
           />
         </div>
-        <BaseButton type="submit" label="Save" variant="primary" class="w-full mt-4" />
+        <BaseButton type="submit" label="Save" variant="teal" class="w-full mt-4" />
       </form>
     </BaseCard>
   </BaseModal>

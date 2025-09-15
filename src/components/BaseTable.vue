@@ -1,6 +1,5 @@
 <template>
-  <div class="relative overflow-x-auto sm:rounded-lg p-4">
-    <!-- Search & Dropdown -->
+  <div :class="['relative overflow-x-auto sm:rounded-lg p-4']">
     <div class="flex justify-between items-center pb-2">
       <div class="flex flex-row gap-2">
         <BaseInput
@@ -8,14 +7,13 @@
           :modelValue="searchQuery"
           @update:modelValue="handleSearchQuery"
           placeholder="Cari..."
-          :class="themeClass.input.mist"
         />
         <div v-if="limitable" class="hidden md:flex gap-2 items-center">
           <select
             v-model="localLimit"
             @change="applyLimit"
-            class="px-2 py-3 text-sm"
-            :class="themeClass.select.mist"
+            class="px-2 py-3 text-sm rounded"
+            :class="themeClass.select.secondary"
           >
             <option v-for="n in [5, 10, 20, 50, 100]" :key="n" :value="n">
               {{ n }}
@@ -30,26 +28,39 @@
         @update:modelValue="handleDropdownSelect"
         :options="dropdownItems"
         :placeholder="dropdownLabel"
-        :class="themeClass.select.mist"
       />
     </div>
 
-    <!-- Table -->
     <div v-if="!loading && items?.length" class="w-full overflow-x-auto">
       <table
         class="w-full text-sm text-left rounded-xl border min-w-max"
-        :class="themeClass.borderColor"
+        :class="themeClass.border.secondary"
       >
         <thead class="text-xs uppercase" :class="themeClass.thead">
           <tr>
-            <th v-for="(col, index) in computedColumns" :key="index" class="px-6 py-3">
+            <th
+              v-for="(col, index) in computedColumns"
+              :key="index"
+              class="px-6 py-3"
+              :class="themeClass.text.secondary"
+            >
               {{ col.label }}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.id" class="border-b" :class="themeClass.trHover">
-            <td v-for="col in computedColumns" :key="col.key" class="px-6 py-4">
+          <tr
+            v-for="item in items"
+            :key="item.id"
+            class="border-b"
+            :class="[themeClass.hoverless.secondary, themeClass.border.secondary]"
+          >
+            <td
+              v-for="col in computedColumns"
+              :key="col.key"
+              class="px-6 py-4"
+              :class="themeClass.text.secondary"
+            >
               <slot :name="col.key" :value="item[col.key]" :item="item">
                 {{ item[col.key] }}
               </slot>
@@ -64,12 +75,10 @@
       Tidak ada data ditemukan.
     </div>
 
-    <!-- Pagination -->
     <BasePagination
       v-if="!loading && items?.length && pagination"
       :pagination="pagination"
       @page-change="$emit('page-change', $event)"
-      :class="themeClass.baseDiv"
     />
   </div>
 </template>

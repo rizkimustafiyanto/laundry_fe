@@ -41,11 +41,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useUIStore } from '@/stores/utils/ui'
-
 const router = useRouter()
 const userStore = useAuthStore()
-const ui = useUIStore()
 
 const email = ref('')
 const message = ref('')
@@ -55,10 +52,10 @@ const handleSubmit = async () => {
   const response = await userStore.forgetPassword(email.value)
 
   if (response.status === 200) {
-    ui.show('success', `Congratulation`)
+    notifySuccess('Congratulation')
     router.push('/login')
   } else {
-    ui.show('failed', response.message)
+    notifyError('failed', response.message)
     message.value = response.message
     isError.value = true
   }

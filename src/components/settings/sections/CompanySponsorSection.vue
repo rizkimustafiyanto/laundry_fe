@@ -1,5 +1,5 @@
 <template>
-  <div :class="[themeClass.baseDiv.glass, 'p-6 rounded-xl shadow-lg backdrop-blur-md']">
+  <div :class="[themeClass.baseDiv.secondary, 'p-6 rounded-xl shadow-lg backdrop-blur-md']">
     <h2 class="text-xl font-semibold mb-4">Company Sponsor</h2>
 
     <div class="space-y-4 mb-6">
@@ -7,8 +7,9 @@
         v-for="item in items"
         :key="item.id"
         :class="[
-          themeClass.baseDiv.secondary,
-          'p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3',
+          themeClass.baseDiv.mist,
+          'p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 border',
+          themeClass.border.dark,
         ]"
       >
         <div class="flex items-center gap-4 w-full sm:w-auto">
@@ -32,25 +33,13 @@
         </div>
 
         <div class="flex flex-wrap gap-2 mt-2 sm:mt-0">
-          <BaseButton
-            variant="warning"
-            class="w-full sm:w-20"
-            :icon="'edit'"
-            v-if="true"
-            @click="openEditModal(item)"
-          />
-          <BaseButton
-            variant="danger"
-            class="w-full sm:w-20"
-            :icon="'trash'"
-            v-if="true"
-            @click="deleteItem(item.id)"
-          />
+          <BaseButton variant="dark" :icon="'edit'" size="sm" @click="openEditModal(item)" />
+          <BaseButton variant="danger" :icon="'trash'" size="sm" @click="deleteItem(item.id)" />
         </div>
       </div>
     </div>
 
-    <BaseButton variant="primary" class="w-full mb-4" :icon="'plus'" @click="openEditModal(null)" />
+    <BaseButton variant="sky" class="w-full mb-4" :icon="'plus'" @click="openEditModal(null)" />
 
     <CompanySponsorForm
       v-model="modalOpen"

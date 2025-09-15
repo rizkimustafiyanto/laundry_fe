@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { api, apiForm } from '@/utils/api'
-import { notifyError, notifySuccess } from '@/utils/notify'
+import { notifyError, notifySuccess, notifyConfirm } from '@/utils/notify'
 import { mapMeta } from '@/utils/formatters'
 
 export function createStoreBuilder({
@@ -104,11 +104,18 @@ export function createStoreBuilder({
 
       async deleteItem(id) {
         try {
+          await notifyConfirm({
+            title: 'Hapus Data',
+            message: `Apakah Anda yakin ingin menghapus ${storeId} ini?`,
+          })
+
           await api.delete(`${endpoint}/${id}`)
           notifySuccess(`${storeId} berhasil dihapus`)
           this.items = this.items.filter((i) => i.id !== id)
         } catch (err) {
-          notifyError(err, `Gagal menghapus ${storeId}`)
+          if (err !== 'cancelled') {
+            notifyError(err, `Gagal menghapus ${storeId}`)
+          }
         }
       },
 

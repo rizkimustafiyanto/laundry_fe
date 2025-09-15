@@ -1,7 +1,7 @@
 <template>
   <header
     class="shadow-md px-6 py-4 flex justify-between items-center transition duration-300"
-    :class="themeClass.thead"
+    :class="themeClass.baseDiv.subtle"
   >
     <h1
       :class="['text-2xl font-semibold cursor-pointer', themeClass.text.teal]"
@@ -14,17 +14,17 @@
     <nav class="hidden md:flex items-center">
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="relative">
-          <div
-            @click="toggleDropdown(item.key)"
-            :class="[
-              menuClass(item.key),
-              themeClass.hoverless.teal,
-              'cursor-pointer flex items-center gap-2',
-            ]"
-            class="z-10 focus:outline-none"
-          >
-            <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
-            {{ item.label }}
+          <div @click="toggleDropdown(item.key)" class="z-10 focus:outline-none px-1">
+            <div
+              :class="[
+                menuClass(item.key),
+                themeClass.hoverless.teal,
+                'cursor-pointer flex items-center gap-2',
+              ]"
+            >
+              <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
+              {{ item.label }}
+            </div>
           </div>
           <transition name="fade-scale">
             <div
@@ -51,22 +51,22 @@
             </div>
           </transition>
         </div>
-        <div
-          v-else
-          @click="selectDesktop(item.key)"
-          :class="[
-            menuClass(item.key),
-            themeClass.hoverless.teal,
-            'cursor-pointer flex items-center gap-2',
-          ]"
-        >
-          <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
-          {{ item.label }}
+        <div v-else @click="selectDesktop(item.key)" class="px-1">
+          <div
+            :class="[
+              menuClass(item.key),
+              themeClass.hoverless.teal,
+              'cursor-pointer flex items-center gap-2',
+            ]"
+          >
+            <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
+            {{ item.label }}
+          </div>
         </div>
       </template>
 
       <div
-        class="flex items-center justify-center cursor-pointer px-3"
+        class="flex items-center justify-center cursor-pointer px-1"
         @click="toggleTheme"
         :class="themeClass.icon.orange"
       >
@@ -208,7 +208,7 @@ const menuClass = (key, mobile = false) => {
   return `${base} ${
     isActive
       ? [themeClass.value.button.teal, 'rounded rounded-b-xl']
-      : [themeClass.value.text.muted]
+      : [themeClass.value.text.muted, 'rounded rounded-b-xl']
   }`
 }
 

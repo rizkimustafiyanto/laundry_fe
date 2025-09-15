@@ -7,11 +7,13 @@
     <form @submit.prevent="submitForm" class="space-y-4">
       <div>
         <BaseInput label="Image" type="file" @update:file="handleFileUpload" :required="false" />
-        <div v-if="imagePreview" class="mt-2">
+        <div v-if="imagePreview" class="mt-2 flex justify-center items-center">
           <img
-            :src="`${__BASE_URL__}${imagePreview}`"
+            :src="
+              imagePreview.startsWith('data:') ? imagePreview : `${__BASE_URL__}${imagePreview}`
+            "
             alt="Image Preview"
-            class="h-16 w-16 object-cover rounded"
+            class="h-20 w-20 object-cover rounded shadow"
           />
         </div>
       </div>
@@ -61,7 +63,7 @@ watch(
       Object.keys(store.formPayload || {}).forEach((key) => {
         formPayload[key] = newItem[key] || ''
       })
-      imagePreview.value = newItem.logoUrl ? `${__BASE_URL__}${newItem.logoUrl}` : null
+      imagePreview.value = newItem.logoUrl ? newItem.logoUrl : null
       fileObj.value = null
     } else if (props.mode === 'create') {
       Object.keys(store.formPayload || {}).forEach((key) => {

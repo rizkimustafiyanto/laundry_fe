@@ -1,5 +1,5 @@
 <template>
-  <BaseCard variant="secondary">
+  <BaseCard variant="mist">
     <div class="text-sm text-gray-400">{{ title }}</div>
     <div class="text-2xl font-bold">{{ value }}</div>
   </BaseCard>

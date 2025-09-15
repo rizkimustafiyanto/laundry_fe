@@ -1,5 +1,5 @@
 <template>
-  <BaseCard variant="glass">
+  <BaseCard variant="secondary">
     <BaseTable
       :items="transactions"
       :columns="columns"
@@ -30,8 +30,16 @@
 
       <template #actions="{ item }">
         <div class="flex gap-2">
-          <BaseButton size="sm" @edit="emit('edit', item)" variant="secondary" icon="pen" />
-          <BaseButton size="sm" @edit="emit('delete', item.id)" variant="danger" icon="trash" />
+          <BaseButton size="sm" @click="emit('view', item.id)" variant="secondary" icon="eye" />
+          <BaseButton
+            v-if="item.status === 'COMPLETED' && ['SUPER_ADMIN', 'OWNER'].includes(role)"
+            size="sm"
+            @click="emit('edit-payment', item.id)"
+            variant="teal"
+            icon="dollar"
+          />
+          <BaseButton size="sm" @click="emit('edit', item.id)" variant="warning" icon="pen" />
+          <BaseButton size="sm" @click="emit('delete', item.id)" variant="danger" icon="trash" />
         </div>
       </template>
     </BaseTable>
@@ -39,8 +47,7 @@
 </template>
 
 <script setup>
-import BaseButton from '@/components/BaseButton.vue'
-import { formatDate } from '@/utils/formatters.js'
+const { role } = storeToRefs(useAuthStore())
 
 defineProps({
   transactions: { type: Array, default: () => [] },
@@ -57,5 +64,7 @@ const emit = defineEmits([
   'search',
   'edit',
   'delete',
+  'view',
+  'edit-payment',
 ])
 </script>
