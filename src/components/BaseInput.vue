@@ -1,20 +1,24 @@
 <template>
-  <div class="py-1">
-    <label v-if="label" :for="id" class="block mb-2 font-medium" :class="themeClass.text.dark">
+  <div class="relative border-none bg-inherit">
+    <label
+      v-if="label"
+      :for="id"
+      class="block mb-2 font-medium"
+      :class="[themeClass.text.secondary, sizeClass.font]"
+    >
       {{ label }}
     </label>
 
     <div class="relative">
-      <!-- Icon kiri -->
       <div
         v-if="icon && type !== 'textarea' && type !== 'file' && type !== 'date'"
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-        :class="themeClass.icon.primary"
+        :class="[themeClass.icon.primary, sizeClass.icon]"
       >
         <font-awesome-icon :icon="['fas', icon]" />
       </div>
 
-      <!-- Textarea -->
+      <!-- TEXTAREA -->
       <template v-if="type === 'textarea'">
         <textarea
           :id="id"
@@ -24,13 +28,13 @@
           :autocomplete="autocomplete"
           :rows="rows"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition resize-y min-h-[100px]"
-          :class="[themeClass.input.mist, roundedClass]"
+          class="w-full border focus:outline-none focus:ring-2 transition resize-y scrollbar-none relative block leading-normal align-top"
+          :class="[themeClass.input.mist, roundedClass, sizeClass.font, sizeClass.wrapper]"
           :required="required"
         />
       </template>
 
-      <!-- File Input -->
+      <!-- FILE -->
       <template v-else-if="type === 'file'">
         <input
           ref="inputRef"
@@ -38,13 +42,13 @@
           type="file"
           :disabled="disabled"
           @change="handleFileChange"
-          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, roundedClass]"
+          class="w-full border focus:outline-none focus:ring-2 transition"
+          :class="[themeClass.input.mist, roundedClass, sizeClass.font, sizeClass.wrapper]"
           :required="required"
         />
       </template>
 
-      <!-- Number Input -->
+      <!-- NUMBER -->
       <template v-else-if="type === 'number'">
         <input
           ref="inputRef"
@@ -62,13 +66,19 @@
               $event.target.value === '' ? '' : Number($event.target.value),
             )
           "
-          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, themeClass.text.primary, roundedClass]"
+          class="w-full border focus:outline-none focus:ring-2 transition"
+          :class="[
+            themeClass.input.mist,
+            themeClass.text.primary,
+            roundedClass,
+            sizeClass.font,
+            sizeClass.wrapper,
+          ]"
           :required="required"
         />
       </template>
 
-      <!-- Date Picker -->
+      <!-- DATE -->
       <template v-else-if="type === 'date'">
         <input
           ref="inputRef"
@@ -79,13 +89,19 @@
           :disabled="disabled"
           :autocomplete="autocomplete"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, roundedClass, { 'pl-10': icon, 'pr-10': isPassword }]"
+          class="w-full border focus:outline-none focus:ring-2 transition"
+          :class="[
+            themeClass.input.mist,
+            roundedClass,
+            sizeClass.font,
+            sizeClass.wrapper,
+            { 'pl-10': icon, 'pr-10': isPassword },
+          ]"
           :required="required"
         />
       </template>
 
-      <!-- Default / Text / Password -->
+      <!-- DEFAULT INPUT -->
       <template v-else>
         <input
           ref="inputRef"
@@ -96,8 +112,14 @@
           :disabled="disabled"
           :autocomplete="autocomplete"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full p-2.5 border focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, roundedClass, { 'pl-10': icon, 'pr-10': isPassword }]"
+          class="w-full border focus:outline-none focus:ring-2 transition"
+          :class="[
+            themeClass.input.mist,
+            roundedClass,
+            sizeClass.font,
+            sizeClass.wrapper,
+            { 'pl-10': icon, 'pr-10': isPassword },
+          ]"
           :required="required"
         />
 
@@ -105,7 +127,7 @@
           v-if="isPassword"
           type="button"
           class="absolute inset-y-0 right-0 flex items-center pr-3"
-          :class="themeClass.icon.primary"
+          :class="[themeClass.icon.primary, sizeClass.icon]"
           @click="togglePassword"
         >
           <font-awesome-icon :icon="showPassword ? ['fas', 'eye-slash'] : ['fas', 'eye']" />
@@ -146,13 +168,15 @@ const props = defineProps({
     type: String,
     default: 'off',
   },
-  enableTimePicker: { type: Boolean, default: false },
-  range: { type: Boolean, default: false },
-  format: { type: String, default: 'yyyy-MM-dd' },
   rounded: {
     type: String,
-    default: 'xl',
+    default: 'lg',
     validator: (val) => ['none', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', 'full'].includes(val),
+  },
+  sizeVariant: {
+    type: String,
+    default: 'sm',
+    validator: (val) => ['xs', 'sm', 'md', 'lg', 'xl'].includes(val),
   },
 })
 
@@ -181,4 +205,21 @@ defineExpose({
 })
 
 const roundedClass = computed(() => `rounded-${props.rounded}`)
+
+const sizeClass = computed(() => {
+  switch (props.sizeVariant) {
+    case 'xs':
+      return { font: 'text-xs', wrapper: 'px-3 py-2 text-xs', icon: 'text-xs' }
+    case 'sm':
+      return { font: 'text-sm', wrapper: 'px-3 py-2 text-sm', icon: 'text-sm' }
+    case 'md':
+      return { font: 'text-base', wrapper: 'px-3 py-2 text-base', icon: 'text-base' }
+    case 'lg':
+      return { font: 'text-lg', wrapper: 'px-3 py-2 text-lg', icon: 'text-lg' }
+    case 'xl':
+      return { font: 'text-xl', wrapper: 'px-3 py-2 text-xl', icon: 'text-xl' }
+    default:
+      return { font: 'text-base', wrapper: 'px-3 py-2 text-base', icon: 'text-base' }
+  }
+})
 </script>

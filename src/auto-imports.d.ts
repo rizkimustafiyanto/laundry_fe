@@ -32,6 +32,7 @@ declare global {
   const formatAddress: (typeof import('./utils/formatters.js'))['formatAddress']
   const formatCurrency: (typeof import('./utils/formatters.js'))['formatCurrency']
   const formatDate: (typeof import('./utils/formatters.js'))['formatDate']
+  const formatDateForInput: (typeof import('./utils/formatters.js'))['formatDateForInput']
   const formatPercent: (typeof import('./utils/formatters.js'))['formatPercent']
   const formatPhone: (typeof import('./utils/formatters.js'))['formatPhone']
   const formatText: (typeof import('./utils/formatters.js'))['formatText']
@@ -128,6 +129,7 @@ declare global {
   const useThemeClass: (typeof import('./composables/useThemeClass.js'))['useThemeClass']
   const useThemeStore: (typeof import('./stores/utils/theme.js'))['useThemeStore']
   const useTransactionPreviewStore: (typeof import('./stores/services/payment.service.js'))['useTransactionPreviewStore']
+  const useTransactionStatsStore: (typeof import('./stores/services/transaction.service.js'))['useTransactionStatsStore']
   const useTransactionStore: (typeof import('./stores/services/transaction.service.js'))['useTransactionStore']
   const useUIStore: (typeof import('./stores/utils/ui.js'))['useUIStore']
   const useUserStore: (typeof import('./stores/services/user.service.js'))['useUserStore']
@@ -187,6 +189,9 @@ declare module 'vue' {
     readonly formatAddress: UnwrapRef<(typeof import('./utils/formatters.js'))['formatAddress']>
     readonly formatCurrency: UnwrapRef<(typeof import('./utils/formatters.js'))['formatCurrency']>
     readonly formatDate: UnwrapRef<(typeof import('./utils/formatters.js'))['formatDate']>
+    readonly formatDateForInput: UnwrapRef<
+      (typeof import('./utils/formatters.js'))['formatDateForInput']
+    >
     readonly formatPercent: UnwrapRef<(typeof import('./utils/formatters.js'))['formatPercent']>
     readonly formatPhone: UnwrapRef<(typeof import('./utils/formatters.js'))['formatPhone']>
     readonly formatText: UnwrapRef<(typeof import('./utils/formatters.js'))['formatText']>
@@ -324,6 +329,9 @@ declare module 'vue' {
     readonly useThemeStore: UnwrapRef<(typeof import('./stores/utils/theme.js'))['useThemeStore']>
     readonly useTransactionPreviewStore: UnwrapRef<
       (typeof import('./stores/services/payment.service.js'))['useTransactionPreviewStore']
+    >
+    readonly useTransactionStatsStore: UnwrapRef<
+      (typeof import('./stores/services/transaction.service.js'))['useTransactionStatsStore']
     >
     readonly useTransactionStore: UnwrapRef<
       (typeof import('./stores/services/transaction.service.js'))['useTransactionStore']

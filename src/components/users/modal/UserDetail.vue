@@ -25,15 +25,14 @@
             <h2 class="text-2xl sm:text-3xl font-semibold" :class="themeClass.text.secondary">
               {{ user.name }}
             </h2>
-            <p :class="[themeClass.text.subtleMeta, 'text-sm']">{{ user.email }}</p>
+            <p :class="[themeClass.text.subtleMeta, 'text-sm p-1']">{{ user.email }}</p>
             <BaseBadge
               variant-text="secondary"
-              variant-b-g-color="pink"
-              variant-hover="primary"
+              variant-b-g-color="softPink"
+              variant-hover="airy"
               text-size="sm"
               rounded="full"
               class="inline-block text-sm px-2 py-1 mt-2 rounded-xl font-medium"
-              :class="themeClass.baseDiv.pink"
             >
               {{ formatText(user?.role) }}
             </BaseBadge>

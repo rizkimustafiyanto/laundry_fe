@@ -32,11 +32,10 @@
             </p>
             <BaseBadge
               variant-text="secondary"
-              variant-b-g-color="pink"
-              variant-hover="primary"
+              variant-b-g-color="softPink"
+              variant-hover="airy"
               text-size="sm"
               rounded="full"
-              :class="themeClass.badge?.pink"
             >
               {{ formatText(profile?.role) }}
             </BaseBadge>

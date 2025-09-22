@@ -3,29 +3,30 @@
     <BaseLoadingSpinner v-if="loading" :type="'mini'" />
     <BaseCard v-else class="space-y-4" variant="dark">
       <form @submit.prevent="submitOrder" class="space-y-4">
-        <!-- Customer, Pickup, Delivery -->
+        <!-- Customer, hanya tampil jika bukan CUSTOMER -->
         <BaseSelect
-          v-if="isManualPickup"
+          v-if="isManualPickup && user.role !== 'CUSTOMER'"
           label="Pilih Pelanggan"
           v-model="form.customerId"
-          :options="customerOptions"
+          :options="customerAsAdminOptions"
           placeholder="-- Pilih Pelanggan --"
           type="search"
           :onSearch="searchCustomers"
           required
           :disabled="editMode"
         />
-
+        <!-- Pickup -->
         <BaseSelect
           v-if="form.pickupRequested"
           label="Pilih Alamat Pengambilan"
           v-model="form.pickupAddressId"
           :options="addressOption"
           placeholder="-- Pilih Alamat Pengambilan --"
+          type="search"
           required
-          :disabled="editMode"
         />
 
+        <!-- Delivery -->
         <BaseSelect
           v-if="form.deliveryRequested"
           label="Pilih Alamat Pengantaran"
@@ -33,7 +34,6 @@
           :options="addressOption"
           placeholder="-- Pilih Alamat Pengantaran --"
           required
-          :disabled="editMode"
         />
 
         <div class="flex gap-4">
@@ -41,18 +41,13 @@
             <input
               type="checkbox"
               v-model="form.pickupRequested"
-              :disabled="forcePickup || editMode"
+              :disabled="forcePickup"
               class="accent-teal-600"
             />
             Minta Penjemputan
           </label>
           <label class="flex items-center gap-2" :class="themeClass.text.secondary">
-            <input
-              type="checkbox"
-              v-model="form.deliveryRequested"
-              :disabled="editMode"
-              class="accent-teal-600"
-            />
+            <input type="checkbox" v-model="form.deliveryRequested" class="accent-teal-600" />
             Minta Pengantaran
           </label>
         </div>
@@ -112,35 +107,33 @@
         </div>
 
         <!-- Payment -->
-        <!-- Payment -->
-        <div v-if="showPaymentSection">
+        <div v-if="showPaymentSection" class="space-y-2">
           <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Payment</h3>
           <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-          <!-- Invoice Details -->
-          <div class="space-y-1">
+          <div class="space-y-2">
             <h3 class="font-semibold">💳 Rincian Pembayaran</h3>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm">
               <span>Subtotal</span><span>{{ formatCurrency(order.invoice?.subtotal) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm">
               <span>Service Fee</span
               ><span>{{ formatCurrency(order.invoice?.serviceCharge) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm">
               <span>Pickup Fee</span><span>{{ formatCurrency(order.invoice?.pickupFee) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm">
               <span>Delivery Fee</span><span>{{ formatCurrency(order.invoice?.deliveryFee) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm">
               <span>Tax</span><span>{{ formatCurrency(order.invoice?.tax) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm">
               <span>Discount</span><span>-{{ formatCurrency(order.invoice?.discount) }}</span>
             </div>
             <div
-              class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-lg"
+              class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-sm"
               :class="themeClass.border.secondary"
             >
               <span>Total Harus Dibayar</span>
@@ -149,7 +142,7 @@
           </div>
 
           <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
-          <div class="flex justify-between mt-4 mb-2">
+          <div class="flex justify-between py-2 text-sm">
             <span>Jumlah Dibayarkan</span>
             <span>{{
               form.payment?.amountPaid
@@ -207,7 +200,6 @@ const addressStore = useAddressStore()
 const userStore = useUserStore()
 const pricingStore = usePricingStore()
 
-// ========== MODE ==========
 const isManualPickup = computed(() => props.mode === 'manualpickup')
 const forcePickup = computed(() => props.mode === 'requestpickup')
 const modalTitle = computed(() => {
@@ -216,9 +208,10 @@ const modalTitle = computed(() => {
 })
 const loading = ref(true)
 
-// ========== OPTIONS ==========
 const customers = computed(() => (Array.isArray(userStore.items) ? userStore.items : []))
-const customerOptions = computed(() => customers.value.map((c) => ({ label: c.name, value: c.id })))
+const customerAsAdminOptions = computed(() =>
+  customers.value.map((c) => ({ label: c.name, value: c.id })),
+)
 const paymentOptions = computed(() => paymentMethodStore.options)
 
 const addressOption = computed(() =>
@@ -240,13 +233,13 @@ const searchCustomers = async (keyword) => {
   await userStore.fetchItems({ search: keyword })
 }
 
-// ========== FORM ==========
 const form = computed(() => transactionStore.formPayload)
 const order = computed(() => transactionStore.item)
 
 const resetForm = () => {
   transactionStore.formPayload = {
-    customerId: isManualPickup.value ? '' : user.value?.id,
+    customerId:
+      user.value.role === 'CUSTOMER' ? user.value.id : isManualPickup.value ? '' : user.value?.id,
     pickupRequested: forcePickup.value ? true : false,
     deliveryRequested: false,
     pickupAddressId: '',
@@ -257,7 +250,6 @@ const resetForm = () => {
   }
 }
 
-// ========== PAYMENT ROLE LOGIC ==========
 const isCompleted = computed(() => order.value.status === 'COMPLETED')
 
 const showPaymentSection = computed(
@@ -268,13 +260,14 @@ const showPaymentSection = computed(
     isCompleted.value,
 )
 
-const canEditPaymentMethod = computed(() => isCompleted.value && user.value.role === 'SUPER_ADMIN')
+const canEditPaymentMethod = computed(
+  () => isCompleted.value && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role),
+)
 
 const canEditNote = computed(
   () => isCompleted.value && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role),
 )
 
-// ========== WATCHER ==========
 watch(
   () => form.value.customerId,
   async (newVal) => {
@@ -287,7 +280,6 @@ watch(
   { immediate: true },
 )
 
-// ========== METHODS ==========
 const addItem = () => {
   form.value.items.push({
     serviceTypeId: '',
@@ -326,15 +318,7 @@ const submitOrder = async () => {
     (item) => item.itemTypeId && item.serviceTypeId && item.weightInKg > 0,
   )
 
-  if (user.value.role === 'OWNER') {
-    delete transactionStore.formPayload.payment.paymentMethod
-  }
-
-  if (
-    props.editMode &&
-    props.pickedByEmployee &&
-    (isManualPickup.value || props.mode === 'owner')
-  ) {
+  if (props.editMode && props.pickedByEmployee && isManualPickup.value) {
     transactionStore.formPayload.status = 'PICKED_UP'
   }
 
@@ -347,11 +331,10 @@ const submitOrder = async () => {
   modelValue.value = false
 }
 
-// ========== HOOKS ==========
 onBeforeMount(async () => {
   loading.value = true
   try {
-    if (isManualPickup.value) {
+    if (isManualPickup.value && user.value.role !== 'CUSTOMER') {
       await userStore.fetchItems()
     }
 

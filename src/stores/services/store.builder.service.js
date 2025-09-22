@@ -75,30 +75,27 @@ export function createStoreBuilder({
           this.item = res.data.data
           this.formPayload = { ...res.data.data }
         } catch (err) {
-          notifyError(err, `Gagal mengambil detail item ${storeId}`)
+          notifyError(err, `Gagal mengambil detail item data`)
         }
       },
 
       async createItem() {
         try {
-          const res = await api.post(endpoint, this.formPayload)
-          notifySuccess(`${storeId} berhasil dibuat`)
-          this.items.push(res.data.data)
+          await api.post(endpoint, this.formPayload)
+          notifySuccess(`Data berhasil dibuat`)
           this.resetForm()
         } catch (err) {
-          notifyError(err, `Gagal membuat ${storeId}`)
+          notifyError(err, `Gagal membuat data`)
         }
       },
 
       async updateItem(id) {
         try {
-          const res = await api.put(`${endpoint}/${id}`, this.formPayload)
-          notifySuccess(`${storeId} berhasil diperbarui`)
-          const index = this.items.findIndex((i) => i.id === id)
-          if (index !== -1) this.items[index] = res.data.data
+          await api.put(`${endpoint}/${id}`, this.formPayload)
+          notifySuccess(`Data berhasil diperbarui`)
           this.resetForm()
         } catch (err) {
-          notifyError(err, `Gagal memperbarui ${storeId}`)
+          notifyError(err, `Gagal memperbarui data`)
         }
       },
 
@@ -106,39 +103,35 @@ export function createStoreBuilder({
         try {
           await notifyConfirm({
             title: 'Hapus Data',
-            message: `Apakah Anda yakin ingin menghapus ${storeId} ini?`,
+            message: `Apakah Anda yakin ingin menghapus data ini?`,
           })
 
           await api.delete(`${endpoint}/${id}`)
-          notifySuccess(`${storeId} berhasil dihapus`)
-          this.items = this.items.filter((i) => i.id !== id)
+          notifySuccess(`Data berhasil dihapus`)
         } catch (err) {
           if (err !== 'cancelled') {
-            notifyError(err, `Gagal menghapus ${storeId}`)
+            notifyError(err, `Gagal menghapus data`)
           }
         }
       },
 
       async createItemWithFormData(formData) {
         try {
-          const res = await apiForm.post(endpoint, formData)
-          notifySuccess(`${storeId} berhasil dibuat`)
-          this.items.push(res.data.data)
+          await apiForm.post(endpoint, formData)
+          notifySuccess(`Data berhasil dibuat`)
           this.resetForm()
         } catch (err) {
-          notifyError(err, `Gagal membuat ${storeId}`)
+          notifyError(err, `Gagal membuat data`)
         }
       },
 
       async updateItemWithFormData(id, formData) {
         try {
-          const res = await apiForm.put(`${endpoint}/${id}`, formData)
-          notifySuccess(`${storeId} berhasil diperbarui`)
-          const index = this.items.findIndex((i) => i.id === id)
-          if (index !== -1) this.items[index] = res.data.data
+          await apiForm.put(`${endpoint}/${id}`, formData)
+          notifySuccess(`Data berhasil diperbarui`)
           this.resetForm()
         } catch (err) {
-          notifyError(err, `Gagal memperbarui ${storeId}`)
+          notifyError(err, `Gagal memperbarui data`)
         }
       },
 

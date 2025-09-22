@@ -11,38 +11,49 @@
         class="p-2 rounded-lg"
         variant="secondary"
       >
-        <div class="flex justify-between items-center">
-          <div class="cursor-pointer" @click="openDetail(order.id)">
-            <div class="font-semibold">#{{ order.invoiceNumber }}</div>
-            <div class="text-sm text-gray-500">Status: {{ statusDraft[order.id] }}</div>
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4"
+        >
+          <div class="cursor-pointer w-full sm:w-auto" @click="openDetail(order.id)">
+            <div class="font-semibold text-sm sm:text-base">#{{ order.invoiceNumber }}</div>
+            <div class="text-xs sm:text-sm text-gray-500">Status: {{ statusDraft[order.id] }}</div>
           </div>
-          <div class="flex gap-2 items-center">
+
+          <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <BaseSelect
               v-model="statusDraft[order.id]"
               :options="statusOption"
-              class="text-xs"
+              size-variant="sm"
               placeholder="Pilih Status"
+              class="w-full sm:w-auto"
+              :disabled="isCustomer"
             />
             <BaseButton
-              v-if="!['COMPLETED', 'CANCELLED'].includes(order.status)"
+              v-if="
+                !['COMPLETED', 'CANCELLED'].includes(order.status) &&
+                order.payment?.status !== 'PAID'
+              "
               size="sm"
               @click="emit('onPayment', order.id)"
               variant="teal"
               icon="dollar"
+              class="w-full sm:w-auto"
             />
             <BaseButton
-              v-if="isStatusChanged(order.id)"
+              v-if="isStatusChanged(order.id) && !isCustomer"
               icon="save"
-              size="md"
+              size="sm"
               @click="updateStatus(order.id)"
               variant="primary"
+              class="w-full sm:w-auto"
             />
             <BaseButton
               v-if="isCancelledOrder(statusDraft[order.id])"
               icon="stop"
-              size="md"
+              size="sm"
               @click="cancelOrder(order.id)"
               variant="danger"
+              class="w-full sm:w-auto"
             />
           </div>
         </div>
@@ -76,6 +87,10 @@ const pagination = computed(() => ({
   totalData: transactionStore.meta.totalData || filteredOrders.value.length,
 }))
 
+const authStore = useAuthStore()
+
+const isCustomer = computed(() => authStore.user?.role === 'CUSTOMER')
+
 const loading = computed(() => loadingStore.isLoading)
 
 const emit = defineEmits(['view', 'onPayment'])
@@ -94,6 +109,20 @@ watchEffect(() => {
     }
   })
 })
+
+watch(
+  filteredOrders,
+  (newOrders) => {
+    newOrders.forEach((order) => {
+      if (!(order.id in originalStatuses)) {
+        originalStatuses[order.id] = order.status
+      }
+
+      statusDraft[order.id] = order.status
+    })
+  },
+  { deep: true },
+)
 
 const fetchTransactionPage = async (page = 1) => {
   await transactionStore.fetchItems({ page, limit: transactionStore.meta.limit })

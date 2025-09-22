@@ -32,4 +32,13 @@ userStore.listenUserUpdates()
 
 const transactionStore = useTransactionStore()
 transactionStore.listenOrderUpdates()
+
+const addressStore = useAddressStore()
+addressStore.listenAddressUpdates()
+
+const statStore = useTransactionStatsStore()
+statStore.listenStatUpdates()
+
+const authStore = useAuthStore()
+authStore.listenAuthUpdates()
 </script>

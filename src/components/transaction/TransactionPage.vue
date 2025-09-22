@@ -22,6 +22,7 @@
         @edit="handleEdit"
         @edit-payment="handleEditPayment"
         @delete="deleteOrder"
+        @download="handleDownload"
       />
     </div>
 
@@ -167,5 +168,36 @@ function handleEdit(orderId) {
 function handleEditPayment(orderId) {
   idValueSelected.value = orderId
   showPaymentModal.value = true
+}
+
+async function handleDownload() {
+  try {
+    loading.value = true
+
+    await notifyConfirm({
+      title: 'Download Data',
+      message: `Apakah Anda yakin ingin download data ini?`,
+    })
+
+    const res = await transactionStore.exportTransactions({
+      status: transactionStore.filters?.status || '',
+      search: transactionStore.filters?.search || '',
+    })
+
+    const fileUrl = `${__BASE_URL__}${res.data.replace(/\\/g, '/')}`
+
+    const link = document.createElement('a')
+    link.href = fileUrl
+    link.setAttribute('download', `transactions_${Date.now()}.xlsx`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch (err) {
+    if (err !== 'cancelled') {
+      notifyError(err, `Gagal download data`)
+    }
+  } finally {
+    loading.value = false
+  }
 }
 </script>

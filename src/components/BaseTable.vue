@@ -8,11 +8,11 @@
           @update:modelValue="handleSearchQuery"
           placeholder="Cari..."
         />
-        <div v-if="limitable" class="hidden md:flex gap-2 items-center">
+        <div v-if="limitable" class="hidden md:flex gap-2 items-center text-sm">
           <select
             v-model="localLimit"
             @change="applyLimit"
-            class="px-2 py-3 text-sm rounded"
+            class="px-2"
             :class="themeClass.select.secondary"
           >
             <option v-for="n in [5, 10, 20, 50, 100]" :key="n" :value="n">
@@ -22,13 +22,22 @@
           <span :class="themeClass.text.secondary">: Tampilan Per Halaman</span>
         </div>
       </div>
-      <BaseSelect
-        v-if="choosable"
-        :modelValue="selectedDropdownValue"
-        @update:modelValue="handleDropdownSelect"
-        :options="dropdownItems"
-        :placeholder="dropdownLabel"
-      />
+      <div class="flex flex-row gap-2">
+        <BaseButton
+          v-if="exportable"
+          icon="download"
+          variant="mist"
+          @click="emit('export')"
+          class="w-full"
+        />
+        <BaseSelect
+          v-if="choosable"
+          :modelValue="selectedDropdownValue"
+          @update:modelValue="handleDropdownSelect"
+          :options="dropdownItems"
+          :placeholder="dropdownLabel"
+        />
+      </div>
     </div>
 
     <div v-if="!loading && items?.length" class="w-full overflow-x-auto">
@@ -102,6 +111,7 @@ const props = defineProps({
   searchable: { type: Boolean, default: false },
   choosable: { type: Boolean, default: false },
   limitable: { type: Boolean, default: false },
+  exportable: { type: Boolean, default: false },
   dropdownLabel: { type: String, default: 'Filter' },
   dropdownItems: { type: Array, default: () => [] },
 })
@@ -112,6 +122,7 @@ const emit = defineEmits([
   'page-change',
   'dropdown-select',
   'limit-change',
+  'export',
 ])
 
 const searchQuery = ref('')

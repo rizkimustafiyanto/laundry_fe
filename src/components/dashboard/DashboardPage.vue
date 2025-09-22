@@ -1,13 +1,11 @@
 <template>
   <div>
     <div class="space-y-4">
-      <!-- Welcome Card -->
       <BaseCard variant="secondary">
         <h2 class="text-lg font-semibold" :class="themeClass.text.secondary">
           Selamat datang, {{ user?.name }}
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          <!-- Status Cucian -->
           <BaseCard variant="mist">
             <h3 class="text-sm font-medium mb-2" :class="themeClass.text.subtle">Status Cucian</h3>
             <p class="text-lg font-semibold" :class="themeClass.text.secondary">
@@ -19,7 +17,6 @@
             </p>
           </BaseCard>
 
-          <!-- Total Tagihan -->
           <BaseCard variant="mist">
             <h3 class="text-sm font-medium mb-2" :class="themeClass.text.subtle">Total Tagihan</h3>
             <p class="text-lg font-semibold" :class="themeClass.text.secondary">
@@ -27,7 +24,6 @@
             </p>
           </BaseCard>
 
-          <!-- Estimasi Selesai -->
           <BaseCard variant="mist">
             <h3 class="text-sm font-medium mb-2" :class="themeClass.text.subtle">
               Estimasi Selesai
@@ -43,8 +39,7 @@
         </div>
       </BaseCard>
 
-      <!-- Pickup Laundry Section -->
-      <BaseCard v-if="isCustomer || isSuperadmin" variant="secondary">
+      <BaseCard variant="secondary">
         <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
           Minta Penjemputan Laundry
         </h3>
@@ -55,11 +50,8 @@
         />
       </BaseCard>
 
-      <!-- Receive Laundry Section -->
-      <BaseCard v-if="isOwner || isSuperadmin" variant="secondary">
-        <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
-          Receive Laundry
-        </h3>
+      <BaseCard variant="secondary">
+        <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">Manual Form</h3>
         <BaseButton
           label="Pesanan Dibuat"
           @click="showCreateModal = true"
@@ -67,7 +59,6 @@
         />
       </BaseCard>
 
-      <!-- Penjemputan Laundry List -->
       <BaseCard v-if="isOwner || isSuperadmin" variant="secondary" class="space-y-4">
         <h3 class="text-lg font-semibold" :class="themeClass.text.secondary">
           Penjemputan Laundry
@@ -92,31 +83,29 @@
           <BaseButton
             label="Sudah Diambil"
             @click="openEditModal(order)"
-            variant="pink"
+            variant="teal"
             :class="themeClass.button.pink"
           />
         </div>
       </BaseCard>
 
-      <!-- Kelola Status Pesanan -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <BaseCard v-if="isOwner || isSuperadmin" variant="secondary">
+        <BaseCard variant="secondary">
           <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
             Kelola Status Pesanan
           </h3>
           <ManageOrderStatus @view="openViewModal" @on-payment="openPaymentModal" />
         </BaseCard>
 
-        <!-- Statistik & Laporan -->
-        <BaseCard v-if="isSuperadmin" variant="secondary">
+        <BaseCard variant="secondary">
           <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
             Statistik & Laporan
           </h3>
-          <p :class="themeClass.text.secondary">Fitur laporan global akan ditambahkan di sini.</p>
+          <StatisticReport />
         </BaseCard>
       </div>
     </div>
-    <!-- Order Forms -->
+
     <OrderForm v-if="showCreateModal" v-model="showCreateModal" mode="manualpickup" />
     <OrderForm v-if="showPickupModal" v-model="showPickupModal" mode="requestpickup" />
     <OrderForm
@@ -141,6 +130,7 @@
 import ManageOrderStatus from '@/components/dashboard/manage/OrderStatus.vue'
 import OrderForm from '@/components/dashboard/form/OrderForm.vue'
 import OrderView from './form/OrderView.vue'
+import StatisticReport from './manage/StatisticReport.vue'
 
 const authStore = useAuthStore()
 const transactionStore = useTransactionStore()

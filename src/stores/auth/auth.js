@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
+import socket from '@/plugins/socket'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -21,6 +22,7 @@ export const useAuthStore = defineStore('auth', {
           role: data.role,
           photo: data.photo,
           bio: data.bio,
+          isActive: data.isActive,
         }
         this.token = data.token
         this.role = data.role
@@ -139,6 +141,20 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       localStorage.removeItem('role')
+    },
+
+    listenAuthUpdates() {
+      socket.on('user_updated', (updatedUser) => {
+        const updatedData = updatedUser.user || updatedUser
+        if (this.user?.id === updatedData.id && updatedData.isActive === false) {
+          notifyError('Akun dinonaktifkan', 'Akun Anda telah dinonaktifkan oleh admin')
+          this.logout()
+
+          const router = useRouter()
+          router.push({ name: 'Login' })
+          return
+        }
+      })
     },
   },
 })

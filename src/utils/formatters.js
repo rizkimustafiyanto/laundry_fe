@@ -32,6 +32,11 @@ export function formatDate(dateInput) {
   }
 }
 
+export function formatDateForInput(dateString) {
+  if (!dateString) return ''
+  return dateString.split('T')[0] // ambil hanya bagian tanggal
+}
+
 /**
  * Format waktu (jam dan menit) dalam format 24 jam, contoh "14:30"
  * @param {string|Date} dateInput

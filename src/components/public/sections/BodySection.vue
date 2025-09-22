@@ -1,66 +1,60 @@
 <template>
-  <div class="max-w-full mx-auto text-center mt-24 px-4 space-y-5">
-    <!-- Judul -->
-    <h1 class="text-4xl md:text-5xl font-extrabold mb-4" :class="themeClass.text.secondary">
-      Selamat Datang di {{ companyName }}
-    </h1>
-
-    <!-- Deskripsi -->
-    <p class="text-lg md:text-xl pb-8" :class="themeClass.text.secondary">
-      {{ companyAbout }}
-    </p>
-
-    <!-- Logo -->
-    <div class="pb-12">
-      <img
-        :src="companyLogo"
-        :alt="companyName + ' Logo'"
-        class="rounded-2xl shadow-lg mx-auto max-h-20 object-cover"
-        @error="onLogoError"
-      />
-    </div>
-
-    <!-- Services -->
-    <BaseCard type="grid" :cols="3" gridDirection="row" variant="secondary">
-      <BaseCard
-        v-for="(service, index) in services"
-        :key="index"
-        variant="mist"
-        classOverride="p-6 hover:shadow-md transition"
-      >
-        <h3 :class="['text-xl font-semibold mb-2', themeClass.text.teal]">
-          {{ service.title }}
-        </h3>
-        <p :class="themeClass.text.secondary">
-          {{ service.description }}
+  <div>
+    <section
+      class="relative bg-cover bg-center min-h-[80vh] flex items-center justify-center"
+      :style="{ backgroundImage: `url(${logoSrc})` }"
+    >
+      <div class="absolute inset-0 bg-black/50"></div>
+      <div class="relative z-10 text-center text-white px-6">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
+          {{ companyName }}
+        </h1>
+        <p class="text-lg md:text-2xl mb-6 max-w-2xl mx-auto">
+          {{ companyAbout }}
         </p>
-      </BaseCard>
-    </BaseCard>
+        <a
+          :href="ctaLink"
+          class="inline-block bg-teal-500 hover:bg-teal-600 text-white px-8 py-3 rounded-lg shadow-lg font-semibold transition"
+        >
+          {{ ctaLabel }}
+        </a>
+      </div>
+    </section>
 
-    <!-- Galleries (Testimoni/Foto) -->
-    <div v-if="companyGalleries.length" class="py-6">
-      <h2 class="text-2xl font-bold mb-6" :class="themeClass.text.secondary">Galeri Kami</h2>
-      <div class="px-8">
+    <section id="services" class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-12">Layanan Kami</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <BaseCard
+            v-for="(service, index) in services"
+            :key="index"
+            class="p-8 bg-white shadow-md rounded-xl hover:shadow-xl transition"
+          >
+            <div
+              class="w-16 h-16 mx-auto mb-4 bg-teal-100 text-teal-600 flex items-center justify-center rounded-full text-3xl"
+            >
+              <font-awesome-icon :icon="service.icon" />
+            </div>
+            <h3 class="text-xl font-semibold mb-2">{{ service.title }}</h3>
+            <p class="text-gray-600">{{ service.description }}</p>
+          </BaseCard>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="py-20">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-12">Galeri Kami</h2>
         <BaseSlider
+          v-if="companyGalleries.length"
           :slides="companyGalleries"
-          captionMode="outside"
+          captionMode="overlay-top"
           captionVariant="muted"
           image-mode="cover"
-          fixed-height="max-h-[15rem] sm:max-h-[18rem] md:max-h-[25rem] min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]"
+          fixed-height="h-[20rem] md:h-[28rem]"
         />
       </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="pt-12">
-      <a
-        :href="ctaLink"
-        class="inline-block px-6 py-3 rounded-lg shadow font-semibold transition"
-        :class="[themeClass.button.teal, themeClass.hoverless.teal]"
-      >
-        {{ ctaLabel }}
-      </a>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -69,32 +63,32 @@ import defaultLogo from '@/assets/logo.svg'
 
 const store = useCompanyProfileStore()
 const { items } = storeToRefs(store)
-const themeClass = useThemeClass()
 
-const companyLogo = ref(defaultLogo)
+const logoSrc = ref(defaultLogo)
 const companyName = ref('LaundryKuy')
 const companyAbout = ref(
   'Solusi laundry cepat, bersih, dan terpercaya untuk kebutuhan harian Anda.',
 )
 const ctaLabel = ref('Pesan Sekarang')
-const ctaLink = ref('#')
+const ctaLink = ref('/dashboard')
 
-// galleries khusus untuk slider
 const companyGalleries = ref([])
 
 const services = ref([
   {
     title: 'Layanan Antar Jemput',
-    description:
-      'Kami jemput cucian Anda langsung ke rumah dan antar kembali setelah bersih dan wangi.',
+    description: 'Kami jemput cucian Anda langsung ke rumah dan antar kembali setelah bersih.',
+    icon: 'truck',
   },
   {
     title: 'Cuci Kering & Lipat',
-    description: 'Pakaian Anda dicuci dan dilipat rapi, siap langsung masuk lemari.',
+    description: 'Pakaian dicuci dan dilipat rapi, siap masuk lemari.',
+    icon: 'tshirt',
   },
   {
     title: 'Layanan Kilat 24 Jam',
-    description: 'Butuh cepat? Gunakan layanan express kami yang selesai dalam 24 jam.',
+    description: 'Butuh cepat? Gunakan layanan express selesai dalam 24 jam.',
+    icon: 'clock',
   },
 ])
 
@@ -103,23 +97,14 @@ watch(
   (newItems) => {
     if (newItems && newItems.length > 0) {
       const company = newItems[0]
-      companyLogo.value = company.logoUrl ? `${__BASE_URL__}${company.logoUrl}` : defaultLogo
       companyName.value = company.name || 'LaundryKuy'
       companyAbout.value = company.about || companyAbout.value
-
-      // mapping galleries untuk slider
+      logoSrc.value = newItems[0].logoUrl ? `${__BASE_URL__}${newItems[0].logoUrl}` : defaultLogo
       if (company.galleries && company.galleries.length > 0) {
         companyGalleries.value = company.galleries.filter((g) => !g.deletedAt)
       }
-
-      ctaLabel.value = 'Pesan Sekarang'
-      ctaLink.value = '/dashboard'
     }
   },
   { immediate: true },
 )
-
-function onLogoError(event) {
-  event.target.src = defaultLogo
-}
 </script>

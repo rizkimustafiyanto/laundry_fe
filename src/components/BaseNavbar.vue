@@ -5,7 +5,6 @@
   >
     <h1
       :class="['text-2xl font-semibold cursor-pointer', themeClass.text.teal]"
-      style="min-height: 2.25rem"
       @click="$router.push('/')"
     >
       {{ title }}
@@ -101,29 +100,30 @@
   <transition name="fade-scale">
     <div
       v-show="mobileMenuOpen"
-      :class="['md:hidden shadow px-4 py-4 space-y-2', themeClass.baseDiv.muted]"
+      :class="['md:hidden shadow px-4 py-4 space-y-2', themeClass.baseDiv.subtle]"
     >
       <template v-for="item in menuItems" :key="item.key">
         <div v-if="item.children" class="space-y-1">
-          <button
+          <div
             @click="toggleMobileDropdown(item.key)"
             :class="[
-              'w-full text-left font-medium px-4 py-2 flex justify-between items-center rounded',
+              'w-full text-left px-4 py-2 flex justify-between items-center rounded cursor-pointer',
+              themeClass.text.secondary,
             ]"
           >
             {{ item.label }}
             <font-awesome-icon :icon="['fas', 'chevron-down']" class="w-4 h-4 ml-2" />
-          </button>
+          </div>
           <transition name="fade-scale">
-            <div v-show="openMobileDropdown === item.key" class="ml-4 space-y-1">
-              <button
+            <div v-show="openMobileDropdown === item.key" class="space-y-1 px-3">
+              <div
                 v-for="child in item.children"
                 :key="child.key"
                 @click="select(child.key)"
-                :class="[menuClass(child.key, true)]"
+                :class="[menuClass(child.key, true), 'cursor-pointer']"
               >
                 {{ child.label }}
-              </button>
+              </div>
             </div>
           </transition>
         </div>
@@ -132,16 +132,16 @@
         </button>
       </template>
 
-      <button
+      <div
         @click="logout"
         :class="[
-          'flex items-center gap-2 hover:underline w-full px-4 py-2 mt-2',
-          themeClass.buttonDanger,
+          'flex items-center gap-2 hover:underline w-full px-4 py-2 mt-2 cursor-pointer',
+          themeClass.icon.danger,
         ]"
       >
         <font-awesome-icon icon="right-from-bracket" class="w-4 h-4" />
         Logout
-      </button>
+      </div>
     </div>
   </transition>
 </template>

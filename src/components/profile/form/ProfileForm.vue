@@ -67,7 +67,9 @@ const localProfile = reactive({
   email: '',
   gender: '',
   phone: '',
-  dateOfBirth: '',
+  dateOfBirth: props.dataProfile?.dateOfBirth
+    ? formatDateForInput(props.dataProfile.dateOfBirth)
+    : '',
   address: '',
   bio: '',
   ...props.dataProfile,
@@ -79,12 +81,20 @@ const { options: itemGender } = storeToRefs(genderStore)
 watch(
   () => props.dataProfile,
   (newVal) => {
-    Object.assign(localProfile, newVal || {})
+    Object.assign(localProfile, {
+      ...newVal,
+      dateOfBirth: newVal?.dateOfBirth ? formatDateForInput(newVal.dateOfBirth) : '',
+    })
   },
+  { immediate: true },
 )
 
 function saveProfile() {
-  emit('save', { ...localProfile })
+  const payload = {
+    ...localProfile,
+    dateOfBirth: localProfile.dateOfBirth ? new Date(localProfile.dateOfBirth).toISOString() : null,
+  }
+  emit('save', payload)
 }
 
 function handleFileSelected(fileEvent) {

@@ -47,7 +47,7 @@
         @close="showDetail = false"
       />
 
-      <EditUserModal v-model="showEditModal" :user="item" :showRole="true" @save="saveEditedUser" />
+      <EditUserModal v-model="showEditModal" :showRole="true" @save="saveEditedUser" />
     </BaseCard>
   </div>
 </template>
@@ -101,8 +101,8 @@ const openEditModal = (userId) => {
   showEditModal.value = true
 }
 
-const saveEditedUser = async (updatedUser) => {
-  await userStore.updateItem(updatedUser.id, updatedUser)
+const saveEditedUser = async () => {
+  await userStore.updateItem(userStore.formPayload.id)
 }
 
 onMounted(async () => {

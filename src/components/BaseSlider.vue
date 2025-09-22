@@ -141,4 +141,12 @@ const handleClick = (slide) => {
   opacity: 1 !important;
   transform: translateX(0);
 }
+
+:deep(.swiper-pagination-bullet) {
+  background: #d1d5db;
+  opacity: 1;
+}
+:deep(.swiper-pagination-bullet-active) {
+  background: #14b8a6;
+}
 </style>

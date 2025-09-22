@@ -41,15 +41,17 @@
 
     <BaseButton variant="sky" class="w-full mb-4" :icon="'plus'" @click="openEditModal(null)" />
 
-    <CompanySponsorForm
-      v-model="modalOpen"
-      :item="currentItem"
-      :mode="modalMode"
-      @save="handleSave"
-      @edit="handleEdit"
-      @saveWithFormData="handleSaveWithFormData"
-      @editWithFormData="handleEditWithFormData"
-    />
+    <teleport to="body">
+      <CompanySponsorForm
+        v-model="modalOpen"
+        :item="currentItem"
+        :mode="modalMode"
+        @save="handleSave"
+        @edit="handleEdit"
+        @saveWithFormData="handleSaveWithFormData"
+        @editWithFormData="handleEditWithFormData"
+      />
+    </teleport>
   </div>
 </template>
 
@@ -91,9 +93,7 @@ const handleEditWithFormData = async (formData) => {
 }
 
 const deleteItem = async (id) => {
-  if (confirm('Are you sure you want to delete this sponsor?')) {
-    await store.deleteItem(id)
-  }
+  await store.deleteItem(id)
 }
 
 onBeforeMount(async () => {

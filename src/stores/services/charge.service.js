@@ -23,7 +23,7 @@ export const useChargeStore = createStoreBuilder({
       } else {
         await api.post('/charges', payload)
       }
-      await this.fetchItems() // refresh list setelah create/update
+      await this.fetchItems()
     },
   },
 })

@@ -4,7 +4,7 @@
     :title="mode === 'create' ? 'Create Address' : 'Edit Address'"
     size="md"
   >
-    <form @submit.prevent="saveAddress">
+    <form class="flex flex-col gap-3" @submit.prevent="saveAddress">
       <BaseInput
         id="label"
         label="Label Alamat"
@@ -18,7 +18,7 @@
         type="textarea"
         v-model="localAddress.addressLine"
         placeholder="Silahkan masukkan detail alamat"
-        plac
+        rows="3"
         required
       />
       <BaseInput

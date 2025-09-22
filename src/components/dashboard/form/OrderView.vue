@@ -26,15 +26,26 @@
       <section>
         <h3 class="font-semibold mb-2">🧺 Item Laundry</h3>
         <div
+          v-if="!form.items || form.items.length === 0"
+          class="text-sm italic border border-dashed rounded-lg p-3 text-center"
+          :class="themeClass.text.secondary"
+        >
+          Belum ada item laundry ditambahkan
+          <br />
+          Silakan tunggu untuk diproses oleh admin.
+        </div>
+        <div
+          v-else
           v-for="(item, index) in form.items"
           :key="index"
           class="py-2 border-b border-dashed last:border-0"
+          :class="themeClass.text.secondary"
         >
           <div class="flex justify-between">
             <span>{{ item.itemType?.name }} - {{ item.serviceType?.name }}</span>
             <span>{{ formatCurrency(item.subtotal) }}</span>
           </div>
-          <div class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="text-xs">
             Berat: {{ item.weightInKg }} kg × {{ formatCurrency(item.unitPrice) }}
           </div>
         </div>
@@ -52,7 +63,7 @@
           </span>
         </div>
 
-        <div class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-lg">
+        <div class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-md">
           <span>Total Harus Dibayar</span>
           <span>{{ formatCurrency(form.invoice?.grandTotal) }}</span>
         </div>
@@ -66,9 +77,10 @@
           label="Metode Pembayaran"
           :options="paymentOptions"
           placeholder="-- Pilih Pembayaran --"
+          required
         />
 
-        <BaseButton class="w-full" @click="submitPayment">Konfirmasi Bayar</BaseButton>
+        <BaseButton class="w-full" @click="submitPayment"> Konfirmasi Bayar </BaseButton>
       </section>
 
       <section
@@ -76,10 +88,10 @@
         class="mt-6 border-t border-dashed pt-4 text-center space-y-2"
       >
         <h3 class="font-bold text-green-600">✅ TRANSAKSI SELESAI</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-300">
+        <p class="text-sm" :class="themeClass.text.secondary">
           Terima kasih telah menggunakan layanan {{ appName }} 🙏
         </p>
-        <div class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="text-xs" :class="themeClass.text.secondary">
           Status: <span class="font-semibold">PAID</span><br />
           Tanggal: {{ form.payment.paidAt ? formatDate(form.payment.paidAt) : 'No Paid' }}
         </div>
@@ -87,7 +99,7 @@
 
       <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <div class="text-center text-xs text-gray-500 dark:text-gray-400">
+      <div class="text-center text-xs" :class="themeClass.text.secondary">
         {{
           isPaymentMode && !isPaidCompleted
             ? 'Mohon pastikan rincian benar sebelum melanjutkan pembayaran 🙏'
@@ -137,6 +149,12 @@ const invoiceDetails = computed(() => [
 
 const isPaidCompleted = computed(() => form.payment && form.payment.status === 'PAID')
 
+const canProceed = computed(() => {
+  const hasItems = form.items && form.items.length > 0
+  const isStatusAllowed = form.status !== 'REGISTERED' && form.status !== 'CANCELLED'
+  return hasItems && isStatusAllowed
+})
+
 const loadOrder = async () => {
   try {
     isPrepare.value = true
@@ -155,6 +173,17 @@ const loadOrder = async () => {
 }
 
 const submitPayment = async () => {
+  if (!canProceed.value) {
+    notifyError(
+      '',
+      'Item laundry masih kosong atau transaksi belum di proses, tidak bisa melakukan pembayaran!',
+    )
+    return
+  }
+  if (!paymentStore.formPayload.paymentMethod) {
+    notifyError('', 'Silakan pilih metode pembayaran terlebih dahulu!')
+    return
+  }
   paymentStore.formPayload.amountPaid = form.invoice?.grandTotal
   await paymentStore.addPayment(props.orderId, paymentStore.formPayload)
   modelValue.value = false

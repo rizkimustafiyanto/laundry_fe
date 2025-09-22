@@ -1,19 +1,19 @@
 <template>
-  <div class="p-6 max-w-6xl mx-auto">
+  <div>
     <h1 class="text-3xl font-bold mb-6" :class="themeClass.text.secondary">Admin Settings</h1>
 
-    <nav class="flex space-x-4 mb-6 border-b" :class="themeClass.border.sky">
-      <button :class="getTabClass('profile')" @click="activeTab = 'profile'">
-        Company Profile
-      </button>
-      <button :class="getTabClass('gallery')" @click="activeTab = 'gallery'">Gallery</button>
-      <button :class="getTabClass('sponsor')" @click="activeTab = 'sponsor'">Sponsor</button>
-    </nav>
+    <BaseTab :tabs="tabs" v-model:activeTab="activeTab" variant="underline" color="sky" />
 
-    <div>
-      <CompanyProfileSection v-if="activeTab === 'profile'" />
-      <CompanyGallerySection v-if="activeTab === 'gallery'" />
-      <CompanySponsorSection v-if="activeTab === 'sponsor'" />
+    <div v-if="activeTab === 'profile'" class="flex flex-col gap-8">
+      <CompanyProfileSection />
+      <CompanyGallerySection />
+      <CompanySponsorSection />
+    </div>
+    <div v-if="activeTab === 'pricing-service'">
+      <PricingSection />
+    </div>
+    <div v-if="activeTab === 'service-type'">
+      <ServiceItemTypeSetting />
     </div>
   </div>
 </template>
@@ -22,20 +22,15 @@
 import CompanyGallerySection from './sections/CompanyGallerySection.vue'
 import CompanyProfileSection from './sections/CompanyProfileSection.vue'
 import CompanySponsorSection from './sections/CompanySponsorSection.vue'
+import PricingSection from './sections/PricingSection.vue'
+import ServiceItemTypeSetting from './sections/ServiceItemTypeSetting.vue'
 
 const themeClass = useThemeClass()
 const activeTab = ref('profile')
 
-const getTabClass = (tab) => {
-  const base = 'px-4 py-2 font-semibold border-b-2'
-  const isActive = activeTab.value === tab
-
-  if (isActive) {
-    return [base, themeClass.value.border.sky, themeClass.value.text.sky].join(' ')
-  } else {
-    const hover = themeClass.value.hoverText.sky || 'hover:text-sky-300'
-    const text = themeClass.value.textless.sky || 'text-sky-300/50'
-    return [base.replace('font-semibold border-b-2', ''), hover, text].join(' ')
-  }
-}
+const tabs = [
+  { label: 'Company', value: 'profile' },
+  { label: 'Service & Item', value: 'service-type' },
+  { label: 'Pricing & Services', value: 'pricing-service' },
+]
 </script>

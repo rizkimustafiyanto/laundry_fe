@@ -1,18 +1,21 @@
 <template>
-  <nav class="shadow-md fixed top-0 left-0 w-full z-50" :class="themeClass.thead">
-    <div class="max-w-full mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-4">
+  <nav class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
         <img
           :src="logoSrc"
           :alt="appName + ' Logo'"
-          class="h-12 w-12 object-cover"
+          class="h-12 w-12 object-cover rounded-full shadow"
           @error="onLogoError"
         />
-        <span class="text-2xl font-bold" :class="themeClass.text.teal">{{ appName }}</span>
+        <span class="text-2xl font-bold text-gray-800">{{ appName }}</span>
       </div>
 
-      <div>
-        <BaseButton :variant="'teal'" :label="buttonLabel" @click="goToRoute" />
+      <div class="hidden md:flex space-x-6 items-center">
+        <a href="#services" class="text-gray-600 hover:text-teal-600">Services</a>
+        <a href="#about" class="text-gray-600 hover:text-teal-600">About</a>
+        <a href="#gallery" class="text-gray-600 hover:text-teal-600">Gallery</a>
+        <BaseButton variant="teal" :label="buttonLabel" @click="goToRoute" />
       </div>
     </div>
   </nav>
@@ -26,7 +29,6 @@ const { items } = storeToRefs(store)
 
 const logoSrc = ref(defaultLogo)
 const appName = ref('LaundryKuy')
-const themeClass = useThemeClass()
 
 const authStore = useAuthStore()
 const { user: dataLogin } = storeToRefs(authStore)

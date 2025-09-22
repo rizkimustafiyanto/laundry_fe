@@ -27,7 +27,7 @@ function navigateTo(path) {
       @change="navigateTo"
     />
 
-    <main class="p-6">
+    <main class="p-6 max-w-6xl mx-auto">
       <router-view v-slot="{ Component }">
         <Transition name="fade-page" mode="out-in">
           <component :is="Component" />

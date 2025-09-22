@@ -9,10 +9,12 @@
       :dropdownLabel="'Filter Status'"
       choosable
       searchable
+      limitable
       @page-change="$emit('page-change', $event)"
       @dropdown-select="$emit('dropdown-select', $event)"
       @limit-change="$emit('limit-change', $event)"
       @search="$emit('search', $event)"
+      @export="$emit('download')"
     >
       <template #customer="{ value }">
         {{ value?.name || '-' }}
@@ -66,5 +68,6 @@ const emit = defineEmits([
   'delete',
   'view',
   'edit-payment',
+  'download',
 ])
 </script>

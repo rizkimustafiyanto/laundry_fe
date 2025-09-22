@@ -1,5 +1,5 @@
 <template>
-  <div :class="themeClass.baseDiv.dark + ' py-12 text-gray-100'" class="w-full">
+  <div :class="'bg-gray-900 py-12 text-gray-100'" class="w-full">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-0"
@@ -88,7 +88,6 @@
 </template>
 
 <script setup>
-const themeClass = useThemeClass()
 const store = useCompanyProfileStore()
 const { items } = storeToRefs(store)
 

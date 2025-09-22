@@ -36,7 +36,7 @@
             </button>
           </div>
 
-          <div class="overflow-y-auto px-6 pb-6 scrollbar-none">
+          <div class="overflow-y-auto px-6 pb-6 pt-2 scrollbar-none">
             <slot />
           </div>
         </div>

@@ -53,13 +53,35 @@ export const useUserStore = createStoreBuilder({
       socket.on('user_updated', (updatedUser) => {
         const updatedData = updatedUser.user || updatedUser
         const index = this.items.findIndex((u) => u.id === updatedData.id)
+
         if (index !== -1) {
           this.items.splice(index, 1, updatedData)
         } else {
           this.items.push(updatedData)
         }
-        if (updatedUser.id == this.item.id) {
-          this.item = updatedUser
+
+        if (updatedData.id == this.item?.id) {
+          this.item = updatedData
+        }
+      })
+
+      socket.on('user_created', (newUser) => {
+        const newData = newUser.user || newUser
+        const exists = this.items.some((u) => u.id === newData.id)
+        if (!exists) {
+          this.items.unshift(newData)
+        }
+      })
+
+      socket.on('user_deleted', (deletedUser) => {
+        const deletedData = deletedUser.user || deletedUser
+        const index = this.items.findIndex((u) => u.id === deletedData.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+
+        if (deletedData.id == this.item?.id) {
+          this.item = {}
         }
       })
     },
