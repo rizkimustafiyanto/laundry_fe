@@ -1,6 +1,5 @@
 <template>
   <div class="relative inline-block text-left">
-    <!-- Button Trigger -->
     <button
       @click="toggleDropdown"
       type="button"
@@ -10,17 +9,18 @@
       ]"
     >
       {{ labelHead }}
-      <font-awesome-icon
-        :icon="isOpen ? 'angle-up' : 'angle-down'"
-        class="ml-2"
-        :class="themeClass.icon.primary"
-      />
+      <i
+        :class="[
+          'ml-2 transition-transform duration-200',
+          isOpen ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down',
+          themeClass.icon.primary,
+        ]"
+      ></i>
     </button>
 
-    <!-- Dropdown Menu -->
     <div
       v-show="isOpen"
-      class="absolute right-0 mt-2 z-10 w-full rounded-xl shadow ring-1 ring-black ring-opacity-5 focus:outline-none"
+      class="absolute right-0 mt-2 z-10 w-full rounded-xl shadow ring-1 ring-black ring-opacity-5 focus:outline-none transition-opacity duration-200"
       :class="themeClass.dropdown"
     >
       <ul class="py-1 text-sm">
@@ -28,7 +28,10 @@
           <a
             href="#"
             @click.prevent="selectItem(item)"
-            :class="[themeClass.item.primary, 'block px-4 py-2 cursor-pointer']"
+            :class="[
+              themeClass.item.primary,
+              'block px-4 py-2 cursor-pointer rounded-lg transition hover:shadow-sm',
+            ]"
           >
             {{ item.label }}
           </a>

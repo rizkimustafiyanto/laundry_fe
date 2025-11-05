@@ -1,15 +1,7 @@
 <script setup>
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules'
-
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import 'swiper/css/effect-fade'
-
 const themeClass = useThemeClass()
 
-defineProps({
+const props = defineProps({
   slides: {
     type: Array,
     default: () => [],
@@ -47,10 +39,6 @@ defineProps({
     type: String,
     default: 'min-h-[15rem] sm:min-h-[18rem] md:min-h-[20rem]',
   },
-  effect: {
-    type: String,
-    default: 'fade',
-  },
   pagination: {
     type: [Boolean, Object],
     default: true,
@@ -63,30 +51,56 @@ defineProps({
 
 const emit = defineEmits(['slideClick', 'update:selected'])
 
+const currentIndex = ref(0)
+let autoplayTimer = null
+
+const goTo = (index) => {
+  if (!props.slides.length) return
+  currentIndex.value = (index + props.slides.length) % props.slides.length
+  emit('update:selected', props.slides[currentIndex.value])
+}
+
+const nextSlide = () => {
+  goTo(currentIndex.value + 1)
+}
+
+const prevSlide = () => {
+  goTo(currentIndex.value - 1)
+}
+
 const handleClick = (slide) => {
   emit('slideClick', slide)
   emit('update:selected', slide)
 }
+
+onMounted(() => {
+  if (props.slides.length > 1 && props.autoplayOptions) {
+    autoplayTimer = setInterval(() => {
+      nextSlide()
+    }, props.autoplayOptions.delay || 3000)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (autoplayTimer) clearInterval(autoplayTimer)
+})
 </script>
 
 <template>
-  <div class="relative group w-full">
-    <Swiper
-      v-if="slides.length"
-      :modules="[Navigation, Pagination, Autoplay, EffectFade]"
-      :slides-per-view="slidesPerView"
-      :loop="slides.length > 1"
-      :autoplay="slides.length > 1 ? autoplayOptions : false"
-      :effect="effect"
-      :pagination="pagination"
-      :navigation="navigation"
-      class="rounded-xl overflow-hidden"
+  <div class="relative group w-full overflow-hidden rounded-xl">
+    <div
+      class="flex transition-transform duration-700 ease-in-out"
+      :style="{
+        transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)`,
+        width: `${slides.length * (100 / slidesPerView)}%`,
+      }"
     >
-      <SwiperSlide
+      <div
         v-for="slide in slides"
         :key="slide.id"
+        class="w-full flex-shrink-0 cursor-pointer"
+        :style="{ width: `${100 / slidesPerView}%` }"
         @click="handleClick(slide)"
-        class="cursor-pointer flex flex-col"
       >
         <div class="relative w-full">
           <img
@@ -98,7 +112,7 @@ const handleClick = (slide) => {
 
           <template v-if="showCaption && slide.caption && captionMode !== 'outside'">
             <div
-              class="absolute left-4 right-4 px-4 py-2 rounded-lg text-sm sm:text-base overflow-hidden w-fit"
+              class="absolute left-4 right-4 px-4 py-2 rounded-lg text-sm sm:text-base w-fit"
               :class="[
                 themeClass.baseDiv[captionVariant] || themeClass.baseDiv.muted,
                 captionMode === 'overlay-bottom' ? 'bottom-4' : 'top-4',
@@ -119,34 +133,38 @@ const handleClick = (slide) => {
             {{ slide.caption }}
           </p>
         </template>
-      </SwiperSlide>
-    </Swiper>
+      </div>
+    </div>
+
+    <button
+      v-if="navigation && slides.length > 1"
+      @click="prevSlide"
+      class="absolute top-1/2 -translate-y-1/2 left-2 p-2 rounded-full shadow-lg"
+      :class="themeClass.button.secondary"
+    >
+      <i class="fa fa-chevron-left"></i>
+    </button>
+
+    <button
+      v-if="navigation && slides.length > 1"
+      @click="nextSlide"
+      class="absolute top-1/2 -translate-y-1/2 right-2 p-2 rounded-full shadow-lg"
+      :class="themeClass.button.secondary"
+    >
+      <i class="fa fa-chevron-right"></i>
+    </button>
+
+    <div
+      v-if="pagination && slides.length > 1"
+      class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2"
+    >
+      <span
+        v-for="(slide, index) in slides"
+        :key="index"
+        class="w-3 h-3 rounded-full cursor-pointer transition-all"
+        :class="[currentIndex === index ? themeClass.bg.primary : themeClass.bg.muted]"
+        @click="goTo(index)"
+      ></span>
+    </div>
   </div>
 </template>
-
-<style scoped>
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  opacity: 0 !important;
-  transform: translateX(20px);
-  transition: all 0.3s ease-in-out;
-}
-
-:deep(.swiper-button-prev) {
-  transform: translateX(-20px);
-}
-
-.group:hover :deep(.swiper-button-next),
-.group:hover :deep(.swiper-button-prev) {
-  opacity: 1 !important;
-  transform: translateX(0);
-}
-
-:deep(.swiper-pagination-bullet) {
-  background: #d1d5db;
-  opacity: 1;
-}
-:deep(.swiper-pagination-bullet-active) {
-  background: #14b8a6;
-}
-</style>

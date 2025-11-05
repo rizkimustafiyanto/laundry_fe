@@ -1,13 +1,10 @@
 import './assets/tailwind.css'
 import './assets/styles.css'
+import 'leaflet/dist/leaflet.css'
+import '@fortawesome/fontawesome-free/css/all.min.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { far } from '@fortawesome/free-regular-svg-icons'
-import { fab } from '@fortawesome/free-brands-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import App from './App.vue'
 import router from './router'
@@ -33,15 +30,12 @@ import BaseTable from './components/BaseTable.vue'
 import BaseTab from './components/BaseTab.vue'
 import ResponseModal from './components/ResponseModal.vue'
 
-library.add(fas, far, fab)
-
 const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
 app.use(VueApexCharts)
-app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.component('BaseBadge', BaseBadge)
 app.component('BaseButton', BaseButton)

@@ -3,11 +3,15 @@
     <BaseLoadingSpinner v-if="isPrepare" type="mini" />
 
     <div v-else>
-      <h2 class="text-xl font-semibold mb-4" :class="themeClass.text.secondary">
+      <h2
+        class="text-xl font-semibold mb-4 flex items-center gap-2"
+        :class="themeClass.text.secondary"
+      >
+        <i :class="['fa-solid fa-tag', themeClass.icon.primary]"></i>
         Pricing Settings
       </h2>
 
-      <BaseCard variant="dark" class="p-4 space-y-4 mb-6">
+      <BaseCard variant="dark" class="p-6 space-y-5 mb-8 rounded-xl shadow-sm">
         <BaseSelect
           label="Tipe Layanan"
           v-model="pricingForm.serviceTypeId"
@@ -30,46 +34,59 @@
           placeholder="Contoh: 10000"
         />
 
-        <div class="flex justify-end gap-2">
-          <BaseButton label="Reset" variant="secondary" @click="resetPricingForm" />
+        <div class="flex justify-end gap-3 pt-4 border-t" :class="themeClass.border.secondary">
+          <BaseButton
+            label="Reset"
+            variant="secondary"
+            icon="fa-solid fa-rotate-left"
+            @click="resetPricingForm"
+          />
           <BaseButton
             :label="pricingForm.id ? 'Update' : 'Simpan'"
             variant="teal"
+            :icon="pricingForm.id ? 'fa-solid fa-pen' : 'fa-solid fa-floppy-disk'"
             @click="savePricing"
           />
         </div>
       </BaseCard>
 
-      <BaseCard variant="dark" class="p-4">
+      <BaseCard variant="dark" class="p-6 rounded-xl shadow-sm">
         <table class="w-full text-sm border-collapse">
           <thead>
             <tr :class="themeClass.text.secondary">
-              <th class="text-left p-2">Layanan</th>
-              <th class="text-left p-2">Item</th>
-              <th class="text-left p-2">Harga / Kg</th>
-              <th class="text-right p-2">Aksi</th>
+              <th class="text-left p-3">Layanan</th>
+              <th class="text-left p-3">Item</th>
+              <th class="text-left p-3">Harga / Kg</th>
+              <th class="text-right p-3">Aksi</th>
             </tr>
           </thead>
           <tbody>
             <template v-for="(items, service) in groupedPricing" :key="service">
-              <tr class="bg-gray-800/50">
-                <td class="p-2 font-semibold" colspan="4">{{ service }}</td>
+              <tr class="bg-gray-800/40">
+                <td class="p-3 font-semibold" colspan="4">{{ service }}</td>
               </tr>
 
-              <tr v-for="price in items" :key="price.id" class="border-t border-gray-700">
-                <td class="p-2"></td>
-                <td class="p-2">{{ price.itemType?.name }}</td>
-                <td class="p-2">{{ price.pricePerKg.toLocaleString() }}</td>
-                <td class="p-2 text-right space-x-2">
+              <tr
+                v-for="price in items"
+                :key="price.id"
+                class="border-t transition hover:bg-gray-800/30"
+                :class="themeClass.border.secondary"
+              >
+                <td class="p-3"></td>
+                <td class="p-3">{{ price.itemType?.name }}</td>
+                <td class="p-3">{{ price.pricePerKg.toLocaleString() }}</td>
+                <td class="p-3 text-right space-x-2">
                   <BaseButton
                     size="sm"
                     variant="secondary"
+                    icon="fa-solid fa-pen"
                     label="Edit"
                     @click="editPricing(price)"
                   />
                   <BaseButton
                     size="sm"
                     variant="danger"
+                    icon="fa-solid fa-trash"
                     label="Hapus"
                     @click="deletePricing(price.id)"
                   />
@@ -80,18 +97,25 @@
         </table>
       </BaseCard>
 
-      <h2 class="text-xl font-semibold mt-8 mb-4" :class="themeClass.text.secondary">
+      <h2
+        class="text-xl font-semibold mt-10 mb-4 flex items-center gap-2"
+        :class="themeClass.text.secondary"
+      >
+        <i :class="['fa-solid fa-file-invoice-dollar', themeClass.icon.primary]"></i>
         Charges Settings
       </h2>
 
-      <BaseCard variant="dark" class="p-4 space-y-6">
+      <BaseCard variant="dark" class="p-6 space-y-6 rounded-xl shadow-sm">
         <div
           v-for="cat in chargeCategoryStore.items"
           :key="cat"
-          class="border-b pb-4 last:border-b-0"
+          class="pb-5 last:pb-0 border-b last:border-b-0 space-y-3"
           :class="themeClass.border.secondary"
         >
-          <h3 class="font-semibold mb-2">{{ cat }}</h3>
+          <h3 class="font-semibold flex items-center gap-2" :class="themeClass.text.secondary">
+            <i :class="['fa-solid fa-layer-group', themeClass.icon.secondary]"></i>
+            {{ cat }}
+          </h3>
 
           <BaseSelect
             label="Tipe"
@@ -108,14 +132,21 @@
             placeholder="Contoh: 10 (persen) / 5000 (fixed)"
           />
 
-          <div class="flex items-center gap-2 mt-2">
-            <label :class="themeClass.text.secondary">Status</label>
+          <div class="flex items-center gap-3 mt-2">
+            <label class="text-sm" :class="themeClass.text.secondary">Status</label>
             <BaseSwitch v-model="chargesForm[cat].isEnabled" />
-            <span>{{ chargesForm[cat].isEnabled ? 'Aktif' : 'Non Aktif' }}</span>
+            <span :class="themeClass.text.secondary">
+              {{ chargesForm[cat].isEnabled ? 'Aktif' : 'Non Aktif' }}
+            </span>
           </div>
 
-          <div class="flex justify-end gap-2 mt-3">
-            <BaseButton label="Simpan" variant="teal" @click="saveCharge(cat)" />
+          <div class="flex justify-end mt-4">
+            <BaseButton
+              label="Simpan"
+              variant="teal"
+              icon="fa-solid fa-floppy-disk"
+              @click="saveCharge(cat)"
+            />
           </div>
         </div>
       </BaseCard>

@@ -1,5 +1,5 @@
 <template>
-  <transition name="modal-fade">
+  <transition name="modal-fade" @after-enter="$emit('after-enter')">
     <div
       v-if="modelValue"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
@@ -51,7 +51,7 @@ import { computed } from 'vue'
 
 const themeClass = useThemeClass()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'after-enter'])
 
 const props = defineProps({
   modelValue: {

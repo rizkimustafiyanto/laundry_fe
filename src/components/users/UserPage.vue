@@ -1,42 +1,73 @@
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4">Daftar User</h2>
+    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2" :class="themeClass.text.secondary">
+      <i :class="['fa-solid fa-users', themeClass.icon.primary]"></i>
+      Daftar User
+    </h2>
 
-    <BaseCard variant="secondary">
+    <BaseCard variant="secondary" class="shadow-sm rounded-xl">
       <BaseTable
         :items="items"
         :columns="columns"
         :loading="isLoading"
         :pagination="userStore.meta"
         searchable
+        exportable
         @page-change="handlePageChange"
         @limit-change="handleLimitChange"
         @search="handleSearch"
       >
         <template #name_email="{ item }">
-          <div class="flex items-center cursor-pointer" @click="showUserDetails(item.id)">
+          <div
+            class="flex items-center gap-3 cursor-pointer group"
+            @click="showUserDetails(item.id)"
+          >
             <img
-              class="w-10 h-10 rounded-full"
+              class="w-12 h-12 rounded-full object-cover ring-2"
+              :class="themeClass.border.airy"
               :src="`${__BASE_URL__}${item.photo}`"
               @error="$event.target.src = defaultAvatar"
             />
-            <div class="ps-3">
-              <div :class="themeClass.text.dark">{{ item.name }}</div>
-              <div :class="themeClass.text.stone">{{ item.email }}</div>
+            <div>
+              <div class="font-semibold" :class="themeClass.text.dark">
+                {{ item.name }}
+              </div>
+              <div class="text-sm" :class="themeClass.text.stone">
+                {{ item.email }}
+              </div>
             </div>
           </div>
         </template>
 
         <template #createdAt="{ value }">
-          {{ formatDate(value) }}
+          <span :class="themeClass.text.secondary">
+            {{ formatDate(value) }}
+          </span>
         </template>
 
         <template #role="{ value }">
-          {{ formatText(value) }}
+          <BaseBadge
+            variant-text="secondary"
+            variant-b-g-color="sky"
+            variant-hover="airy"
+            text-size="sm"
+            rounded="full"
+          >
+            <i :class="['fa-solid fa-user-shield me-1', themeClass.icon.info]"></i>
+            {{ formatText(value) }}
+          </BaseBadge>
         </template>
 
         <template #actions="{ item }">
-          <BaseButton size="sm" @click="openEditModal(item.id)" variant="secondary" icon="pen" />
+          <div class="flex gap-2">
+            <BaseButton
+              size="sm"
+              @click="openEditModal(item.id)"
+              variant="secondary"
+              icon="fa-solid fa-pen"
+              :title="`Edit ${item.name}`"
+            />
+          </div>
         </template>
       </BaseTable>
 

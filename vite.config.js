@@ -37,5 +37,9 @@ export default defineConfig(({ mode }) => {
       __BASE_URL__: JSON.stringify(env.VITE_API_URL),
       __APP_ENV__: JSON.stringify(env.APP_ENV),
     },
+    server: {
+      port: Number(env.VITE_PORT) || 5173,  // ambil dari .env
+      host: true,                           // agar bisa diakses dari jaringan lokal (optional)
+    },
   }
 })

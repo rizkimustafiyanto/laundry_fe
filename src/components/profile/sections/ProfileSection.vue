@@ -2,32 +2,35 @@
   <div>
     <BaseCard type="single" variant="secondary">
       <div
-        class="flex justify-between items-center py-2 border-b"
+        class="flex justify-between items-center py-3 border-b px-2"
         :class="themeClass.border.subtle"
       >
-        <h1 class="text-xl font-bold" :class="themeClass.text.secondary">Profil Saya</h1>
+        <h1 class="text-xl font-bold flex items-center gap-2" :class="themeClass.text.secondary">
+          <i :class="['fa-solid fa-user-circle', themeClass.icon.primary]"></i>
+          Profil Saya
+        </h1>
         <BaseButton
           @click="editModal()"
           label="Edit Profil"
           variant="secondary"
           size="sm"
-          :class="themeClass.button.secondary"
+          icon="fa-solid fa-pen"
         />
       </div>
 
-      <div class="flex flex-col py-4 gap-4">
-        <div class="flex items-center gap-5 mb-4 md:mb-0">
+      <div class="flex flex-col py-6 px-2 gap-6">
+        <div class="flex items-center gap-6">
           <img
             :src="profileSrc"
             alt="Foto Profil"
-            class="w-28 h-28 rounded-full object-cover ring-1"
+            class="w-28 h-28 rounded-full object-cover ring-2"
             :class="themeClass.border.indigo"
           />
-          <div class="flex-1 min-w-0">
-            <h2 class="text-lg font-medium mb-1 break-words" :class="themeClass.text.dark">
+          <div class="flex-1 min-w-0 space-y-1">
+            <h2 class="text-lg font-semibold break-words" :class="themeClass.text.dark">
               {{ profile?.name }}
             </h2>
-            <p class="mb-1 text-sm break-words" :class="themeClass.text.subtleMeta">
+            <p class="text-sm break-words" :class="themeClass.text.subtleMeta">
               {{ profile?.email }}
             </p>
             <BaseBadge
@@ -43,16 +46,23 @@
         </div>
 
         <div
-          class="flex flex-col border justify-center md:items-start p-3 rounded-xl"
+          class="flex flex-col p-4 rounded-xl space-y-2"
           :class="[themeClass.background.airy, themeClass.border.airy]"
         >
-          <h2 class="text-lg font-medium mb-1" :class="themeClass.text.secondary">BIO</h2>
-          <p class="text-sm break-words whitespace-pre-wrap" :class="themeClass.text.subtle">
+          <h2 class="text-lg font-medium" :class="themeClass.text.secondary">
+            <i :class="['fa-solid fa-id-card-clip mr-2', themeClass.icon.secondary]"></i>
+            Bio
+          </h2>
+          <p
+            class="text-sm leading-relaxed break-words whitespace-pre-wrap"
+            :class="themeClass.text.subtle"
+          >
             {{ profile?.bio || 'Belum ada bio' }}
           </p>
         </div>
       </div>
     </BaseCard>
+
     <ProfileForm
       v-model="editProfile"
       :data-profile="profile"

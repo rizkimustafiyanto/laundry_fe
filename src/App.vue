@@ -30,14 +30,17 @@ const loading = useLoadingStore()
 const userStore = useUserStore()
 userStore.listenUserUpdates()
 
-const transactionStore = useTransactionStore()
-transactionStore.listenOrderUpdates()
-
 const addressStore = useAddressStore()
 addressStore.listenAddressUpdates()
 
+const transactionStore = useTransactionStore()
+transactionStore.listenTrnasactionUpdates()
+
 const statStore = useTransactionStatsStore()
 statStore.listenStatUpdates()
+
+const orderStore = useOrderStore()
+orderStore.listenOrderUpdates()
 
 const authStore = useAuthStore()
 authStore.listenAuthUpdates()

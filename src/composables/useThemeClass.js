@@ -33,7 +33,6 @@ export function useThemeClass() {
       light: 'text-cyan-700 bg-cyan-50 border-cyan-200 hover:bg-cyan-100',
       dark: 'text-cyan-300 bg-cyan-800 border-cyan-600 hover:bg-cyan-700',
     },
-
     // =========================
     // Pastel / soft / glass / mist (safe with opacity)
     // Bisa dipakai untuk textless, backgroundless, borderless, hoverless
@@ -74,6 +73,14 @@ export function useThemeClass() {
       light: 'text-sky-700 bg-sky-50/40 border-sky-200/30 hover:bg-sky-100/50',
       dark: 'text-sky-200 bg-sky-900/30 border-sky-700/30 hover:bg-sky-800/50',
     },
+    softYellow: {
+      light: 'text-yellow-800 bg-yellow-100/40 border-yellow-200/30 hover:bg-yellow-200/50',
+      dark: 'text-yellow-200 bg-yellow-800/40 border-yellow-600/30 hover:bg-yellow-700/50',
+    },
+    softIndigo: {
+      light: 'text-indigo-800 bg-indigo-100/40 border-indigo-200/30 hover:bg-indigo-200/50',
+      dark: 'text-indigo-200 bg-indigo-800/40 border-indigo-600/30 hover:bg-indigo-700/50',
+    },
 
     // =========================
     // Meta / transparent (opacity optional)
@@ -86,6 +93,10 @@ export function useThemeClass() {
     subtleMeta: {
       light: 'text-slate-500 bg-transparent border-transparent hover:text-slate-600',
       dark: 'text-slate-400 bg-transparent border-transparent hover:text-slate-300',
+    },
+    ghost: {
+      light: 'text-gray-600 bg-transparent border-gray-200 hover:bg-gray-50',
+      dark: 'text-gray-300 bg-transparent border-gray-700 hover:bg-gray-800',
     },
 
     // =========================
@@ -132,6 +143,10 @@ export function useThemeClass() {
       light: 'text-gray-800 bg-gray-100 border-gray-300 hover:bg-gray-200',
       dark: 'text-gray-100 bg-gray-900 border-gray-700 hover:bg-gray-800',
     },
+    rose: {
+      light: 'text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100',
+      dark: 'text-rose-300 bg-rose-800 border-rose-600 hover:bg-rose-700',
+    },
 
     // =========================
     // Warna baru yang bisa dipakai opacity (textless, borderless, backgroundless)
@@ -147,6 +162,14 @@ export function useThemeClass() {
     softViolet: {
       light: 'text-violet-800 bg-violet-100/40 border-violet-200/30 hover:bg-violet-200/50',
       dark: 'text-violet-200 bg-violet-800/40 border-violet-600/30 hover:bg-violet-700/50',
+    },
+    softCyan: {
+      light: 'text-cyan-800 bg-cyan-100/40 border-cyan-200/30 hover:bg-cyan-200/50',
+      dark: 'text-cyan-200 bg-cyan-800/40 border-cyan-600/30 hover:bg-cyan-700/50',
+    },
+    softRose: {
+      light: 'text-rose-800 bg-rose-100/40 border-rose-200/30 hover:bg-rose-200/50',
+      dark: 'text-rose-200 bg-rose-800/40 border-rose-600/30 hover:bg-rose-700/50',
     },
   }
 
@@ -220,7 +243,6 @@ export function useThemeClass() {
           return [key, bgClass ? `${bgClass}/20` : '']
         }),
       ),
-
       // =========================
       // Text Variants
       // =========================

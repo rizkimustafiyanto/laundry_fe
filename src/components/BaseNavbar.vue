@@ -21,7 +21,7 @@
                 'cursor-pointer flex items-center gap-2',
               ]"
             >
-              <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
+              <i v-if="item.icon" :class="`fas fa-${item.icon} w-4 h-4`"></i>
               {{ item.label }}
             </div>
           </div>
@@ -44,7 +44,7 @@
                   themeClass.hoverless.teal,
                 ]"
               >
-                <font-awesome-icon v-if="child.icon" :icon="['fas', child.icon]" class="w-4 h-4" />
+                <i v-if="child.icon" :class="`fas fa-${child.icon} w-4 h-4`"></i>
                 {{ child.label }}
               </div>
             </div>
@@ -58,7 +58,7 @@
               'cursor-pointer flex items-center gap-2',
             ]"
           >
-            <font-awesome-icon v-if="item.icon" :icon="['fas', item.icon]" class="w-4 h-4" />
+            <i v-if="item.icon" :class="`fas fa-${item.icon} w-4 h-4`"></i>
             {{ item.label }}
           </div>
         </div>
@@ -67,10 +67,10 @@
       <div
         class="flex items-center justify-center cursor-pointer px-1"
         @click="toggleTheme"
-        :class="themeClass.icon.orange"
+        :class="themeClass.icon.warning"
       >
-        <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
-        <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
+        <i v-if="theme === 'light'" class="fas fa-sun w-5 h-5"></i>
+        <i v-else class="fas fa-moon w-5 h-5"></i>
       </div>
 
       <div
@@ -78,21 +78,17 @@
         @click="logout"
         title="Logout"
       >
-        <font-awesome-icon
-          icon="right-from-bracket"
-          :class="themeClass.icon.brown"
-          class="w-5 h-5"
-        />
+        <i class="fas fa-right-from-bracket w-5 h-5" :class="themeClass.icon.danger"></i>
       </div>
     </nav>
 
     <div class="md:hidden flex gap-6">
       <button @click="toggleTheme" title="Toggle Theme" :class="themeClass.icon.orange">
-        <font-awesome-icon v-if="theme === 'light'" :icon="['fas', 'sun']" class="w-5 h-5" />
-        <font-awesome-icon v-else :icon="['fas', 'moon']" class="w-5 h-5" />
+        <i v-if="theme === 'light'" class="fas fa-sun w-5 h-5"></i>
+        <i v-else class="fas fa-moon w-5 h-5"></i>
       </button>
       <button @click="mobileMenuOpen = !mobileMenuOpen">
-        <font-awesome-icon :icon="['fas', 'bars']" class="w-6 h-6" />
+        <i class="fas fa-bars w-6 h-6"></i>
       </button>
     </div>
   </header>
@@ -112,7 +108,7 @@
             ]"
           >
             {{ item.label }}
-            <font-awesome-icon :icon="['fas', 'chevron-down']" class="w-4 h-4 ml-2" />
+            <i class="fas fa-chevron-down w-4 h-4 ml-2"></i>
           </div>
           <transition name="fade-scale">
             <div v-show="openMobileDropdown === item.key" class="space-y-1 px-3">
@@ -139,7 +135,7 @@
           themeClass.icon.danger,
         ]"
       >
-        <font-awesome-icon icon="right-from-bracket" class="w-4 h-4" />
+        <i class="fas fa-right-from-bracket w-4 h-4"></i>
         Logout
       </div>
     </div>

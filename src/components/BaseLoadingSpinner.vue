@@ -1,12 +1,15 @@
 <template>
   <div
     v-if="type === 'full'"
-    :class="['absolute inset-0 z-50 flex items-center justify-center', themeClass.bg_spinner]"
+    :class="[
+      'absolute inset-0 z-50 flex flex-col items-center justify-center',
+      themeClass.bg_spinner,
+    ]"
   >
-    <div :class="['flex items-center gap-2', themeClass.spinner]">
+    <div class="flex flex-col items-center gap-3">
       <svg
-        class="animate-spin h-5 w-5"
-        :class="themeClass.spinner"
+        class="animate-spin h-8 w-8"
+        :class="themeClass.icon.primary"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -18,18 +21,18 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
         />
       </svg>
-      <span>{{ message }}</span>
+      <span class="text-sm font-medium" :class="themeClass.text.secondary">{{ message }}</span>
     </div>
   </div>
 
   <div
     v-else-if="type === 'mini'"
-    :class="['flex items-center justify-center p-4', themeClass.bg_spinner]"
+    :class="['flex items-center justify-center p-3 rounded-lg shadow-md', themeClass.bg_spinner]"
   >
-    <div :class="['flex items-center gap-2', themeClass.spinner]">
+    <div class="flex items-center gap-2">
       <svg
         class="animate-spin h-5 w-5"
-        :class="themeClass.spinner"
+        :class="themeClass.icon.primary"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -41,7 +44,7 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
         />
       </svg>
-      <span>{{ message }}</span>
+      <span class="text-sm" :class="themeClass.text.secondary">{{ message }}</span>
     </div>
   </div>
 </template>

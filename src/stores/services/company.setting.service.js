@@ -7,6 +7,11 @@ export const useCompanyProfileStore = createStoreBuilder({
   defaultPayload: {
     name: '',
     logoUrl: '',
+    heroImageUrl: '',
+    heroTitle: '',
+    heroSubtitle: '',
+    ctaText: '',
+    ctaUrl: '',
     about: '',
     email: '',
     phone: '',
@@ -16,17 +21,37 @@ export const useCompanyProfileStore = createStoreBuilder({
     twitterUrl: '',
     linkedinUrl: '',
     tiktokUrl: '',
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
   },
 })
 
-export const useCompanyGalleryStore = createStoreBuilder({
-  storeId: 'company-galleries',
-  endpoint: '/company-galleries',
-  defaultPayload: { companyId: '', imageUrl: '', caption: '' },
+export const useCompanyMediaStore = createStoreBuilder({
+  storeId: 'company-medias',
+  endpoint: '/company-medias',
+  defaultPayload: {
+    companyId: '',
+    type: '',
+    url: '',
+    title: '',
+    description: '',
+    order: 0,
+  },
 })
 
-export const useCompanySponsorStore = createStoreBuilder({
-  storeId: 'company-sponsors',
-  endpoint: '/company-sponsors',
-  defaultPayload: { companyId: '', sponsorName: '', logoUrl: '', websiteUrl: '' },
+export const useCompanyContentStore = createStoreBuilder({
+  storeId: 'company-contents',
+  endpoint: '/company-contents',
+  defaultPayload: {
+    companyId: '',
+    type: '',
+    title: '',
+    subtitle: '',
+    description: '',
+    rating: null,
+    icon: '',
+    mediaId: null,
+    order: 0,
+  },
 })

@@ -1,29 +1,49 @@
 <template>
-  <BaseCard variant="mist">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-sm font-medium" :class="themeClass.text.subtle">Grafik Pesanan</h3>
+  <div class="space-y-6">
+    <BaseCard variant="mist" class="p-4 rounded-xl shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-medium flex items-center gap-2" :class="themeClass.text.subtle">
+          <i :class="['fa-solid fa-chart-simple', themeClass.icon.secondary]"></i>
+          Grafik Pesanan per Bulan
+        </h3>
 
-      <BaseSelect
-        v-model="selectedLimit"
-        :options="limitOptions"
-        placeholder="Pilih Limit"
-        size-variant="sm"
-        @update:modelValue="changeLimit"
+        <BaseSelect
+          v-model="selectedLimit"
+          :options="limitOptions"
+          placeholder="Pilih Limit"
+          size-variant="sm"
+          @update:modelValue="changeLimit"
+        />
+      </div>
+
+      <BaseChart
+        type="donut"
+        :categories="transactionsByMonth.categories"
+        :data="transactionsByMonth.data"
       />
-    </div>
+    </BaseCard>
 
-    <BaseChart
-      type="donut"
-      :categories="transactionsByMonth.categories"
-      :data="transactionsByMonth.data"
-    />
-  </BaseCard>
+    <BaseCard variant="mist" class="p-4 rounded-xl shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-medium flex items-center gap-2" :class="themeClass.text.subtle">
+          <i :class="['fa-solid fa-chart-pie', themeClass.icon.secondary]"></i>
+          Grafik Pesanan per Status
+        </h3>
+      </div>
+
+      <BaseChart
+        type="pie"
+        :categories="transactionsByStatus.map((s) => s.status)"
+        :data="transactionsByStatus.map((s) => s.count)"
+      />
+    </BaseCard>
+  </div>
 </template>
 
 <script setup>
 const themeClass = useThemeClass()
 const transactionStatStore = useTransactionStatsStore()
-const { transactionsByMonth } = storeToRefs(transactionStatStore)
+const { transactionsByMonth, transactionsByStatus } = storeToRefs(transactionStatStore)
 
 const selectedLimit = ref(transactionStatStore.meta.limit)
 

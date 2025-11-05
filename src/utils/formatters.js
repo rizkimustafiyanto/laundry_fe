@@ -22,11 +22,17 @@ export function formatCurrency(value) {
 import { format } from 'date-fns'
 import { id as idLocale } from 'date-fns/locale'
 
-export function formatDate(dateInput) {
+export function formatDate(dateInput, formatString = 'dd MMMM yyyy') {
   if (!dateInput) return '-'
   try {
-    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
-    return format(date, 'dd MMMM yyyy', { locale: idLocale })
+    const date =
+      typeof dateInput === 'string' || typeof dateInput === 'number'
+        ? new Date(dateInput)
+        : dateInput
+
+    if (isNaN(date)) return '-'
+
+    return format(date, formatString, { locale: idLocale })
   } catch {
     return '-'
   }

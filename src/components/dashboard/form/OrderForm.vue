@@ -1,183 +1,208 @@
 <template>
   <BaseModal v-model="modelValue" :title="modalTitle" size="md">
     <BaseLoadingSpinner v-if="loading" :type="'mini'" />
-    <BaseCard v-else class="space-y-4" variant="dark">
-      <form @submit.prevent="submitOrder" class="space-y-4">
-        <!-- Customer, hanya tampil jika bukan CUSTOMER -->
-        <BaseSelect
-          v-if="isManualPickup && user.role !== 'CUSTOMER'"
-          label="Pilih Pelanggan"
-          v-model="form.customerId"
-          :options="customerAsAdminOptions"
-          placeholder="-- Pilih Pelanggan --"
-          type="search"
-          :onSearch="searchCustomers"
-          required
-          :disabled="editMode"
+
+    <form v-else @submit.prevent="submitOrder" class="space-y-4">
+
+      <!-- Customer, hanya tampil jika bukan CUSTOMER -->
+      <BaseSelect
+        v-if="isManualPickup && user.role !== 'CUSTOMER'"
+        label="Pilih Pelanggan"
+        v-model="form.customerId"
+        :options="customerAsAdminOptions"
+        placeholder="-- Pilih Pelanggan --"
+        type="search"
+        :onSearch="searchCustomers"
+        required
+        :disabled="editMode"
+      />
+
+      <!-- Pickup -->
+      <BaseSelect
+        v-if="form.pickupRequested"
+        label="Pilih Alamat Pengambilan"
+        v-model="form.pickupAddressId"
+        :options="addressOption"
+        placeholder="-- Pilih Alamat Pengambilan --"
+        type="search"
+        required
+      />
+
+      <!-- Delivery -->
+      <BaseSelect
+        v-if="form.deliveryRequested"
+        label="Pilih Alamat Pengantaran"
+        v-model="form.deliveryAddressId"
+        :options="addressOption"
+        placeholder="-- Pilih Alamat Pengantaran --"
+        required
+      />
+
+      <!-- Checkbox pickup & delivery -->
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2" :class="themeClass.text.secondary">
+          <input
+            type="checkbox"
+            v-model="form.pickupRequested"
+            :disabled="forcePickup"
+            class="accent-teal-600"
+          />
+          Minta Penjemputan
+        </label>
+        <label class="flex items-center gap-2" :class="themeClass.text.secondary">
+          <input type="checkbox" v-model="form.deliveryRequested" class="accent-teal-600" />
+          Minta Pengantaran
+        </label>
+      </div>
+
+      <BaseInput
+        label="Catatan"
+        v-model="form.notes"
+        type="textarea"
+        rows="3"
+        placeholder="Tulis catatan tambahan..."
+        :disabled="editMode"
+      />
+
+      <!-- Items -->
+      <div>
+        <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Item Laundry</h3>
+        <BaseCard
+          v-for="(item, index) in form.items"
+          :key="index"
+          class="mb-4 p-4 space-y-2"
+          variant="secondary"
+        >
+          <BaseSelect
+            v-model="item.serviceTypeId"
+            label="Jenis Layanan"
+            :options="serviceTypeOption"
+            placeholder="-- Pilih Layanan --"
+            :required="isManualPickup"
+          />
+          <BaseSelect
+            v-model="item.itemTypeId"
+            label="Jenis Item"
+            :options="getItemsForService(item.serviceTypeId)"
+            placeholder="-- Pilih Item --"
+            :required="isManualPickup"
+          />
+          <BaseInput
+            v-model.number="item.weightInKg"
+            type="number"
+            label="Berat (kg)"
+            min="0"
+            :required="isManualPickup"
+          />
+          <BaseButton
+            label="Hapus Item"
+            variant="danger"
+            @click.prevent="removeItem(index)"
+            class="w-full"
+          />
+        </BaseCard>
+        <BaseButton
+          label="+ Tambah Item"
+          variant="secondary"
+          class="w-full"
+          @click.prevent="addItem"
         />
-        <!-- Pickup -->
+      </div>
+
+      <!-- Payment -->
+      <div v-if="showPaymentSection" class="space-y-2">
+        <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Pembayaran</h3>
+        <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
+
+        <div class="space-y-1 text-sm">
+          <div class="flex justify-between">
+            <span>Subtotal</span><span>{{ formatCurrency(order.invoice?.subtotal) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Service Fee</span><span>{{ formatCurrency(order.invoice?.serviceCharge) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Pickup Fee</span><span>{{ formatCurrency(order.invoice?.pickupFee) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Delivery Fee</span><span>{{ formatCurrency(order.invoice?.deliveryFee) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Tax</span><span>{{ formatCurrency(order.invoice?.tax) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Discount</span><span>-{{ formatCurrency(order.invoice?.discount) }}</span>
+          </div>
+          <div
+            class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold"
+            :class="themeClass.border.secondary"
+          >
+            <span>Total Harus Dibayar</span>
+            <span>{{ formatCurrency(order.invoice?.grandTotal) }}</span>
+          </div>
+        </div>
+
+        <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
+
+        <div class="text-sm space-y-2">
+          <div class="flex justify-between">
+            <span>Status</span>
+            <span class="font-medium capitalize">
+              {{ order.payment?.status || 'PENDING' }}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span>Dibuat</span>
+            <span>{{ formatDate(order.payment?.createdAt, 'dd/MM/yyyy HH:mm') }}</span>
+          </div>
+          <div v-if="order.payment?.paidAt" class="flex justify-between">
+            <span>Dikonfirmasi</span>
+            <span>{{ formatDate(order.payment.paidAt, 'dd/MM/yyyy HH:mm') }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Jumlah Dibayarkan</span>
+            <span>{{ formatCurrency(order.payment?.amountPaid || 0) }}</span>
+          </div>
+        </div>
+
         <BaseSelect
-          v-if="form.pickupRequested"
-          label="Pilih Alamat Pengambilan"
-          v-model="form.pickupAddressId"
-          :options="addressOption"
-          placeholder="-- Pilih Alamat Pengambilan --"
-          type="search"
-          required
+          v-if="canEditPaymentMethod"
+          v-model="form.payment.paymentMethod"
+          label="Metode Pembayaran"
+          :options="paymentOptions"
+          placeholder="-- Pilih Pembayaran --"
         />
 
-        <!-- Delivery -->
-        <BaseSelect
-          v-if="form.deliveryRequested"
-          label="Pilih Alamat Pengantaran"
-          v-model="form.deliveryAddressId"
-          :options="addressOption"
-          placeholder="-- Pilih Alamat Pengantaran --"
-          required
-        />
-
-        <div class="flex gap-4">
-          <label class="flex items-center gap-2" :class="themeClass.text.secondary">
-            <input
-              type="checkbox"
-              v-model="form.pickupRequested"
-              :disabled="forcePickup"
-              class="accent-teal-600"
-            />
-            Minta Penjemputan
-          </label>
-          <label class="flex items-center gap-2" :class="themeClass.text.secondary">
-            <input type="checkbox" v-model="form.deliveryRequested" class="accent-teal-600" />
-            Minta Pengantaran
-          </label>
+        <div v-if="form.payment.paymentMethod === 'QRIS' && qrisChar" class="mt-3 text-center">
+          <p class="text-sm mb-2" :class="themeClass.text.secondary">
+            Scan QRIS untuk melakukan pembayaran
+          </p>
+          <img
+            :src="`${__BASE_URL__}${qrisChar}`"
+            alt="QRIS Payment"
+            class="mx-auto w-56 h-56 object-contain border rounded-xl shadow-md"
+          />
         </div>
 
         <BaseInput
-          label="Catatan"
-          v-model="form.notes"
+          v-if="canEditNote"
+          v-model="form.payment.note"
+          label="Catatan Pembayaran"
           type="textarea"
           rows="3"
           placeholder="Tulis catatan tambahan..."
-          :disabled="editMode"
         />
 
-        <!-- Items -->
-        <div>
-          <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Item Laundry</h3>
-          <BaseCard
-            v-for="(item, index) in form.items"
-            :key="index"
-            class="mb-4 p-4 space-y-2"
-            variant="dark"
-          >
-            <BaseSelect
-              v-model="item.serviceTypeId"
-              label="Jenis Layanan"
-              :options="serviceTypeOption"
-              placeholder="-- Pilih Layanan --"
-              :required="isManualPickup"
-            />
-            <BaseSelect
-              v-model="item.itemTypeId"
-              label="Jenis Item"
-              :options="getItemsForService(item.serviceTypeId)"
-              placeholder="-- Pilih Item --"
-              :required="isManualPickup"
-            />
-            <BaseInput
-              v-model.number="item.weightInKg"
-              type="number"
-              label="Berat (kg)"
-              min="0"
-              :required="isManualPickup"
-            />
-            <BaseButton
-              label="Hapus Item"
-              variant="danger"
-              @click.prevent="removeItem(index)"
-              class="w-full"
-            />
-          </BaseCard>
-          <BaseButton
-            label="+ Tambah Item"
-            variant="secondary"
-            class="w-full"
-            @click.prevent="addItem"
-          />
-        </div>
+        <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
+      </div>
 
-        <!-- Payment -->
-        <div v-if="showPaymentSection" class="space-y-2">
-          <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Payment</h3>
-          <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
-
-          <div class="space-y-2">
-            <h3 class="font-semibold">💳 Rincian Pembayaran</h3>
-            <div class="flex justify-between text-sm">
-              <span>Subtotal</span><span>{{ formatCurrency(order.invoice?.subtotal) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span>Service Fee</span
-              ><span>{{ formatCurrency(order.invoice?.serviceCharge) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span>Pickup Fee</span><span>{{ formatCurrency(order.invoice?.pickupFee) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span>Delivery Fee</span><span>{{ formatCurrency(order.invoice?.deliveryFee) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span>Tax</span><span>{{ formatCurrency(order.invoice?.tax) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span>Discount</span><span>-{{ formatCurrency(order.invoice?.discount) }}</span>
-            </div>
-            <div
-              class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-sm"
-              :class="themeClass.border.secondary"
-            >
-              <span>Total Harus Dibayar</span>
-              <span>{{ formatCurrency(order.invoice?.grandTotal) }}</span>
-            </div>
-          </div>
-
-          <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
-          <div class="flex justify-between py-2 text-sm">
-            <span>Jumlah Dibayarkan</span>
-            <span>{{
-              form.payment?.amountPaid
-                ? formatCurrency(form.payment?.amountPaid)
-                : formatCurrency(0)
-            }}</span>
-          </div>
-
-          <BaseSelect
-            v-if="canEditPaymentMethod"
-            v-model="form.payment.paymentMethod"
-            label="Metode Pembayaran"
-            :options="paymentOptions"
-            placeholder="-- Pilih Pembayaran --"
-          />
-
-          <BaseInput
-            v-if="canEditNote"
-            v-model="form.payment.note"
-            label="Catatan"
-            type="textarea"
-            rows="3"
-            placeholder="Tulis catatan tambahan..."
-          />
-          <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
-        </div>
-
-        <BaseButton
-          type="submit"
-          :label="showPaymentSection ? 'Payment Change' : 'Simpan Pesanan'"
-          variant="teal"
-          class="w-full"
-        />
-      </form>
-    </BaseCard>
+      <BaseButton
+        type="submit"
+        :label="showPaymentSection ? 'Simpan Perubahan Pembayaran' : 'Simpan Pesanan'"
+        variant="teal"
+        class="w-full"
+      />
+    </form>
   </BaseModal>
 </template>
 
@@ -199,6 +224,8 @@ const paymentMethodStore = usePaymentMethodStore()
 const addressStore = useAddressStore()
 const userStore = useUserStore()
 const pricingStore = usePricingStore()
+const profileStore = useCompanyProfileStore()
+const qrisChar = computed(() => profileStore.items[0]?.qrisImageUrl || null)
 
 const isManualPickup = computed(() => props.mode === 'manualpickup')
 const forcePickup = computed(() => props.mode === 'requestpickup')
@@ -212,7 +239,19 @@ const customers = computed(() => (Array.isArray(userStore.items) ? userStore.ite
 const customerAsAdminOptions = computed(() =>
   customers.value.map((c) => ({ label: c.name, value: c.id })),
 )
-const paymentOptions = computed(() => paymentMethodStore.options)
+const paymentOptions = computed(() => {
+  return paymentMethodStore.options.map((opt) => {
+    if (opt.value === 'QRIS' && !qrisChar.value) {
+      return {
+        ...opt,
+        disabled: true,
+        label: `${opt.label} (Belum diatur di Setting)`,
+      }
+    }
+    return opt
+  })
+})
+
 
 const addressOption = computed(() =>
   toValueLabelOptions(
@@ -250,23 +289,18 @@ const resetForm = () => {
   }
 }
 
-const isCompleted = computed(() => order.value.status === 'COMPLETED')
-
-const showPaymentSection = computed(
-  () =>
-    props.editMode &&
-    props.mode === 'paymentorder' &&
-    ['SUPER_ADMIN', 'OWNER'].includes(user.value.role) &&
-    isCompleted.value,
+const showPaymentSection = computed(() =>
+  props.mode === 'paymentorder' &&
+  ['SUPER_ADMIN', 'OWNER'].includes(user.value.role) &&
+  order.value.status === 'COMPLETED'
 )
 
 const canEditPaymentMethod = computed(
-  () => isCompleted.value && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role),
+  () => order.value.status === 'COMPLETED' && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role)
 )
 
-const canEditNote = computed(
-  () => isCompleted.value && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role),
-)
+const canEditNote = canEditPaymentMethod
+
 
 watch(
   () => form.value.customerId,

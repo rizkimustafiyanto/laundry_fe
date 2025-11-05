@@ -1,16 +1,23 @@
 <template>
   <div>
-    <BaseLoadingSpinner v-if="isPrepare" type="mini" />
+    <BaseLoadingSpinner v-if="isPrepare" type="mini" class="mx-auto my-10" />
 
     <div v-else>
-      <h2 class="text-xl font-semibold mt-8 mb-4" :class="themeClass.text.secondary">
+      <h2
+        class="text-2xl font-bold mt-8 mb-6 flex items-center gap-2"
+        :class="themeClass.text.secondary"
+      >
+        <i :class="['fa-solid fa-gear', themeClass.icon.primary]"></i>
         Service & Item Type Settings
       </h2>
 
       <div class="grid md:grid-cols-2 gap-6">
-        <!-- SERVICE TYPE -->
-        <BaseCard variant="dark" class="p-4 space-y-4">
-          <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
+        <BaseCard variant="dark" class="p-5 space-y-4 rounded-xl shadow-sm">
+          <h3
+            class="text-lg font-semibold flex items-center gap-2"
+            :class="themeClass.text.secondary"
+          >
+            <i :class="['fa-solid fa-hand-holding-droplet', themeClass.icon.info]"></i>
             Service Types
           </h3>
 
@@ -21,50 +28,74 @@
           />
 
           <div class="flex justify-end gap-2">
-            <BaseButton label="Reset" variant="secondary" @click="resetServiceTypeForm" />
+            <BaseButton
+              label="Reset"
+              variant="secondary"
+              size="sm"
+              icon="fa-solid fa-rotate-left"
+              @click="resetServiceTypeForm"
+            />
             <BaseButton
               :label="serviceTypeForm.id ? 'Update' : 'Simpan'"
               variant="teal"
+              size="sm"
+              icon="fa-solid fa-save"
               @click="saveServiceType"
             />
           </div>
 
-          <table class="w-full text-sm border-collapse mt-4">
-            <thead>
-              <tr :class="themeClass.text.secondary">
-                <th class="text-left p-2">Nama</th>
-                <th class="text-right p-2">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="st in serviceTypeStore.items"
-                :key="st.id"
-                class="border-t border-gray-700"
-              >
-                <td class="p-2">{{ st.name }}</td>
-                <td class="p-2 text-right space-x-2">
-                  <BaseButton
-                    size="sm"
-                    variant="secondary"
-                    label="Edit"
-                    @click="editServiceType(st)"
-                  />
-                  <BaseButton
-                    size="sm"
-                    variant="danger"
-                    label="Hapus"
-                    @click="serviceTypeStore.deleteItem(st.id)"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm border-collapse rounded-lg overflow-hidden">
+              <thead :class="themeClass.baseDiv.secondary">
+                <tr>
+                  <th class="text-left px-3 py-2 font-medium" :class="themeClass.text.secondary">
+                    Nama
+                  </th>
+                  <th class="text-right px-3 py-2 font-medium" :class="themeClass.text.secondary">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="st in serviceTypeStore.items"
+                  :key="st.id"
+                  class="border-t transition hover:bg-gray-800/30"
+                  :class="themeClass.border.airy"
+                >
+                  <td class="px-3 py-2" :class="themeClass.text.secondary">
+                    {{ st.name }}
+                  </td>
+                  <td class="px-3 py-2 text-right space-x-2">
+                    <BaseButton
+                      size="xs"
+                      variant="secondary"
+                      icon="fa-solid fa-pen"
+                      @click="editServiceType(st)"
+                      title="Edit"
+                    />
+                    <BaseButton
+                      size="xs"
+                      variant="danger"
+                      icon="fa-solid fa-trash"
+                      @click="serviceTypeStore.deleteItem(st.id)"
+                      title="Hapus"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </BaseCard>
 
-        <!-- ITEM TYPE -->
-        <BaseCard variant="dark" class="p-4 space-y-4">
-          <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">Item Types</h3>
+        <BaseCard variant="dark" class="p-5 space-y-4 rounded-xl shadow-sm">
+          <h3
+            class="text-lg font-semibold flex items-center gap-2"
+            :class="themeClass.text.secondary"
+          >
+            <i :class="['fa-solid fa-shirt', themeClass.icon.warning]"></i>
+            Item Types
+          </h3>
 
           <BaseInput
             label="Nama Item Type"
@@ -73,41 +104,64 @@
           />
 
           <div class="flex justify-end gap-2">
-            <BaseButton label="Reset" variant="secondary" @click="resetItemTypeForm" />
+            <BaseButton
+              label="Reset"
+              variant="secondary"
+              size="sm"
+              icon="fa-solid fa-rotate-left"
+              @click="resetItemTypeForm"
+            />
             <BaseButton
               :label="itemTypeForm.id ? 'Update' : 'Simpan'"
               variant="teal"
+              size="sm"
+              icon="fa-solid fa-save"
               @click="saveItemType"
             />
           </div>
 
-          <table class="w-full text-sm border-collapse mt-4">
-            <thead>
-              <tr :class="themeClass.text.secondary">
-                <th class="text-left p-2">Nama</th>
-                <th class="text-right p-2">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="it in itemTypeStore.items" :key="it.id" class="border-t border-gray-700">
-                <td class="p-2">{{ it.name }}</td>
-                <td class="p-2 text-right space-x-2">
-                  <BaseButton
-                    size="sm"
-                    variant="secondary"
-                    label="Edit"
-                    @click="editItemType(it)"
-                  />
-                  <BaseButton
-                    size="sm"
-                    variant="danger"
-                    label="Hapus"
-                    @click="itemTypeStore.deleteItem(it.id)"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm border-collapse rounded-lg overflow-hidden">
+              <thead :class="themeClass.baseDiv.secondary">
+                <tr>
+                  <th class="text-left px-3 py-2 font-medium" :class="themeClass.text.secondary">
+                    Nama
+                  </th>
+                  <th class="text-right px-3 py-2 font-medium" :class="themeClass.text.secondary">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="it in itemTypeStore.items"
+                  :key="it.id"
+                  class="border-t transition hover:bg-gray-800/30"
+                  :class="themeClass.border.airy"
+                >
+                  <td class="px-3 py-2" :class="themeClass.text.secondary">
+                    {{ it.name }}
+                  </td>
+                  <td class="px-3 py-2 text-right space-x-2">
+                    <BaseButton
+                      size="xs"
+                      variant="secondary"
+                      icon="fa-solid fa-pen"
+                      @click="editItemType(it)"
+                      title="Edit"
+                    />
+                    <BaseButton
+                      size="xs"
+                      variant="danger"
+                      icon="fa-solid fa-trash"
+                      @click="itemTypeStore.deleteItem(it.id)"
+                      title="Hapus"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </BaseCard>
       </div>
     </div>

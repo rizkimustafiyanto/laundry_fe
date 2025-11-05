@@ -80,21 +80,59 @@
           required
         />
 
+        <div
+          v-if="paymentStore.formPayload.paymentMethod === 'QRIS' && qrisChar"
+          class="mt-3 text-center"
+        >
+          <p class="text-sm mb-2" :class="themeClass.text.secondary">
+            Scan QRIS untuk melakukan pembayaran
+          </p>
+          <img
+            :src="`${__BASE_URL__}${qrisChar}`"
+            alt="QRIS Payment"
+            class="mx-auto w-56 h-56 object-contain border rounded-xl shadow-md"
+          />
+        </div>
+
         <BaseButton class="w-full" @click="submitPayment"> Konfirmasi Bayar </BaseButton>
       </section>
 
       <section
-        v-if="isPaidCompleted"
+        v-if="form.payment && form.payment.status"
         class="mt-6 border-t border-dashed pt-4 text-center space-y-2"
       >
-        <h3 class="font-bold text-green-600">✅ TRANSAKSI SELESAI</h3>
-        <p class="text-sm" :class="themeClass.text.secondary">
-          Terima kasih telah menggunakan layanan {{ appName }} 🙏
-        </p>
-        <div class="text-xs" :class="themeClass.text.secondary">
-          Status: <span class="font-semibold">PAID</span><br />
-          Tanggal: {{ form.payment.paidAt ? formatDate(form.payment.paidAt) : 'No Paid' }}
-        </div>
+        <template v-if="form.payment.status === 'PENDING'">
+          <h3 class="font-bold text-yellow-500">⏳ PEMBAYARAN MENUNGGU KONFIRMASI</h3>
+          <p class="text-sm" :class="themeClass.text.secondary">
+            Pembayaran telah dilakukan dan menunggu konfirmasi admin.
+          </p>
+          <div class="text-xs" :class="themeClass.text.secondary">
+            Status: <span class="font-semibold">PENDING</span><br />
+            Dibayarkan pada: {{ formatDate(form.payment.createdAt, 'dd MMM yyyy, HH:mm') }}
+          </div>
+        </template>
+
+        <template v-else-if="form.payment.status === 'PAID'">
+          <h3 class="font-bold text-green-600">✅ PEMBAYARAN TERKONFIRMASI</h3>
+          <p class="text-sm" :class="themeClass.text.secondary">
+            Terima kasih telah menggunakan layanan {{ appName }} 🙏
+          </p>
+          <div class="text-xs" :class="themeClass.text.secondary">
+            Status: <span class="font-semibold">PAID</span><br />
+            Dikonfirmasi pada: {{ formatDate(form.payment.paidAt, 'dd MMM yyyy, HH:mm') }}
+          </div>
+        </template>
+
+        <template v-else-if="form.payment.status === 'FAILED'">
+          <h3 class="font-bold text-red-600">❌ PEMBAYARAN GAGAL</h3>
+          <p class="text-sm" :class="themeClass.text.secondary">
+            Silakan coba ulang proses pembayaran.
+          </p>
+          <div class="text-xs" :class="themeClass.text.secondary">
+            Status: <span class="font-semibold">FAILED</span><br />
+            Waktu: {{ formatDate(form.payment.createdAt) }}
+          </div>
+        </template>
       </section>
 
       <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
@@ -124,19 +162,31 @@ const paymentMethodStore = usePaymentMethodStore()
 const storeCompany = useCompanyProfileStore()
 
 const isPrepare = ref(true)
-
 const appName = computed(() => storeCompany.items[0]?.name || 'Laundry App')
+const qrisChar = computed(() => storeCompany.items[0]?.qrisImageUrl || null)
 
 const form = reactive({
   customer: null,
   items: [],
   invoice: null,
   status: null,
-  payment: [],
+  payment: null,
 })
 
 const isPaymentMode = computed(() => props.mode === 'payment')
-const paymentOptions = computed(() => paymentMethodStore.options)
+
+const paymentOptions = computed(() => {
+  return paymentMethodStore.options.map((opt) => {
+    if (opt.value === 'QRIS' && !qrisChar.value) {
+      return {
+        ...opt,
+        disabled: true,
+        label: `${opt.label} (Belum diatur oleh admin)`,
+      }
+    }
+    return opt
+  })
+})
 
 const invoiceDetails = computed(() => [
   { label: 'Subtotal', value: form.invoice?.subtotal },
@@ -174,16 +224,19 @@ const loadOrder = async () => {
 
 const submitPayment = async () => {
   if (!canProceed.value) {
-    notifyError(
-      '',
-      'Item laundry masih kosong atau transaksi belum di proses, tidak bisa melakukan pembayaran!',
-    )
+    notifyError('', 'Item laundry masih kosong atau transaksi belum diproses!')
     return
   }
   if (!paymentStore.formPayload.paymentMethod) {
     notifyError('', 'Silakan pilih metode pembayaran terlebih dahulu!')
     return
   }
+
+  if (paymentStore.formPayload.paymentMethod === 'QRIS' && !qrisChar.value) {
+    notifyError('', 'QRIS belum diatur oleh admin di menu Setting!')
+    return
+  }
+
   paymentStore.formPayload.amountPaid = form.invoice?.grandTotal
   await paymentStore.addPayment(props.orderId, paymentStore.formPayload)
   modelValue.value = false

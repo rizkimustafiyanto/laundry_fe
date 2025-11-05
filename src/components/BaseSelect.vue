@@ -11,23 +11,26 @@
 
     <div
       ref="toggleRef"
-      class="w-full border rounded-lg transition flex justify-between items-center"
+      class="w-full border rounded-lg transition flex justify-between items-center px-4 py-2"
       :class="[
         themeClass.select.mist,
         sizeClass.wrapper,
         props.disabled
-          ? 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-70'
-          : 'cursor-pointer focus-within:ring-2',
+          ? `${themeClass.backgroundless.secondary} cursor-not-allowed opacity-70`
+          : 'cursor-pointer focus-within:ring-2 space-x-2',
       ]"
       @click="!props.disabled && toggleDropdown()"
     >
       <span class="block truncate" :class="sizeClass.font">
         {{ selectedLabel || placeholder }}
       </span>
-      <font-awesome-icon
-        :icon="dropdownOpen ? 'angle-up' : 'angle-down'"
-        :class="['ml-2', sizeClass.icon]"
-      />
+      <i
+        :class="[
+          dropdownOpen ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down',
+          sizeClass.icon,
+          themeClass.icon.primary,
+        ]"
+      ></i>
     </div>
 
     <teleport to="body">
@@ -35,23 +38,23 @@
         v-if="dropdownOpen && !props.disabled"
         ref="dropdownRef"
         :style="dropdownStyles"
-        class="absolute z-50 border rounded-lg shadow-lg max-h-60 overflow-auto scrollbar-none"
-        :class="[themeClass.select.mist, sizeClass.dropdown]"
+        class="absolute z-50 border rounded-lg shadow-lg max-h-60 overflow-auto scrollbar-none mt-1"
+        :class="[themeClass.select.dark, sizeClass.dropdown]"
       >
         <BaseInput
           v-if="type === 'search'"
           ref="searchInputRef"
           v-model="searchTerm"
           :placeholder="searchPlaceholder"
-          :icon="'search'"
-          class="sticky top-0 z-10"
-          :class="[themeClass.input.dark, sizeClass.font, sizeClass.wrapper]"
+          :icon="'fa-solid fa-magnifying-glass'"
+          class="sticky top-0 z-10 py-2 px-2"
           rounded="lg"
+          :sizeVariant="props.sizeVariant"
         />
 
         <div
           v-if="options.length === 0"
-          class="px-4 py-2"
+          class="px-4 py-2 text-center"
           :class="[themeClass.baseDiv.dark, sizeClass.font]"
         >
           Tidak ada data
@@ -60,11 +63,12 @@
         <div
           v-for="option in options"
           :key="option.value"
-          class="cursor-pointer"
-          :class="[themeClass.item.dark, sizeClass.option]"
+          class="px-4 py-2 cursor-pointer transition rounded-md hover:bg-gray-100 flex items-center gap-2"
+          :class="[themeClass.item.dark, sizeClass.option, themeClass.hover.smooth]"
           @click="selectOption(option)"
         >
-          {{ option.label }}
+          <i v-if="option.icon" :class="[option.icon, themeClass.icon.secondary]"></i>
+          <span class="truncate">{{ option.label }}</span>
         </div>
       </div>
     </teleport>

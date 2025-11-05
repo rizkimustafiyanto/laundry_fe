@@ -22,25 +22,38 @@ const resolvedSeries = computed(() => {
 })
 
 const resolvedOptions = computed(() => {
+  const common = {
+    theme: { mode: theme.value },
+    stroke: {
+      show: true,
+      colors: [theme.value === 'dark' ? '#1e1e1e' : '#fff'], // atau 'transparent'
+      width: 2,
+    },
+    legend: {
+      position: 'bottom',
+      labels: { colors: themeClass.value.text.subtle },
+    },
+  }
+
   if (props.type === 'donut' || props.type === 'pie') {
     return {
+      ...common,
       chart: { type: props.type },
-      theme: { mode: theme.value },
       labels: props.categories,
-      legend: { position: 'bottom', labels: { colors: themeClass.value.text.subtle } },
     }
   }
+
   return {
+    ...common,
     chart: { type: props.type, toolbar: { show: false } },
-    theme: { mode: theme.value },
     xaxis: {
       categories: props.categories,
       labels: { style: { colors: themeClass.value.text.subtle } },
     },
-    stroke: { curve: 'smooth', width: 3 },
     yaxis: {
       labels: { style: { colors: themeClass.value.text.subtle } },
     },
+    stroke: { curve: 'smooth', width: 3 }, // khusus line/bar
   }
 })
 </script>

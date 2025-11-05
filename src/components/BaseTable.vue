@@ -1,57 +1,67 @@
 <template>
-  <div :class="['relative overflow-x-auto sm:rounded-lg p-4']">
-    <div class="flex justify-between items-center pb-2">
+  <div
+    :class="[
+      'relative overflow-x-auto sm:rounded-lg',
+      themeClass.baseDiv.secondary,
+      sizeClass.wrapper,
+    ]"
+  >
+    <div class="flex justify-between items-center" :class="sizeClass.header">
       <div class="flex flex-row gap-2">
         <BaseInput
           v-if="searchable"
           :modelValue="searchQuery"
           @update:modelValue="handleSearchQuery"
           placeholder="Cari..."
+          :size-variant="sizeVariant"
         />
-        <div v-if="limitable" class="hidden md:flex gap-2 items-center text-sm">
-          <select
-            v-model="localLimit"
-            @change="applyLimit"
-            class="px-2"
-            :class="themeClass.select.secondary"
-          >
-            <option v-for="n in [5, 10, 20, 50, 100]" :key="n" :value="n">
-              {{ n }}
-            </option>
-          </select>
+        <div v-if="limitable" class="hidden md:flex gap-2 items-center" :class="sizeClass.font">
+          <BaseSelect
+            :modelValue="localLimit"
+            @update:modelValue="applyLimit"
+            :options="[5, 10, 20, 50, 100].map((n) => ({ label: n, value: n }))"
+            placeholder="Tampilan Per Halaman"
+            :theme-class="themeClass.select"
+            :size-variant="sizeVariant"
+          />
           <span :class="themeClass.text.secondary">: Tampilan Per Halaman</span>
         </div>
       </div>
+
       <div class="flex flex-row gap-2">
         <BaseButton
           v-if="exportable"
-          icon="download"
+          @click="$emit('export')"
           variant="mist"
-          @click="emit('export')"
-          class="w-full"
-        />
+          :size="sizeVariant"
+          no-bg
+          no-border
+        >
+          <i :class="['fa-solid fa-download', themeClass.icon.primary]"></i>
+        </BaseButton>
+
         <BaseSelect
           v-if="choosable"
           :modelValue="selectedDropdownValue"
           @update:modelValue="handleDropdownSelect"
           :options="dropdownItems"
           :placeholder="dropdownLabel"
+          :size-variant="sizeVariant"
         />
       </div>
     </div>
 
     <div v-if="!loading && items?.length" class="w-full overflow-x-auto">
       <table
-        class="w-full text-sm text-left rounded-xl border min-w-max"
-        :class="themeClass.border.secondary"
+        class="w-full text-left rounded-xl border min-w-max"
+        :class="[themeClass.border.secondary, sizeClass.font]"
       >
-        <thead class="text-xs uppercase" :class="themeClass.thead">
+        <thead class="uppercase bg-gray-50" :class="[themeClass.thead, sizeClass.thead]">
           <tr>
             <th
               v-for="(col, index) in computedColumns"
               :key="index"
-              class="px-6 py-3"
-              :class="themeClass.text.secondary"
+              :class="[themeClass.text.secondary, sizeClass.th]"
             >
               {{ col.label }}
             </th>
@@ -61,14 +71,13 @@
           <tr
             v-for="item in items"
             :key="item.id"
-            class="border-b"
+            class="border-b transition"
             :class="[themeClass.hoverless.secondary, themeClass.border.secondary]"
           >
             <td
               v-for="col in computedColumns"
               :key="col.key"
-              class="px-6 py-4"
-              :class="themeClass.text.secondary"
+              :class="[themeClass.text.secondary, sizeClass.td]"
             >
               <slot :name="col.key" :value="item[col.key]" :item="item">
                 {{ item[col.key] }}
@@ -79,8 +88,14 @@
       </table>
     </div>
 
-    <BaseLoadingSpinner v-else-if="loading" :type="'mini'" />
-    <div v-else class="text-center p-4" :class="themeClass.text.secondary">
+    <BaseLoadingSpinner v-else-if="loading" type="mini" class="my-4 mx-auto" />
+
+    <div
+      v-else
+      class="text-center rounded-lg border border-dashed"
+      :class="[themeClass.text.secondary, themeClass.border.airy, sizeClass.empty]"
+    >
+      <i :class="['fa-regular fa-inbox mb-2', themeClass.icon.secondary, sizeClass.emptyIcon]"></i>
       Tidak ada data ditemukan.
     </div>
 
@@ -88,19 +103,13 @@
       v-if="!loading && items?.length && pagination"
       :pagination="pagination"
       @page-change="$emit('page-change', $event)"
+      class="mt-4"
+      :size-variant="sizeVariant"
     />
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { useThemeClass } from '@/composables/useThemeClass.js'
-import { createDebouncer } from '@/utils/debounce'
-import BasePagination from '@/components/BasePagination.vue'
-import BaseInput from '@/components/BaseInput.vue'
-import BaseSelect from '@/components/BaseSelect.vue'
-import BaseLoadingSpinner from '@/components/BaseLoadingSpinner.vue'
-
 const themeClass = useThemeClass()
 
 const props = defineProps({
@@ -114,6 +123,11 @@ const props = defineProps({
   exportable: { type: Boolean, default: false },
   dropdownLabel: { type: String, default: 'Filter' },
   dropdownItems: { type: Array, default: () => [] },
+  sizeVariant: {
+    type: String,
+    default: 'md',
+    validator: (val) => ['xs', 'sm', 'md', 'lg'].includes(val),
+  },
 })
 
 const emit = defineEmits([
@@ -126,7 +140,6 @@ const emit = defineEmits([
 ])
 
 const searchQuery = ref('')
-
 const debouncedSearch = createDebouncer((val) => {
   emit('search', val)
 }, 400)
@@ -143,8 +156,9 @@ const handleDropdownSelect = (value) => {
 }
 
 const localLimit = ref(props.pagination?.limit || 10)
-const applyLimit = () => {
-  emit('limit-change', localLimit.value)
+const applyLimit = (value) => {
+  localLimit.value = value
+  emit('limit-change', value)
 }
 
 const computedKeys = computed(() => (props.items?.length ? Object.keys(props.items[0]) : []))
@@ -155,5 +169,56 @@ const computedColumns = computed(() => {
     key,
     label: key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
   }))
+})
+
+const sizeClass = computed(() => {
+  switch (props.sizeVariant) {
+    case 'xs':
+      return {
+        wrapper: 'p-1 text-xs',
+        header: 'pb-1',
+        font: 'text-xs',
+        thead: 'text-[10px]',
+        th: 'px-2 py-1',
+        td: 'px-2 py-1',
+        empty: 'p-2 text-xs',
+        emptyIcon: 'text-lg',
+      }
+    case 'sm':
+      return {
+        wrapper: 'p-2 text-sm',
+        header: 'pb-2',
+        font: 'text-sm',
+        thead: 'text-xs',
+        th: 'px-3 py-2',
+        td: 'px-3 py-2',
+        empty: 'p-4 text-sm',
+        emptyIcon: 'text-xl',
+      }
+    case 'md':
+      return {
+        wrapper: 'p-4 text-base',
+        header: 'pb-2',
+        font: 'text-base',
+        thead: 'text-sm',
+        th: 'px-4 py-3',
+        td: 'px-4 py-3',
+        empty: 'p-6 text-base',
+        emptyIcon: 'text-2xl',
+      }
+    case 'lg':
+      return {
+        wrapper: 'p-6 text-lg',
+        header: 'pb-3',
+        font: 'text-lg',
+        thead: 'text-base',
+        th: 'px-6 py-4',
+        td: 'px-6 py-4',
+        empty: 'p-8 text-lg',
+        emptyIcon: 'text-3xl',
+      }
+    default:
+      return {}
+  }
 })
 </script>

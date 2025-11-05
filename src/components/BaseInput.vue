@@ -1,5 +1,6 @@
 <template>
   <div class="relative border-none bg-inherit">
+    <!-- Label -->
     <label
       v-if="label"
       :for="id"
@@ -10,12 +11,12 @@
     </label>
 
     <div class="relative">
+      <!-- Icon prefix -->
       <div
         v-if="icon && type !== 'textarea' && type !== 'file' && type !== 'date'"
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-        :class="[themeClass.icon.primary, sizeClass.icon]"
       >
-        <font-awesome-icon :icon="['fas', icon]" />
+        <i :class="['fa-solid', `fa-${icon}`, themeClass.icon.primary, sizeClass.icon]"></i>
       </div>
 
       <!-- TEXTAREA -->
@@ -28,7 +29,7 @@
           :autocomplete="autocomplete"
           :rows="rows"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full border focus:outline-none focus:ring-2 transition resize-y scrollbar-none relative block leading-normal align-top"
+          class="w-full border focus:outline-none focus:ring-2 focus:ring-opacity-50 transition resize-y scrollbar-none block leading-normal align-top"
           :class="[themeClass.input.mist, roundedClass, sizeClass.font, sizeClass.wrapper]"
           :required="required"
         />
@@ -36,16 +37,32 @@
 
       <!-- FILE -->
       <template v-else-if="type === 'file'">
-        <input
-          ref="inputRef"
-          :id="id"
-          type="file"
-          :disabled="disabled"
-          @change="handleFileChange"
-          class="w-full border focus:outline-none focus:ring-2 transition"
-          :class="[themeClass.input.mist, roundedClass, sizeClass.font, sizeClass.wrapper]"
-          :required="required"
-        />
+        <div class="relative w-full">
+          <input
+            ref="inputRef"
+            :id="id"
+            type="file"
+            class="hidden"
+            :disabled="disabled"
+            @change="handleFileChange"
+            :required="required"
+          />
+
+          <label
+            :for="id"
+            class="flex items-center justify-center gap-2 cursor-pointer border-dashed border-2 transition hover:opacity-90 focus-within:ring-2 focus-within:ring-opacity-50 w-full text-center"
+            :class="[
+              themeClass.input.mist,
+              themeClass.text.secondary,
+              themeClass.border.primary,
+              roundedClass,
+              sizeClass.wrapper,
+            ]"
+          >
+            <i :class="['fa-solid fa-upload', themeClass.icon.primary, sizeClass.icon]"></i>
+            <span :class="sizeClass.font">Upload File</span>
+          </label>
+        </div>
       </template>
 
       <!-- NUMBER -->
@@ -66,7 +83,7 @@
               $event.target.value === '' ? '' : Number($event.target.value),
             )
           "
-          class="w-full border focus:outline-none focus:ring-2 transition"
+          class="w-full border focus:outline-none focus:ring-2 focus:ring-opacity-50 transition"
           :class="[
             themeClass.input.mist,
             themeClass.text.primary,
@@ -83,13 +100,13 @@
         <input
           ref="inputRef"
           :id="id"
-          :type="computedType"
+          type="date"
           :placeholder="placeholder"
           :value="modelValue"
           :disabled="disabled"
           :autocomplete="autocomplete"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full border focus:outline-none focus:ring-2 transition"
+          class="w-full border focus:outline-none focus:ring-2 focus:ring-opacity-50 transition"
           :class="[
             themeClass.input.mist,
             roundedClass,
@@ -112,7 +129,7 @@
           :disabled="disabled"
           :autocomplete="autocomplete"
           @input="$emit('update:modelValue', $event.target.value)"
-          class="w-full border focus:outline-none focus:ring-2 transition"
+          class="w-full border focus:outline-none focus:ring-2 focus:ring-opacity-50 transition"
           :class="[
             themeClass.input.mist,
             roundedClass,
@@ -123,14 +140,21 @@
           :required="required"
         />
 
+        <!-- Password Toggle -->
         <button
           v-if="isPassword"
           type="button"
           class="absolute inset-y-0 right-0 flex items-center pr-3"
-          :class="[themeClass.icon.primary, sizeClass.icon]"
           @click="togglePassword"
         >
-          <font-awesome-icon :icon="showPassword ? ['fas', 'eye-slash'] : ['fas', 'eye']" />
+          <i
+            :class="[
+              'fa-solid',
+              showPassword ? 'fa-eye-slash' : 'fa-eye',
+              themeClass.icon.primary,
+              sizeClass.icon,
+            ]"
+          ></i>
         </button>
       </template>
     </div>
@@ -158,7 +182,7 @@ const props = defineProps({
   icon: String,
   required: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   disabled: {
     type: Boolean,

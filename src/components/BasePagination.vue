@@ -18,11 +18,11 @@
           :class="[
             btnClass,
             themeClass.button.secondary,
-            'rounded-s-lg',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
+            'rounded-s-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1',
           ]"
         >
-          Previous
+          <i :class="['fa-solid fa-chevron-left', themeClass.icon.primary]"></i>
+          Prev
         </button>
       </li>
 
@@ -46,11 +46,11 @@
           :class="[
             btnClass,
             themeClass.button.secondary,
-            'rounded-e-lg',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
+            'rounded-e-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1',
           ]"
         >
           Next
+          <i :class="['fa-solid fa-chevron-right', themeClass.icon.primary]"></i>
         </button>
       </li>
     </ul>

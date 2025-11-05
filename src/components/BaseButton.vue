@@ -12,7 +12,6 @@
       customClass,
     ]"
   >
-    <!-- Loading State -->
     <template v-if="isLoading">
       <svg
         :class="['animate-spin text-current', iconSizeClass, showOnlyIcon ? '' : 'mr-2']"
@@ -30,17 +29,16 @@
       <span v-if="!showOnlyIcon">Loading...</span>
     </template>
 
-    <!-- Normal State -->
     <template v-else>
       <template v-if="icon">
-        <font-awesome-icon
-          :icon="icon"
+        <i
           :class="[
+            icon,
             iconSizeClass,
             !showOnlyIcon ? 'mr-2' : '',
             themeClass.icon[props.variant] || themeClass.icon.primary,
           ]"
-        />
+        ></i>
       </template>
       <template v-if="!showOnlyIcon">
         <slot>{{ label }}</slot>
@@ -63,6 +61,7 @@ const props = defineProps({
   customClass: { type: String, default: '' },
   size: { type: String, default: 'md' },
   noBg: { type: Boolean, default: false },
+  noBorder: { type: Boolean, default: false }, // 👈 tambah ini
   rounded: { type: String, default: 'md' },
 })
 
@@ -88,7 +87,17 @@ const buttonClass = computed(() => {
   if (props.disabled || props.isLoading) return 'opacity-50 cursor-not-allowed'
 
   if (props.noBg) {
-    return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-current border border-gray-300 dark:border-gray-600'
+    return [
+      'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-current',
+      props.noBorder ? '' : 'border border-gray-300 dark:border-gray-600', // 👈 cek noBorder
+    ].join(' ')
+  }
+
+  if (props.noBorder) {
+    return [
+      themeClass.value.button?.[props.variant] || themeClass.value.button.secondary,
+      'border-0', // 👈 hapus border
+    ].join(' ')
   }
 
   return themeClass.value.button?.[props.variant] || themeClass.value.button.secondary

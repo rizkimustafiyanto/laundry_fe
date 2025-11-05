@@ -18,6 +18,7 @@
         @dropdown-select="setFilterStatus"
         @limit-change="handleLimitChange"
         @search="handleSearch"
+        @confirm-payment="handleConfirmPayment"
         @view="handleView"
         @edit="handleEdit"
         @edit-payment="handleEditPayment"
@@ -43,6 +44,12 @@
     />
 
     <OrderView v-if="openViewModalValue" v-model="openViewModalValue" :orderId="idValueSelected" />
+
+    <PaymentConfirm
+      v-if="openPaymentConfirmModalValue"
+      v-model="openPaymentConfirmModalValue"
+      :orderId="idValueSelected"
+    />
   </div>
 </template>
 
@@ -53,15 +60,15 @@ import TransactionTable from '@/components/transaction/manage/TransactionTable.v
 import OrderForm from '@/components/dashboard/form/OrderForm.vue'
 import OrderView from '@/components/dashboard/form/OrderView.vue'
 
-const transactionStore = useTransactionStore()
+const transactionStore = useTransactionStatsStore()
 const statusStore = useStatusStore()
 
-// ===== STATE =====
 const idValueSelected = ref(null)
 const showEditModal = ref(false)
 const showPaymentModal = ref(false)
 const openViewModalValue = ref(false)
-const loading = ref(false) // <<=== tambahkan state loading
+const openPaymentConfirmModalValue = ref(false)
+const loading = ref(false)
 
 const todayTransactions = computed(() => transactionStore.todayTransactions ?? 0)
 const completedTransactions = computed(() => transactionStore.completedTransactions ?? 0)
@@ -70,7 +77,6 @@ const transactions = computed(() => transactionStore.items ?? [])
 const meta = computed(() => transactionStore.meta ?? {})
 const statusOptions = computed(() => [{ label: 'All', value: '' }, ...statusStore.options])
 
-// ===== INIT =====
 async function initPageData() {
   try {
     loading.value = true
@@ -88,7 +94,6 @@ async function initPageData() {
 }
 onMounted(initPageData)
 
-// ===== TABLE COLUMNS =====
 const columns = [
   { key: 'invoiceNumber', label: 'Invoice' },
   { key: 'customer', label: 'Customer' },
@@ -97,7 +102,6 @@ const columns = [
   { key: 'actions', label: 'Aksi' },
 ]
 
-// ===== HANDLERS =====
 async function handlePageChange(newPage) {
   try {
     loading.value = true
@@ -113,7 +117,7 @@ async function setFilterStatus(status) {
   try {
     loading.value = true
     transactionStore.setFilter('status', status)
-    await transactionStore.fetchItems({ page: 1 }) // reset ke halaman 1
+    await transactionStore.fetchItems({ page: 1 })
   } catch (err) {
     notifyError(err, 'Gagal filter status')
   } finally {
@@ -168,6 +172,11 @@ function handleEdit(orderId) {
 function handleEditPayment(orderId) {
   idValueSelected.value = orderId
   showPaymentModal.value = true
+}
+
+function handleConfirmPayment(orderId) {
+  idValueSelected.value = orderId
+  openPaymentConfirmModalValue.value = true
 }
 
 async function handleDownload() {

@@ -5,10 +5,40 @@
     <BaseTab :tabs="tabs" v-model:activeTab="activeTab" variant="underline" color="sky" />
 
     <div v-if="activeTab === 'profile'" class="flex flex-col gap-8">
-      <CompanyProfileSection />
-      <CompanyGallerySection />
-      <CompanySponsorSection />
+      <div>
+        <h3
+          class="text-lg font-semibold flex items-center gap-2 mb-3"
+          :class="themeClass.text.secondary"
+        >
+          <i :class="['fa-solid fa-building mr-1', themeClass.icon.teal]"></i>
+          Profil Perusahaan
+        </h3>
+        <CompanyProfileSection />
+      </div>
+
+      <div>
+        <h3
+          class="text-lg font-semibold flex items-center gap-2 mb-3"
+          :class="themeClass.text.secondary"
+        >
+          <i :class="['fa-solid fa-file-lines mr-1', themeClass.icon.teal]"></i>
+          Konten (About, Layanan, Testimoni, dst)
+        </h3>
+        <CompanyContentSection />
+      </div>
+
+      <div>
+        <h3
+          class="text-lg font-semibold flex items-center gap-2 mb-3"
+          :class="themeClass.text.secondary"
+        >
+          <i :class="['fa-solid fa-images mr-1', themeClass.icon.teal]"></i>
+          Media Perusahaan (Gallery, Sponsor, Avatar, dll)
+        </h3>
+        <CompanyMediaSection />
+      </div>
     </div>
+
     <div v-if="activeTab === 'pricing-service'">
       <PricingSection />
     </div>
@@ -19,9 +49,9 @@
 </template>
 
 <script setup>
-import CompanyGallerySection from './sections/CompanyGallerySection.vue'
+import CompanyMediaSection from './sections/CompanyMediaSection.vue'
 import CompanyProfileSection from './sections/CompanyProfileSection.vue'
-import CompanySponsorSection from './sections/CompanySponsorSection.vue'
+import CompanyContentSection from './sections/CompanyContentSection.vue'
 import PricingSection from './sections/PricingSection.vue'
 import ServiceItemTypeSetting from './sections/ServiceItemTypeSetting.vue'
 

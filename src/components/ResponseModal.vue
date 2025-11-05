@@ -6,15 +6,15 @@
         themeClass.baseDiv.secondary,
       ]"
     >
-      <font-awesome-icon
-        :icon="status === 'success' ? ['far', 'thumbs-up'] : ['fas', 'exclamation-circle']"
+      <i
         :class="[
           'text-5xl mb-4 transition-transform duration-300',
           status === 'success'
-            ? themeClass.icon.success + ' animate-pulse'
-            : themeClass.icon.red + ' animate-shake',
+            ? 'far fa-thumbs-up ' + themeClass.icon.success + ' animate-pulse'
+            : 'fas fa-exclamation-circle ' + themeClass.icon.red + ' animate-shake',
         ]"
-      />
+      ></i>
+
       <h2
         :class="[
           'text-2xl font-bold mb-2',
@@ -23,7 +23,9 @@
       >
         {{ status === 'success' ? 'SUCCESS' : 'FAILED' }}
       </h2>
+
       <p class="text-xl mb-6">{{ message }}</p>
+
       <button
         @click="$emit('close')"
         :class="[

@@ -59,41 +59,55 @@ const routes = [
         path: '',
         name: 'DashboardHome',
         component: DashboardHome,
-        meta: { label: 'Dashboard', icon: 'gauge', roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'] },
+        meta: {
+          label: 'Dashboard',
+          icon: 'gauge',
+          roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'],
+        },
       },
+
       {
         path: 'users',
         name: 'UserManagement',
         component: UserManagementPage,
         meta: {
-          label: 'Daftar User',
-          parent: 'User Management',
+          label: 'User Management',
           icon: 'users',
           roles: ['SUPER_ADMIN'],
         },
       },
+
+      {
+        path: 'transactions',
+        name: 'Transactions',
+        component: TransactionPage,
+        meta: {
+          label: 'Transaksi',
+          icon: 'money-check-dollar',
+          roles: ['SUPER_ADMIN', 'OWNER'],
+        },
+      },
+
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: SettingsPage,
+        meta: {
+          label: 'Setting',
+          icon: 'gear',
+          roles: ['SUPER_ADMIN', 'OWNER'],
+        },
+      },
+
       {
         path: 'profile',
         name: 'UserProfile',
         component: ProfilePage,
         meta: {
           label: 'Profile',
-          parent: 'User Management',
           icon: 'user',
           roles: ['SUPER_ADMIN', 'OWNER', 'CUSTOMER'],
         },
-      },
-      {
-        path: 'transactions',
-        name: 'Transactions',
-        component: TransactionPage,
-        meta: { label: 'Transaksi', icon: 'money-check-dollar', roles: ['SUPER_ADMIN', 'OWNER'] },
-      },
-      {
-        path: 'settings',
-        name: 'Settings',
-        component: SettingsPage,
-        meta: { label: 'Setting', icon: 'gear', roles: ['SUPER_ADMIN', 'OWNER'] },
       },
     ],
   },

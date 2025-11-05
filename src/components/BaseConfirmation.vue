@@ -7,11 +7,7 @@
     @close="onCancel"
   >
     <div class="flex flex-col gap-4 mt-4">
-      <font-awesome-icon
-        icon="triangle-exclamation"
-        class="text-5xl"
-        :class="themeClass.icon.warning"
-      />
+      <i class="fas fa-triangle-exclamation text-5xl" :class="themeClass.icon.warning"></i>
 
       <p :class="themeClass.text.secondary" class="text-base leading-relaxed">
         {{ message }}
@@ -28,8 +24,8 @@
       </div>
 
       <div class="flex justify-center gap-3 w-full mt-2">
-        <BaseButton variant="softBlue" class="flex-1" @click="onCancel"> Batal </BaseButton>
-        <BaseButton variant="danger" class="flex-1" @click="onConfirm"> Ya, Lanjutkan </BaseButton>
+        <BaseButton variant="softBlue" class="flex-1" @click="onCancel">Batal</BaseButton>
+        <BaseButton variant="danger" class="flex-1" @click="onConfirm">Ya, Lanjutkan</BaseButton>
       </div>
     </div>
   </BaseModal>
