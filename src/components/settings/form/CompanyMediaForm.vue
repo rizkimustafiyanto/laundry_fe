@@ -21,6 +21,7 @@
         v-model="formPayload.type"
         :options="mediaTypeOptions"
         placeholder="Pilih tipe media"
+        required
       />
 
       <!-- Title -->
@@ -68,6 +69,7 @@ const mediaTypeOptions = [
   { value: 'SPONSOR', label: 'Sponsor' },
   { value: 'SERVICE_GIVE', label: 'Service' },
   { value: 'TESTIMONIAL_AVATAR', label: 'Testimonial Avatar' },
+  { value: 'BODY_MAIN', label: 'Background Image Landing Page' },
 ]
 
 const imagePreview = ref(null)

@@ -12,7 +12,11 @@
       <BaseInput label="Address" v-model="formPayload.address" placeholder="Address" />
 
       <BaseInput label="Hero Title" v-model="formPayload.heroTitle" placeholder="Hero Title" />
-      <BaseInput label="Hero Subtitle" v-model="formPayload.heroSubtitle" placeholder="Hero Subtitle" />
+      <BaseInput
+        label="Hero Subtitle"
+        v-model="formPayload.heroSubtitle"
+        placeholder="Hero Subtitle"
+      />
       <BaseInput label="CTA Text" v-model="formPayload.ctaText" placeholder="CTA Text" />
       <BaseInput label="CTA URL" v-model="formPayload.ctaUrl" placeholder="CTA URL" />
 
@@ -63,7 +67,11 @@
 
       <BaseInput label="Slug" v-model="formPayload.slug" placeholder="Slug" />
       <BaseInput label="Meta Title" v-model="formPayload.metaTitle" placeholder="Meta Title" />
-      <BaseInput label="Meta Description" v-model="formPayload.metaDescription" placeholder="Meta Description" />
+      <BaseInput
+        label="Meta Description"
+        v-model="formPayload.metaDescription"
+        placeholder="Meta Description"
+      />
 
       <div class="flex space-x-3 pt-4">
         <BaseButton
@@ -103,7 +111,7 @@ function handleFileUpload(type, file) {
     if (type === 'qris') qrisPreview.value = result
   }
   reader.readAsDataURL(file)
- 
+
   const input = document.getElementById(`${type}-file`)
   if (input) input.value = ''
 }

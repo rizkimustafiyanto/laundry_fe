@@ -57,7 +57,7 @@
           </p>
           <p v-if="order.payment" :class="themeClass.text.subtle">
             <i :class="['fa-solid fa-credit-card', themeClass.icon.secondary]"></i>
-            {{ order.payment.paymentMethod }} - 
+            {{ order.payment.paymentMethod }} -
             <span class="capitalize">{{ order.payment.status }}</span>
             <template v-if="order.payment.status === 'PENDING'">
               • Dibuat {{ formatDate(order.payment.createdAt) }}
@@ -125,7 +125,6 @@
           >
             <span>Konfirmasi Pembayaran</span>
           </BaseButton>
-
         </div>
       </BaseCard>
     </div>
@@ -199,7 +198,10 @@ const openDetail = (orderId) => emit('view', orderId)
 const isStatusChanged = (id) => statusDraft[id] !== originalStatuses[id]
 
 const canPay = (order) => {
-  return !['COMPLETED', 'CANCELLED'].includes(order.status) && !['PAID', 'PENDING'].includes(order.payment?.status)
+  return (
+    !['COMPLETED', 'CANCELLED'].includes(order.status) &&
+    !['PAID', 'PENDING'].includes(order.payment?.status)
+  )
 }
 
 const canCancel = (order) => {
@@ -210,11 +212,7 @@ const canCancel = (order) => {
 }
 
 const canConfirmPayment = (order) => {
-  return (
-    !isCustomer.value &&
-    order.payment &&
-    order.payment.status === 'PENDING'
-  )
+  return !isCustomer.value && order.payment && order.payment.status === 'PENDING'
 }
 
 const updateStatus = async (id) => {

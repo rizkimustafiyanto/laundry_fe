@@ -126,7 +126,11 @@
             <i :class="['fa-solid fa-list-check mr-1', themeClass.icon.primary]"></i>
             Kelola Status Pesanan
           </h3>
-          <ManageOrderStatus @view="openViewModal" @on-payment="openPaymentModal"  @on-confirm-payment="openPaymentConfirmModal" />
+          <ManageOrderStatus
+            @view="openViewModal"
+            @on-payment="openPaymentModal"
+            @on-confirm-payment="openPaymentConfirmModal"
+          />
         </BaseCard>
 
         <BaseCard variant="secondary">

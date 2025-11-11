@@ -44,7 +44,10 @@ const responseErrorInterceptor = (error) => {
   const loadingStore = useLoadingStore()
   loadingStore.stopMini()
   console.log(error.response?.data)
-  if (error.response?.data?.message === 'Session is not valid' || error.response?.data?.success === false && error.response?.data?.message?.includes('Session')) {
+  if (
+    error.response?.data?.message === 'Session is not valid' ||
+    (error.response?.data?.success === false && error.response?.data?.message?.includes('Session'))
+  ) {
     const authStore = useAuthStore()
     authStore.logout()
   }

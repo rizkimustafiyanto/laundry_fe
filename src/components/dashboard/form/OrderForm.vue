@@ -3,7 +3,6 @@
     <BaseLoadingSpinner v-if="loading" :type="'mini'" />
 
     <form v-else @submit.prevent="submitOrder" class="space-y-4">
-
       <!-- Customer, hanya tampil jika bukan CUSTOMER -->
       <BaseSelect
         v-if="isManualPickup && user.role !== 'CUSTOMER'"
@@ -252,7 +251,6 @@ const paymentOptions = computed(() => {
   })
 })
 
-
 const addressOption = computed(() =>
   toValueLabelOptions(
     addressStore.items,
@@ -289,18 +287,18 @@ const resetForm = () => {
   }
 }
 
-const showPaymentSection = computed(() =>
-  props.mode === 'paymentorder' &&
-  ['SUPER_ADMIN', 'OWNER'].includes(user.value.role) &&
-  order.value.status === 'COMPLETED'
+const showPaymentSection = computed(
+  () =>
+    props.mode === 'paymentorder' &&
+    ['SUPER_ADMIN', 'OWNER'].includes(user.value.role) &&
+    order.value.status === 'COMPLETED',
 )
 
 const canEditPaymentMethod = computed(
-  () => order.value.status === 'COMPLETED' && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role)
+  () => order.value.status === 'COMPLETED' && ['SUPER_ADMIN', 'OWNER'].includes(user.value.role),
 )
 
 const canEditNote = canEditPaymentMethod
-
 
 watch(
   () => form.value.customerId,

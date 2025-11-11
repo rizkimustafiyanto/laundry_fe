@@ -61,9 +61,7 @@
                 {{ item.description }}
               </p>
 
-              <p v-if="item.rating" class="text-sm mt-1 text-yellow-500">
-                ⭐ {{ item.rating }}/5
-              </p>
+              <p v-if="item.rating" class="text-sm mt-1 text-yellow-500">⭐ {{ item.rating }}/5</p>
             </div>
 
             <div class="flex justify-end gap-2 mt-3">

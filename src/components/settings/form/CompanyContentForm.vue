@@ -51,7 +51,6 @@
         </template>
       </BaseSelect>
 
-
       <BaseInput
         v-if="formPayload.type === 'TESTIMONIAL'"
         type="number"
@@ -156,5 +155,4 @@ const availableIcons = [
   { label: 'Telepon / Pemesanan', value: 'fa-solid fa-phone', icon: 'fa-solid fa-phone' },
   { label: 'Langganan / Paket', value: 'fa-solid fa-list', icon: 'fa-solid fa-list' },
 ]
-
 </script>

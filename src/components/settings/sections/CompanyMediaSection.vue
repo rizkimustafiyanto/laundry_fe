@@ -122,6 +122,7 @@ const typeLabel = (type) => {
     SPONSOR: 'Sponsor',
     SERVICE_GIVE: 'Service',
     TESTIMONIAL_AVATAR: 'Testimonial',
+    BODY_MAIN: 'Body Picture',
   }
   return labels[type] || type
 }

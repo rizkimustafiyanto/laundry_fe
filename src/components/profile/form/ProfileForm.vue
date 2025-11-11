@@ -91,7 +91,7 @@ watch(
     })
     if (newVal) {
       imagePreview.value = newVal.photo || null
-      fileObj.value = null 
+      fileObj.value = null
     }
   },
   { immediate: true },
