@@ -97,7 +97,7 @@ const refresh = async () => {
   modalOpen.value = false
 }
 
-const ALL_MEDIA_TYPES = ['GALLERY', 'SPONSOR', 'SERVICE_GIVE', 'TESTIMONIAL_AVATAR']
+const ALL_MEDIA_TYPES = ['SPONSOR', 'TESTIMONI', 'BG_MAIN']
 
 const groupedItems = computed(() => {
   const groups = {}
@@ -118,11 +118,9 @@ const groupedItems = computed(() => {
 
 const typeLabel = (type) => {
   const labels = {
-    GALLERY: 'Gallery',
     SPONSOR: 'Sponsor',
-    SERVICE_GIVE: 'Service',
-    TESTIMONIAL_AVATAR: 'Testimonial',
-    BODY_MAIN: 'Body Picture',
+    TESTIMONI: 'Testimoni',
+    BG_MAIN: 'Background Picture',
   }
   return labels[type] || type
 }

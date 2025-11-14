@@ -3,12 +3,15 @@
     class="shadow-md px-6 py-4 flex justify-between items-center transition duration-300"
     :class="themeClass.baseDiv.subtle"
   >
-    <h1
-      :class="['text-2xl font-semibold cursor-pointer', themeClass.text.teal]"
-      @click="$router.push('/')"
-    >
-      {{ title }}
-    </h1>
+    <div class="flex items-center space-x-3 cursor-pointer" @click="$router.push('/')">
+      <img
+        :src="logoSrc"
+        :alt="title"
+        class="h-11 w-11 object-cover rounded-xl shadow-md"
+        @error="onLogoError"
+      />
+      <span :class="['text-2xl font-semibold', themeClass.text.teal]">{{ title }}</span>
+    </div>
 
     <nav class="hidden md:flex items-center">
       <template v-for="item in menuItems" :key="item.key">
@@ -143,11 +146,13 @@
 </template>
 
 <script setup>
+import defaultLogo from '@/assets/logo.svg'
 const themeClass = useThemeClass()
 
 const props = defineProps({
   active: String,
   title: { type: String, default: 'Dashboard' },
+  logoSrc: { type: String, default: '' },
   menuItems: {
     type: Array,
     default: () => [{ key: 'dashboard', label: 'Dashboard' }],
@@ -206,6 +211,10 @@ const menuClass = (key, mobile = false) => {
       ? [themeClass.value.button.teal, 'rounded rounded-b-xl']
       : [themeClass.value.text.muted, 'rounded rounded-b-xl']
   }`
+}
+
+function onLogoError(e) {
+  e.target.src = defaultLogo
 }
 
 const themeStore = useThemeStore()

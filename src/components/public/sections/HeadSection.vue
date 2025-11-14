@@ -1,5 +1,7 @@
 <template>
-  <nav class="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-white/70 border-b border-white/30">
+  <nav
+    class="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-[#1A1A1A]/70 border-b border-[#1A1A1A]/30"
+  >
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <!-- LOGO + NAME -->
       <div class="flex items-center space-x-3">
@@ -9,15 +11,14 @@
           class="h-11 w-11 object-cover rounded-xl shadow-md"
           @error="onLogoError"
         />
-        <span class="text-2xl font-extrabold tracking-tight text-gray-900">{{ appName }}</span>
+        <span class="text-2xl font-extrabold tracking-tight">{{ appName }}</span>
       </div>
 
       <!-- NAV MENU -->
       <div class="hidden md:flex space-x-7 items-center text-[15px] font-medium">
-        <a v-if="showServices" href="#services" class="nav-link">Services</a>
-
+        <a href="#top" class="nav-link">Home</a>
         <a v-if="showAbout" href="#about" class="nav-link">About</a>
-
+        <a v-if="showServices" href="#services" class="nav-link">Services</a>
         <a v-if="showGallery" href="#gallery" class="nav-link">Gallery</a>
 
         <BaseButton
@@ -26,6 +27,7 @@
           @click="goToRoute"
           noBg
           noBorder
+          noHover
           rounded="full"
         />
       </div>
@@ -86,7 +88,7 @@ function goToRoute() {
 
 <style scoped>
 .nav-link {
-  @apply text-gray-700 hover:text-teal-600 transition relative;
+  @apply text-gray-200 hover:text-teal-600 transition relative;
 }
 .nav-link::after {
   content: '';
@@ -94,9 +96,5 @@ function goToRoute() {
 }
 .nav-link:hover::after {
   @apply w-full;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 </style>

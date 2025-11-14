@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 py-12 text-gray-100 w-full relative z-[2]">
+  <div class="bg-[#1A1A1A] py-12 text-gray-100 w-full relative z-[2]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-0"
@@ -27,37 +27,42 @@
               v-if="company.facebookUrl"
               :href="company.facebookUrl"
               target="_blank"
-              class="hover:text-blue-500"
-              >FB</a
+              :class="themeClass.icon.primary"
             >
+              <i class="fa-brands fa-facebook text-xl"></i>
+            </a>
             <a
               v-if="company.instagramUrl"
               :href="company.instagramUrl"
               target="_blank"
-              class="hover:text-pink-500"
-              >IG</a
+              :class="themeClass.icon.softPink"
             >
+              <i class="fa-brands fa-instagram text-xl"></i>
+            </a>
             <a
               v-if="company.twitterUrl"
               :href="company.twitterUrl"
               target="_blank"
-              class="hover:text-blue-400"
-              >TT</a
+              :class="themeClass.icon.info"
             >
+              <i class="fa-brands fa-twitter text-xl"></i>
+            </a>
             <a
               v-if="company.linkedinUrl"
               :href="company.linkedinUrl"
               target="_blank"
-              class="hover:text-blue-700"
-              >LN</a
+              :class="themeClass.icon.primary"
             >
+              <i class="fa-brands fa-linkedin text-xl"></i>
+            </a>
             <a
               v-if="company.tiktokUrl"
               :href="company.tiktokUrl"
               target="_blank"
-              class="hover:text-black"
-              >TT</a
+              :class="themeClass.icon.dark"
             >
+              <i class="fa-brands fa-tiktok text-xl"></i>
+            </a>
           </div>
         </div>
 
@@ -90,10 +95,10 @@
 <script setup>
 const store = useCompanyProfileStore()
 const { items } = storeToRefs(store)
+const themeClass = useThemeClass()
 
 const company = ref(items.value[0] || {})
 
-// Watch items, update company if items changes
 watch(items, (newItems) => {
   company.value = newItems[0] || {}
 })

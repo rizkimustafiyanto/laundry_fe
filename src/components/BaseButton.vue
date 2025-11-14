@@ -61,7 +61,8 @@ const props = defineProps({
   customClass: { type: String, default: '' },
   size: { type: String, default: 'md' },
   noBg: { type: Boolean, default: false },
-  noBorder: { type: Boolean, default: false }, // 👈 tambah ini
+  noBorder: { type: Boolean, default: false },
+  noHover: { type: Boolean, default: false },
   rounded: { type: String, default: 'md' },
 })
 
@@ -89,18 +90,25 @@ const buttonClass = computed(() => {
   if (props.noBg) {
     return [
       'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-current',
-      props.noBorder ? '' : 'border border-gray-300 dark:border-gray-600', // 👈 cek noBorder
+      props.noBorder ? '' : 'border border-gray-300 dark:border-gray-600',
+      props.noHover
+        ? 'hover:none hover:bg-transparent hover:text-current hover:border-current'
+        : '',
     ].join(' ')
   }
 
   if (props.noBorder) {
     return [
       themeClass.value.button?.[props.variant] || themeClass.value.button.secondary,
-      'border-0', // 👈 hapus border
+      'border-0',
+      props.noHover ? 'hover:none hover:bg-transparent hover:text-current' : '',
     ].join(' ')
   }
 
-  return themeClass.value.button?.[props.variant] || themeClass.value.button.secondary
+  return [
+    themeClass.value.button?.[props.variant] || themeClass.value.button.secondary,
+    props.noHover ? 'hover:none hover:bg-transparent hover:text-current' : '',
+  ].join(' ')
 })
 
 const sizeClass = computed(() => {

@@ -65,11 +65,9 @@ const formPayload = reactive({
 })
 
 const mediaTypeOptions = [
-  { value: 'GALLERY', label: 'Gallery' },
   { value: 'SPONSOR', label: 'Sponsor' },
-  { value: 'SERVICE_GIVE', label: 'Service' },
-  { value: 'TESTIMONIAL_AVATAR', label: 'Testimonial Avatar' },
-  { value: 'BODY_MAIN', label: 'Background Image Landing Page' },
+  { value: 'TESTIMONI', label: 'Testimoni' },
+  { value: 'BG_MAIN', label: 'Background Image Landing Page' },
 ]
 
 const imagePreview = ref(null)

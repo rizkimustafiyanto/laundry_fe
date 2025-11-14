@@ -59,6 +59,7 @@ import StatusSummary from '@/components/transaction/manage/StatusSummary.vue'
 import TransactionTable from '@/components/transaction/manage/TransactionTable.vue'
 import OrderForm from '@/components/dashboard/form/OrderForm.vue'
 import OrderView from '@/components/dashboard/form/OrderView.vue'
+import PaymentConfirm from '@/components/dashboard/form/PaymentConfirm.vue'
 
 const transactionStore = useTransactionStatsStore()
 const statusStore = useStatusStore()
