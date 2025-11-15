@@ -37,7 +37,7 @@
             :variantBGColor="statusConfig[statusDraft[order.id]]?.bg || 'secondary'"
             :rounded="'full'"
             textSize="xs"
-            class="flex items-center gap-1 px-3 py-1"
+            class="flex items-center gap-2"
           >
             <i :class="statusConfig[statusDraft[order.id]]?.icon || 'fa-solid fa-info-circle'"></i>
             <span class="capitalize">{{ statusDraft[order.id] }}</span>
@@ -199,8 +199,7 @@ const isStatusChanged = (id) => statusDraft[id] !== originalStatuses[id]
 
 const canPay = (order) => {
   return (
-    !['COMPLETED', 'CANCELLED'].includes(order.status) &&
-    !['PAID', 'PENDING'].includes(order.payment?.status)
+    !['CANCELLED'].includes(order.status) && !['PAID', 'PENDING'].includes(order.payment?.status)
   )
 }
 

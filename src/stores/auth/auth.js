@@ -47,6 +47,43 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async loginWithGoogle(idToken) {
+      try {
+        const res = await api.post('/auth/google', { idToken })
+        const data = res.data.data
+
+        this.user = {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          photo: data.photo,
+          bio: data.bio,
+          isActive: data.isActive,
+        }
+        this.token = data.token
+        this.role = data.role
+
+        localStorage.setItem('user', JSON.stringify(this.user))
+        localStorage.setItem('token', this.token)
+        localStorage.setItem('role', this.role)
+
+        return {
+          status: res.status,
+          message: res.data.message,
+          user: this.user,
+        }
+      } catch (err) {
+        const status = err.response?.status || 500
+        const message = err.response?.data?.message || 'Terjadi kesalahan server'
+
+        return {
+          status,
+          message,
+        }
+      }
+    },
+
     checkTokenValidity() {
       if (!this.token) return false
 

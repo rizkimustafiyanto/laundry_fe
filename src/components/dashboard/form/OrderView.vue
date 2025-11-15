@@ -194,7 +194,7 @@ const invoiceDetails = computed(() => [
   { label: 'Pickup Fee', value: form.invoice?.pickupFee },
   { label: 'Delivery Fee', value: form.invoice?.deliveryFee },
   { label: 'Tax', value: form.invoice?.tax },
-  { label: 'Discount', value: form.invoice?.discount, isDiscount: true },
+  { label: 'Discount', value: form.invoice?.discount, isDiscount: !!form.invoice?.discount },
 ])
 
 const isPaidCompleted = computed(() => form.payment && form.payment.status === 'PAID')

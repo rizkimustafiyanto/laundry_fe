@@ -40,6 +40,7 @@ export default defineConfig([
         useRoute: 'readonly',
         defineStore: 'readonly',
         storeToRefs: 'readonly',
+        google: 'readonly',
         __BASE_URL__: 'readonly',
         ...autoImportGlobals.globals,
       },

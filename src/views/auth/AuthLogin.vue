@@ -26,7 +26,36 @@
           required
         />
 
-        <BaseButton type="submit" label="Login" variant="primary" class="w-full" />
+        <BaseButton
+          type="submit"
+          label="Login"
+          variant="primary"
+          class="w-full"
+          :isLoading="loading"
+          :disabled="loading"
+        />
+
+        <div class="flex items-center my-4">
+          <div class="flex-1 h-px bg-gray-300"></div>
+          <span class="px-3 text-sm text-gray-600">atau</span>
+          <div class="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        <BaseButton
+          label="Login dengan Google"
+          @click="loginWithGoogle"
+          variant="secondary"
+          class="w-full gap-3 py-3 flex items-center justify-center"
+          :isLoading="googleLoading"
+          :disabled="googleLoading"
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            class="h-5 w-5"
+            alt="Google logo"
+          />
+          <span class="font-medium">Login dengan Google</span>
+        </BaseButton>
 
         <div class="flex justify-between mt-4 text-sm text-blue-600">
           <button
@@ -50,47 +79,87 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-import { useUIStore } from '@/stores/utils/ui'
-
 const router = useRouter()
 const userStore = useAuthStore()
 const ui = useUIStore()
 
 const email = ref('')
 const password = ref('')
+const googleReady = ref(false)
+const loading = ref(false)
+const googleLoading = ref(false)
 
 const login = async () => {
-  const result = await userStore.login(email.value, password.value)
+  if (loading.value) return
+  loading.value = true
 
-  if (result.status === 200) {
-    ui.show('success', `Selamat datang, ${result.user.name}`)
-
-    switch (userStore.role) {
-      case 'SUPER_ADMIN':
-        router.push('/dashboard')
-        break
-      case 'OWNER':
-        router.push('/dashboard')
-        break
-      case 'CUSTOMER':
-        router.push('/dashboard')
-        break
-      default:
-        router.push('/dashboard')
+  try {
+    const result = await userStore.login(email.value, password.value)
+    if (result.status === 200) {
+      ui.show('success', `Selamat datang, ${result.user.name}`)
+      router.push('/dashboard')
+    } else {
+      ui.show('failed', result.message)
     }
-  } else {
-    ui.show('failed', result.message)
+  } catch (err) {
+    console.error(err)
+    ui.show('failed', 'Terjadi error saat login')
+  } finally {
+    loading.value = false
   }
 }
 
-const goToRegister = () => {
-  router.push('/register')
+const handleGoogleResponse = async (response) => {
+  googleLoading.value = true
+  try {
+    const idToken = response.credential
+    const result = await userStore.loginWithGoogle(idToken)
+    if (result.status === 200) {
+      ui.show('success', `Selamat datang, ${result.user.name}`)
+      router.push('/dashboard')
+    } else {
+      ui.show('failed', result.message)
+    }
+  } catch (err) {
+    console.error(err)
+    ui.show('failed', 'Terjadi error saat login dengan Google')
+  } finally {
+    googleLoading.value = false
+  }
 }
 
-const goToForgotPassword = () => {
-  router.push('/forget-password')
+onMounted(() => {
+  googleReady.value = true
+  google.accounts.id.initialize({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    callback: handleGoogleResponse,
+    ux_mode: 'popup',
+  })
+})
+
+const loginWithGoogle = () => {
+  if (!googleReady.value) return ui.show('failed', 'Google login belum siap.')
+  if (googleLoading.value) return
+
+  googleLoading.value = true
+
+  try {
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        ui.show(
+          'failed',
+          'Login Google tidak bisa muncul. Mohon cek pengaturan browser dan izinkan third-party cookies.',
+        )
+      }
+      googleLoading.value = false
+    })
+  } catch (err) {
+    console.error(err)
+    ui.show('failed', 'Terjadi error saat memulai login Google')
+    googleLoading.value = false
+  }
 }
+
+const goToRegister = () => router.push('/register')
+const goToForgotPassword = () => router.push('/forget-password')
 </script>
