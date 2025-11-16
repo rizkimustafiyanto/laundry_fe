@@ -11,9 +11,35 @@ import { createStoreBuilder } from './store.builder.service'
 export const useServiceTypeStore = createStoreBuilder({
   storeId: 'serviceTypeStore',
   endpoint: '/options/service-types',
-  defaultPayload: { name: '' },
+  defaultPayload: { name: '', description: '' },
   customGetters: {
     options: (state) => toValueLabelOptions(state.items) || [],
+  },
+  customActions: {
+    listenServiceTypeUpdates() {
+      socket.on('service_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('service_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('service_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+      })
+    },
   },
 })
 
@@ -23,9 +49,35 @@ export const useServiceTypeStore = createStoreBuilder({
 export const useItemTypeStore = createStoreBuilder({
   storeId: 'itemTypeStore',
   endpoint: '/options/item-types',
-  defaultPayload: { name: '' },
+  defaultPayload: { name: '', description: '' },
   customGetters: {
     options: (state) => toValueLabelOptions(state.items) || [],
+  },
+  customActions: {
+    listenItemTypeUpdates() {
+      socket.on('item_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('item_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('item_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+      })
+    },
   },
 })
 

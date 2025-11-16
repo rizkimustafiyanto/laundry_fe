@@ -27,6 +27,12 @@
             placeholder="Contoh: Laundry, Dry Clean"
           />
 
+          <BaseInput
+            label="Deskripsi Service Type"
+            v-model="serviceTypeForm.description"
+            placeholder="Tulis disini ..."
+          />
+
           <div class="flex justify-end gap-2">
             <BaseButton
               label="Reset"
@@ -64,7 +70,7 @@
                   :class="themeClass.border.airy"
                 >
                   <td class="px-3 py-2" :class="themeClass.text.secondary">
-                    {{ st.name }}
+                    {{ formatText(st.name) }}
                   </td>
                   <td class="px-3 py-2 text-right space-x-2">
                     <BaseButton
@@ -101,6 +107,12 @@
             label="Nama Item Type"
             v-model="itemTypeForm.name"
             placeholder="Contoh: Pakaian, Sprei"
+          />
+
+          <BaseInput
+            label="Deskripsi Item Type"
+            v-model="itemTypeForm.description"
+            placeholder="Tulis disini ..."
           />
 
           <div class="flex justify-end gap-2">
@@ -140,7 +152,7 @@
                   :class="themeClass.border.airy"
                 >
                   <td class="px-3 py-2" :class="themeClass.text.secondary">
-                    {{ it.name }}
+                    {{ formatText(it.name) }}
                   </td>
                   <td class="px-3 py-2 text-right space-x-2">
                     <BaseButton
@@ -183,17 +195,19 @@ const isPrepare = ref(true)
 const serviceTypeForm = reactive({
   id: null,
   name: '',
+  description: '',
 })
 
 const resetServiceTypeForm = () => {
   serviceTypeForm.id = null
   serviceTypeForm.name = ''
+  serviceTypeForm.description = ''
 }
 
 const saveServiceType = async () => {
   serviceTypeStore.formPayload = { ...serviceTypeForm }
   if (serviceTypeForm.id) {
-    await serviceTypeStore.updateItem(serviceTypeForm.id)
+    await serviceTypeStore.updateItem()
   } else {
     await serviceTypeStore.createItem()
   }
@@ -203,6 +217,7 @@ const saveServiceType = async () => {
 const editServiceType = (st) => {
   serviceTypeForm.id = st.id
   serviceTypeForm.name = st.name
+  serviceTypeForm.description = st.description
 }
 
 // =====================
@@ -211,17 +226,19 @@ const editServiceType = (st) => {
 const itemTypeForm = reactive({
   id: null,
   name: '',
+  description: '',
 })
 
 const resetItemTypeForm = () => {
   itemTypeForm.id = null
   itemTypeForm.name = ''
+  itemTypeForm.description = ''
 }
 
 const saveItemType = async () => {
   itemTypeStore.formPayload = { ...itemTypeForm }
   if (itemTypeForm.id) {
-    await itemTypeStore.updateItem(itemTypeForm.id)
+    await itemTypeStore.updateItem()
   } else {
     await itemTypeStore.createItem()
   }
@@ -231,6 +248,7 @@ const saveItemType = async () => {
 const editItemType = (it) => {
   itemTypeForm.id = it.id
   itemTypeForm.name = it.name
+  itemTypeForm.description = it.description
 }
 
 onMounted(async () => {

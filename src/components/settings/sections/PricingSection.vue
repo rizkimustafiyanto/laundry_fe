@@ -50,51 +50,45 @@
         </div>
       </BaseCard>
 
-      <BaseCard variant="dark" class="p-6 rounded-xl shadow-sm">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr :class="themeClass.text.secondary">
-              <th class="text-left p-3">Layanan</th>
-              <th class="text-left p-3">Item</th>
-              <th class="text-left p-3">Harga / Kg</th>
-              <th class="text-right p-3">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-for="(items, service) in groupedPricing" :key="service">
-              <tr class="bg-gray-800/40">
-                <td class="p-3 font-semibold" colspan="4">{{ service }}</td>
-              </tr>
+      <BaseCard variant="dark" class="p-6 rounded-xl shadow-sm space-y-6">
+        <template v-for="(items, service) in groupedPricing" :key="service">
+          <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
+            {{ service }}
+          </h3>
 
-              <tr
-                v-for="price in items"
-                :key="price.id"
-                class="border-t transition hover:bg-gray-800/30"
-                :class="themeClass.border.secondary"
-              >
-                <td class="p-3"></td>
-                <td class="p-3">{{ price.itemType?.name }}</td>
-                <td class="p-3">{{ price.pricePerKg.toLocaleString() }}</td>
-                <td class="p-3 text-right space-x-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <BaseCard
+              v-for="price in items"
+              :key="price.id"
+              variant="dark"
+              class="p-4 rounded-xl shadow-sm hover:shadow-lg transition cursor-pointer"
+            >
+              <div class="flex justify-between items-start mb-2">
+                <span class="font-semibold" :class="themeClass.text.secondary">
+                  {{ price.itemType?.name }}
+                </span>
+                <div class="space-x-1">
                   <BaseButton
                     size="sm"
                     variant="secondary"
                     icon="fa-solid fa-pen"
-                    label="Edit"
                     @click="editPricing(price)"
                   />
                   <BaseButton
                     size="sm"
                     variant="danger"
                     icon="fa-solid fa-trash"
-                    label="Hapus"
                     @click="deletePricing(price.id)"
                   />
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
+                </div>
+              </div>
+
+              <p class="text-sm" :class="themeClass.text.secondary">
+                Harga / Kg: <span class="font-medium">{{ price.pricePerKg.toLocaleString() }}</span>
+              </p>
+            </BaseCard>
+          </div>
+        </template>
       </BaseCard>
 
       <h2

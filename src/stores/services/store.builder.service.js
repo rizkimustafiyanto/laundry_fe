@@ -91,7 +91,11 @@ export function createStoreBuilder({
 
       async updateItem(id) {
         try {
-          await api.put(`${endpoint}/${id}`, this.formPayload)
+          if (id) {
+            await api.put(`${endpoint}/${id}`, this.formPayload)
+          } else {
+            await api.put(`${endpoint}`, this.formPayload)
+          }
           notifySuccess(`Data berhasil diperbarui`)
           this.resetForm()
         } catch (err) {

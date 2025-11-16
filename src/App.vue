@@ -44,4 +44,10 @@ orderStore.listenOrderUpdates()
 
 const authStore = useAuthStore()
 authStore.listenAuthUpdates()
+
+const itemStore = useItemTypeStore()
+itemStore.listenItemTypeUpdates()
+
+const serviceStore = useServiceTypeStore()
+serviceStore.listenServiceTypeUpdates()
 </script>

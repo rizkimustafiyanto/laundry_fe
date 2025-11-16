@@ -4,11 +4,11 @@ export function getValidOptions(services, items, pricing) {
 
   const validServices = services
     .filter((s) => validServiceIds.has(s.id))
-    .map((s) => ({ label: s.name, value: s.id }))
+    .map((s) => ({ label: formatText(s.name), value: s.id }))
 
   const validItems = items
     .filter((i) => validItemIds.has(i.id))
-    .map((i) => ({ label: i.name, value: i.id }))
+    .map((i) => ({ label: formatText(i.name), value: i.id }))
 
   const validMap = pricing.reduce((map, p) => {
     if (!map[p.serviceTypeId]) map[p.serviceTypeId] = new Set()
