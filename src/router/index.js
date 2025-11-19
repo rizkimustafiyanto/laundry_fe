@@ -4,6 +4,7 @@ import LoginView from '@/views/auth/AuthLogin.vue'
 import RegisterView from '@/views/auth/AuthRegister.vue'
 import ForgetPasswordView from '@/views/auth/ForgetPassword.vue'
 import ChangePasswordView from '@/views/auth/ChangePassword.vue'
+import VerifyEmail from '@/views/auth/VerifyEmail.vue'
 
 import DashboardLayout from '@/views/dashboard/HomeView.vue'
 import DashboardHome from '@/components/dashboard/DashboardPage.vue'
@@ -43,6 +44,11 @@ const routes = [
     name: 'ChangePassword',
     component: ChangePasswordView,
     meta: { requiresUnauth: true },
+  },
+  {
+    path: '/verify-email',
+    name: 'VerifyEmail',
+    component: VerifyEmail,
   },
   {
     path: '/unauthorized',

@@ -38,9 +38,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
 const router = useRouter()
 const userStore = useAuthStore()
 
@@ -52,7 +49,6 @@ const handleSubmit = async () => {
   const response = await userStore.forgetPassword(email.value)
 
   if (response.status === 200) {
-    notifySuccess('Congratulation')
     router.push('/login')
   } else {
     notifyError('failed', response.message)

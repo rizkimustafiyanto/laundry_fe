@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import api from '@/utils/api'
 import socket from '@/plugins/socket'
+import { notifySuccess, notifyError } from '@/utils/notify'
+import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -8,11 +10,11 @@ export const useAuthStore = defineStore('auth', {
     token: localStorage.getItem('token') || null,
     role: localStorage.getItem('role') || null,
   }),
+
   actions: {
     async login(email, password) {
       try {
         const res = await api.post('/auth/login', { email, password })
-
         const data = res.data.data
 
         this.user = {
@@ -31,19 +33,12 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('token', this.token)
         localStorage.setItem('role', this.role)
 
-        return {
-          status: res.status,
-          message: res.data.message,
-          user: this.user,
-        }
-      } catch (err) {
-        const status = err.response?.status || 500
-        const message = err.response?.data?.message || 'Terjadi kesalahan server'
+        router.push({ name: 'DashboardHome' })
 
-        return {
-          status,
-          message,
-        }
+        notifySuccess(res.data.message)
+      } catch (err) {
+        const message = err.response?.data?.message || 'Email atau password salah'
+        notifyError(err, message)
       }
     },
 
@@ -68,19 +63,12 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('token', this.token)
         localStorage.setItem('role', this.role)
 
-        return {
-          status: res.status,
-          message: res.data.message,
-          user: this.user,
-        }
-      } catch (err) {
-        const status = err.response?.status || 500
-        const message = err.response?.data?.message || 'Terjadi kesalahan server'
+        router.push({ name: 'DashboardHome' })
 
-        return {
-          status,
-          message,
-        }
+        notifySuccess(res.data.message)
+      } catch (err) {
+        const message = err.response?.data?.message || 'Login Google gagal'
+        notifyError(err, message)
       }
     },
 
@@ -105,69 +93,33 @@ export const useAuthStore = defineStore('auth', {
 
     async register(payload) {
       try {
-        const res = await api.post('/auth/register', payload)
-
-        return {
-          status: res.status,
-          message: 'Register berhasil',
-          user: res.data.user,
-        }
-      } catch (error) {
-        if (error.response) {
-          return {
-            status: error.response.status,
-            message: error.response.data.message,
-            missingFields: error.response.data.missingFields || [],
-          }
-        } else if (error.request) {
-          return {
-            status: 500,
-            message: 'Tidak ada respons dari server',
-          }
-        } else {
-          return {
-            status: 500,
-            message: `Terjadi kesalahan: ${error.message}`,
-          }
-        }
+        await api.post('/auth/register', payload)
+        notifySuccess('Register berhasil! Silakan cek email untuk verifikasi.')
+        return true
+      } catch (err) {
+        const message =
+          err.response?.data?.message || 'Registrasi gagal. Periksa kembali data Anda.'
+        notifyError(err, message)
       }
     },
 
     async forgetPassword(email) {
       try {
         const res = await api.post('/auth/forgot-password', { email })
-
-        return {
-          status: res.status,
-          message: res.data.message || 'Link reset password telah dikirim ke email Anda',
-        }
+        notifySuccess(res.data.message || 'Link reset sudah dikirim ke email Anda')
+        return res
       } catch (err) {
-        const status = err.response?.status || 500
-        const message = err.response?.data?.message || 'Terjadi kesalahan saat mengirim email reset'
-
-        return {
-          status,
-          message,
-        }
+        notifyError(err, 'Gagal mengirim email reset password')
       }
     },
 
     async changePassword(payload) {
       try {
         const res = await api.post('/auth/change-password', payload)
-
-        return {
-          status: res.status,
-          message: res.data.message || 'Link reset password telah dikirim ke email Anda',
-        }
+        notifySuccess(res.data.message || 'Password berhasil diubah')
+        router.push({ name: 'Login' })
       } catch (err) {
-        const status = err.response?.status || 500
-        const message = err.response?.data?.message || 'Terjadi kesalahan saat mengirim email reset'
-
-        return {
-          status,
-          message,
-        }
+        notifyError(err, 'Gagal mengubah password')
       }
     },
 
@@ -180,16 +132,33 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('role')
     },
 
+    async requestEmailVerification() {
+      try {
+        const res = await api.post('/auth/email/request-verification')
+        notifySuccess(res.data.message || 'Email verifikasi telah dikirim')
+      } catch (err) {
+        notifyError(err, 'Gagal mengirim email verifikasi')
+      }
+    },
+
+    async verifingEmail(token) {
+      try {
+        const res = await api.post('/auth/email/verify', { token })
+        notifySuccess(res.data.message || 'Email berhasil diverifikasi!')
+      } catch (err) {
+        notifyError(err, 'Token verifikasi tidak valid')
+      }
+    },
+
     listenAuthUpdates() {
       socket.on('user_updated', (updatedUser) => {
         const updatedData = updatedUser.user || updatedUser
+
         if (this.user?.id === updatedData.id && updatedData.isActive === false) {
-          notifyError('Akun dinonaktifkan', 'Akun Anda telah dinonaktifkan oleh admin')
+          notifyError('Akun Anda telah dinonaktifkan oleh admin')
           this.logout()
 
-          const router = useRouter()
           router.push({ name: 'Login' })
-          return
         }
       })
     },

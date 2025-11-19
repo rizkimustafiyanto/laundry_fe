@@ -29,6 +29,14 @@
           <i :class="['fa-solid fa-chart-pie', themeClass.icon.secondary]"></i>
           Grafik Pesanan per Status
         </h3>
+
+        <BaseSelect
+          v-model="selectedLimit"
+          :options="limitOptions"
+          placeholder="Pilih Limit"
+          size-variant="sm"
+          @update:modelValue="changeLimit"
+        />
       </div>
 
       <BaseChart

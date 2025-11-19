@@ -93,39 +93,15 @@ const login = async () => {
   if (loading.value) return
   loading.value = true
 
-  try {
-    const result = await userStore.login(email.value, password.value)
-    if (result.status === 200) {
-      ui.show('success', `Selamat datang, ${result.user.name}`)
-      router.push('/dashboard')
-    } else {
-      ui.show('failed', result.message)
-    }
-  } catch (err) {
-    console.error(err)
-    ui.show('failed', 'Terjadi error saat login')
-  } finally {
-    loading.value = false
-  }
+  await userStore.login(email.value, password.value)
+  loading.value = false
 }
 
 const handleGoogleResponse = async (response) => {
   googleLoading.value = true
-  try {
-    const idToken = response.credential
-    const result = await userStore.loginWithGoogle(idToken)
-    if (result.status === 200) {
-      ui.show('success', `Selamat datang, ${result.user.name}`)
-      router.push('/dashboard')
-    } else {
-      ui.show('failed', result.message)
-    }
-  } catch (err) {
-    console.error(err)
-    ui.show('failed', 'Terjadi error saat login dengan Google')
-  } finally {
-    googleLoading.value = false
-  }
+  const idToken = response.credential
+  await userStore.loginWithGoogle(idToken)
+  googleLoading.value = false
 }
 
 onMounted(() => {

@@ -54,11 +54,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-
 const route = useRoute()
-const router = useRouter()
 const userStore = useAuthStore()
 
 const token = ref(route.query.token || '')
@@ -78,13 +74,6 @@ const handleSubmit = async () => {
     token: token.value,
     newPassword: newPassword.value,
   }
-  const response = await userStore.changePassword(payload)
-
-  if (response.status === 200) {
-    notifySuccess(`Congratulation, ${response.message}`)
-    router.push('/login')
-  } else {
-    notifyError('failed', response.message)
-  }
+  await userStore.changePassword(payload)
 }
 </script>

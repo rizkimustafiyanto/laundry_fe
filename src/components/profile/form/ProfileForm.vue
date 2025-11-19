@@ -3,6 +3,18 @@
     <form class="flex flex-col gap-3 text-sm" @submit.prevent="saveProfile">
       <BaseInput id="name" label="Nama" v-model="localProfile.name" required />
       <BaseInput id="email" label="Email" type="email" v-model="localProfile.email" disabled />
+      <div v-if="!localProfile.isVerified" class="flex justify-between -mt-2 mb-2 mx-1">
+        <p class="text-xs text-red-500">Email belum terverifikasi</p>
+        <BaseButton
+          variant="warning"
+          size="xs"
+          icon="fa-brands fa-letterboxd"
+          noBg
+          noBorder
+          :loading="sendingVerify"
+          @click.prevent="sendVerifyEmail"
+        />
+      </div>
       <BaseSelect
         label="Jenis Kelamin"
         v-model="localProfile.gender"
@@ -112,6 +124,23 @@ function handleFileUpload(file) {
   reader.onload = (e) => (imagePreview.value = e.target.result)
   reader.readAsDataURL(file)
   emit('file-selected', file)
+}
+
+const auth = useAuthStore()
+const sendingVerify = ref(false)
+
+async function sendVerifyEmail() {
+  try {
+    sendingVerify.value = true
+
+    const res = await auth.requestEmailVerification()
+
+    notifySuccess(res.message)
+  } catch (err) {
+    notifyError(err, 'Gagal Kirim Email')
+  } finally {
+    sendingVerify.value = false
+  }
 }
 
 onBeforeMount(async () => {

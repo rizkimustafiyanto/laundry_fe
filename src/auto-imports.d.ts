@@ -8,144 +8,162 @@ export {}
 declare global {
   const Autoplay: (typeof import('swiper'))['Autoplay']
   const EffectFade: (typeof import('swiper'))['EffectFade']
-  const EffectScope: typeof import('vue')['EffectScope']
+  const EffectScope: (typeof import('vue'))['EffectScope']
   const Navigation: (typeof import('swiper'))['Navigation']
   const Pagination: (typeof import('swiper'))['Pagination']
   const Swiper: (typeof import('swiper/vue'))['Swiper']
   const SwiperSlide: (typeof import('swiper/vue'))['SwiperSlide']
-  const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
-  const api: typeof import('./utils/api.js')['default']
-  const apiForm: typeof import('./utils/api.js')['apiForm']
-  const buildMenu: typeof import('./utils/menu.builder.js')['buildMenu']
+  const acceptHMRUpdate: (typeof import('pinia'))['acceptHMRUpdate']
+  const api: (typeof import('./utils/api.js'))['default']
+  const apiForm: (typeof import('./utils/api.js'))['apiForm']
+  const buildMenu: (typeof import('./utils/menu.builder.js'))['buildMenu']
   const companiesBuilderStore: (typeof import('./stores/services/store.builder.service.js'))['companiesBuilderStore']
-  const computed: typeof import('vue')['computed']
-  const createApp: typeof import('vue')['createApp']
-  const createDebouncer: typeof import('./utils/debounce.js')['createDebouncer']
+  const computed: (typeof import('vue'))['computed']
+  const createApp: (typeof import('vue'))['createApp']
+  const createDebouncer: (typeof import('./utils/debounce.js'))['createDebouncer']
   const createEntityStore: (typeof import('./stores/services/create.entity.service.js'))['createEntityStore']
-  const createPinia: typeof import('pinia')['createPinia']
-  const createStoreBuilder: typeof import('./stores/services/store.builder.service.js')['createStoreBuilder']
-  const customRef: typeof import('vue')['customRef']
-  const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
-  const defineComponent: typeof import('vue')['defineComponent']
-  const defineStore: typeof import('pinia')['defineStore']
-  const effectScope: typeof import('vue')['effectScope']
-  const formatAddress: typeof import('./utils/formatters.js')['formatAddress']
-  const formatCurrency: typeof import('./utils/formatters.js')['formatCurrency']
-  const formatDate: typeof import('./utils/formatters.js')['formatDate']
-  const formatDateForInput: typeof import('./utils/formatters.js')['formatDateForInput']
-  const formatPercent: typeof import('./utils/formatters.js')['formatPercent']
-  const formatPhone: typeof import('./utils/formatters.js')['formatPhone']
-  const formatText: typeof import('./utils/formatters.js')['formatText']
-  const formatTime: typeof import('./utils/formatters.js')['formatTime']
-  const getActivePinia: typeof import('pinia')['getActivePinia']
-  const getCurrentInstance: typeof import('vue')['getCurrentInstance']
-  const getCurrentScope: typeof import('vue')['getCurrentScope']
-  const getCurrentWatcher: typeof import('vue')['getCurrentWatcher']
-  const getValidOptions: typeof import('./utils/pricing.helper.js')['getValidOptions']
-  const h: typeof import('vue')['h']
-  const initApp: typeof import('./composables/useInitApp.js')['initApp']
-  const inject: typeof import('vue')['inject']
-  const isProxy: typeof import('vue')['isProxy']
-  const isReactive: typeof import('vue')['isReactive']
-  const isReadonly: typeof import('vue')['isReadonly']
-  const isRef: typeof import('vue')['isRef']
-  const isShallow: typeof import('vue')['isShallow']
-  const listenOptionsUpdates: typeof import('./stores/services/option.service.js')['listenOptionsUpdates']
-  const mapActions: typeof import('pinia')['mapActions']
-  const mapGetters: typeof import('pinia')['mapGetters']
-  const mapMeta: typeof import('./utils/formatters.js')['mapMeta']
-  const mapState: typeof import('pinia')['mapState']
-  const mapStores: typeof import('pinia')['mapStores']
-  const mapWritableState: typeof import('pinia')['mapWritableState']
-  const markRaw: typeof import('vue')['markRaw']
-  const nextTick: typeof import('vue')['nextTick']
-  const notifyConfirm: typeof import('./utils/notify.js')['notifyConfirm']
-  const notifyError: typeof import('./utils/notify.js')['notifyError']
-  const notifySuccess: typeof import('./utils/notify.js')['notifySuccess']
-  const onActivated: typeof import('vue')['onActivated']
-  const onBeforeMount: typeof import('vue')['onBeforeMount']
-  const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
-  const onBeforeRouteUpdate: typeof import('vue-router')['onBeforeRouteUpdate']
-  const onBeforeUnmount: typeof import('vue')['onBeforeUnmount']
-  const onBeforeUpdate: typeof import('vue')['onBeforeUpdate']
-  const onDeactivated: typeof import('vue')['onDeactivated']
-  const onErrorCaptured: typeof import('vue')['onErrorCaptured']
-  const onMounted: typeof import('vue')['onMounted']
-  const onRenderTracked: typeof import('vue')['onRenderTracked']
-  const onRenderTriggered: typeof import('vue')['onRenderTriggered']
-  const onScopeDispose: typeof import('vue')['onScopeDispose']
-  const onServerPrefetch: typeof import('vue')['onServerPrefetch']
-  const onUnmounted: typeof import('vue')['onUnmounted']
-  const onUpdated: typeof import('vue')['onUpdated']
-  const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const provide: typeof import('vue')['provide']
-  const reactive: typeof import('vue')['reactive']
-  const readonly: typeof import('vue')['readonly']
-  const ref: typeof import('vue')['ref']
-  const resolveComponent: typeof import('vue')['resolveComponent']
-  const setActivePinia: typeof import('pinia')['setActivePinia']
-  const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
-  const shallowReactive: typeof import('vue')['shallowReactive']
-  const shallowReadonly: typeof import('vue')['shallowReadonly']
-  const shallowRef: typeof import('vue')['shallowRef']
-  const storeToRefs: typeof import('pinia')['storeToRefs']
-  const toRaw: typeof import('vue')['toRaw']
-  const toRef: typeof import('vue')['toRef']
-  const toRefs: typeof import('vue')['toRefs']
-  const toValue: typeof import('vue')['toValue']
-  const toValueLabelOptions: typeof import('./utils/formatters.js')['toValueLabelOptions']
-  const triggerRef: typeof import('vue')['triggerRef']
-  const unref: typeof import('vue')['unref']
-  const useAddressStore: typeof import('./stores/services/address.service.js')['useAddressStore']
-  const useAttrs: typeof import('vue')['useAttrs']
-  const useAuthStore: typeof import('./stores/auth/auth.js')['useAuthStore']
-  const useChargeCategoryStore: typeof import('./stores/services/option.service.js')['useChargeCategoryStore']
-  const useChargeStore: typeof import('./stores/services/charge.service.js')['useChargeStore']
-  const useChargeTypeStore: typeof import('./stores/services/option.service.js')['useChargeTypeStore']
-  const useCompanyContentStore: typeof import('./stores/services/company.setting.service.js')['useCompanyContentStore']
+  const createPinia: (typeof import('pinia'))['createPinia']
+  const createStoreBuilder: (typeof import('./stores/services/store.builder.service.js'))['createStoreBuilder']
+  const customRef: (typeof import('vue'))['customRef']
+  const defineAsyncComponent: (typeof import('vue'))['defineAsyncComponent']
+  const defineComponent: (typeof import('vue'))['defineComponent']
+  const defineStore: (typeof import('pinia'))['defineStore']
+  const effectScope: (typeof import('vue'))['effectScope']
+  const formatAddress: (typeof import('./utils/formatters.js'))['formatAddress']
+  const formatCurrency: (typeof import('./utils/formatters.js'))['formatCurrency']
+  const formatDate: (typeof import('./utils/formatters.js'))['formatDate']
+  const formatDateForInput: (typeof import('./utils/formatters.js'))['formatDateForInput']
+  const formatPercent: (typeof import('./utils/formatters.js'))['formatPercent']
+  const formatPhone: (typeof import('./utils/formatters.js'))['formatPhone']
+  const formatText: (typeof import('./utils/formatters.js'))['formatText']
+  const formatTime: (typeof import('./utils/formatters.js'))['formatTime']
+  const getActivePinia: (typeof import('pinia'))['getActivePinia']
+  const getCurrentInstance: (typeof import('vue'))['getCurrentInstance']
+  const getCurrentScope: (typeof import('vue'))['getCurrentScope']
+  const getCurrentWatcher: (typeof import('vue'))['getCurrentWatcher']
+  const getValidOptions: (typeof import('./utils/pricing.helper.js'))['getValidOptions']
+  const h: (typeof import('vue'))['h']
+  const initApp: (typeof import('./composables/useInitApp.js'))['initApp']
+  const inject: (typeof import('vue'))['inject']
+  const isProxy: (typeof import('vue'))['isProxy']
+  const isReactive: (typeof import('vue'))['isReactive']
+  const isReadonly: (typeof import('vue'))['isReadonly']
+  const isRef: (typeof import('vue'))['isRef']
+  const isShallow: (typeof import('vue'))['isShallow']
+  const listenOptionsUpdates: (typeof import('./stores/services/option.service.js'))['listenOptionsUpdates']
+  const mapActions: (typeof import('pinia'))['mapActions']
+  const mapGetters: (typeof import('pinia'))['mapGetters']
+  const mapMeta: (typeof import('./utils/formatters.js'))['mapMeta']
+  const mapState: (typeof import('pinia'))['mapState']
+  const mapStores: (typeof import('pinia'))['mapStores']
+  const mapWritableState: (typeof import('pinia'))['mapWritableState']
+  const markRaw: (typeof import('vue'))['markRaw']
+  const nextTick: (typeof import('vue'))['nextTick']
+  const notifyConfirm: (typeof import('./utils/notify.js'))['notifyConfirm']
+  const notifyError: (typeof import('./utils/notify.js'))['notifyError']
+  const notifySuccess: (typeof import('./utils/notify.js'))['notifySuccess']
+  const onActivated: (typeof import('vue'))['onActivated']
+  const onBeforeMount: (typeof import('vue'))['onBeforeMount']
+  const onBeforeRouteLeave: (typeof import('vue-router'))['onBeforeRouteLeave']
+  const onBeforeRouteUpdate: (typeof import('vue-router'))['onBeforeRouteUpdate']
+  const onBeforeUnmount: (typeof import('vue'))['onBeforeUnmount']
+  const onBeforeUpdate: (typeof import('vue'))['onBeforeUpdate']
+  const onDeactivated: (typeof import('vue'))['onDeactivated']
+  const onErrorCaptured: (typeof import('vue'))['onErrorCaptured']
+  const onMounted: (typeof import('vue'))['onMounted']
+  const onRenderTracked: (typeof import('vue'))['onRenderTracked']
+  const onRenderTriggered: (typeof import('vue'))['onRenderTriggered']
+  const onScopeDispose: (typeof import('vue'))['onScopeDispose']
+  const onServerPrefetch: (typeof import('vue'))['onServerPrefetch']
+  const onUnmounted: (typeof import('vue'))['onUnmounted']
+  const onUpdated: (typeof import('vue'))['onUpdated']
+  const onWatcherCleanup: (typeof import('vue'))['onWatcherCleanup']
+  const provide: (typeof import('vue'))['provide']
+  const reactive: (typeof import('vue'))['reactive']
+  const readonly: (typeof import('vue'))['readonly']
+  const ref: (typeof import('vue'))['ref']
+  const resolveComponent: (typeof import('vue'))['resolveComponent']
+  const setActivePinia: (typeof import('pinia'))['setActivePinia']
+  const setMapStoreSuffix: (typeof import('pinia'))['setMapStoreSuffix']
+  const shallowReactive: (typeof import('vue'))['shallowReactive']
+  const shallowReadonly: (typeof import('vue'))['shallowReadonly']
+  const shallowRef: (typeof import('vue'))['shallowRef']
+  const storeToRefs: (typeof import('pinia'))['storeToRefs']
+  const toRaw: (typeof import('vue'))['toRaw']
+  const toRef: (typeof import('vue'))['toRef']
+  const toRefs: (typeof import('vue'))['toRefs']
+  const toValue: (typeof import('vue'))['toValue']
+  const toValueLabelOptions: (typeof import('./utils/formatters.js'))['toValueLabelOptions']
+  const triggerRef: (typeof import('vue'))['triggerRef']
+  const unref: (typeof import('vue'))['unref']
+  const useAddressStore: (typeof import('./stores/services/address.service.js'))['useAddressStore']
+  const useAttrs: (typeof import('vue'))['useAttrs']
+  const useAuthStore: (typeof import('./stores/auth/auth.js'))['useAuthStore']
+  const useChargeCategoryStore: (typeof import('./stores/services/option.service.js'))['useChargeCategoryStore']
+  const useChargeStore: (typeof import('./stores/services/charge.service.js'))['useChargeStore']
+  const useChargeTypeStore: (typeof import('./stores/services/option.service.js'))['useChargeTypeStore']
+  const useCompanyContentStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyContentStore']
   const useCompanyGalleryStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyGalleryStore']
-  const useCompanyMediaStore: typeof import('./stores/services/company.setting.service.js')['useCompanyMediaStore']
-  const useCompanyProfileStore: typeof import('./stores/services/company.setting.service.js')['useCompanyProfileStore']
+  const useCompanyMediaStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyMediaStore']
+  const useCompanyProfileStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyProfileStore']
   const useCompanyStore: (typeof import('./stores/services/company.service.js'))['useCompanyStore']
-  const useCssModule: typeof import('vue')['useCssModule']
-  const useCssVars: typeof import('vue')['useCssVars']
-  const useGendersStore: typeof import('./stores/services/option.service.js')['useGendersStore']
-  const useId: typeof import('vue')['useId']
-  const useItemTypeStore: typeof import('./stores/services/option.service.js')['useItemTypeStore']
-  const useLink: typeof import('vue-router')['useLink']
-  const useLoadingStore: typeof import('./stores/utils/loading.js')['useLoadingStore']
-  const useModel: typeof import('vue')['useModel']
+  const useCssModule: (typeof import('vue'))['useCssModule']
+  const useCssVars: (typeof import('vue'))['useCssVars']
+  const useGendersStore: (typeof import('./stores/services/option.service.js'))['useGendersStore']
+  const useId: (typeof import('vue'))['useId']
+  const useItemTypeStore: (typeof import('./stores/services/option.service.js'))['useItemTypeStore']
+  const useLink: (typeof import('vue-router'))['useLink']
+  const useLoadingStore: (typeof import('./stores/utils/loading.js'))['useLoadingStore']
+  const useModel: (typeof import('vue'))['useModel']
   const useOptionsStore: (typeof import('./stores/services/option.service.js'))['useOptionsStore']
-  const useOrderStore: typeof import('./stores/services/transaction.service.js')['useOrderStore']
-  const usePaymentMethodStore: typeof import('./stores/services/option.service.js')['usePaymentMethodStore']
-  const usePaymentStore: typeof import('./stores/services/payment.service.js')['usePaymentStore']
-  const usePricingStore: typeof import('./stores/services/pricing.service.js')['usePricingStore']
-  const useRolesStore: typeof import('./stores/services/option.service.js')['useRolesStore']
-  const useRoute: typeof import('vue-router')['useRoute']
-  const useRouter: typeof import('vue-router')['useRouter']
-  const useRunningPreviewStore: typeof import('./stores/services/payment.service.js')['useRunningPreviewStore']
-  const useServiceTypeStore: typeof import('./stores/services/option.service.js')['useServiceTypeStore']
-  const useSlots: typeof import('vue')['useSlots']
-  const useStatusStore: typeof import('./stores/services/option.service.js')['useStatusStore']
-  const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const useThemeClass: typeof import('./composables/useThemeClass.js')['useThemeClass']
-  const useThemeStore: typeof import('./stores/utils/theme.js')['useThemeStore']
-  const useTransactionPreviewStore: typeof import('./stores/services/payment.service.js')['useTransactionPreviewStore']
-  const useTransactionStatsStore: typeof import('./stores/services/transaction.service.js')['useTransactionStatsStore']
-  const useTransactionStore: typeof import('./stores/services/transaction.service.js')['useTransactionStore']
-  const useUIStore: typeof import('./stores/utils/ui.js')['useUIStore']
-  const useUserStore: typeof import('./stores/services/user.service.js')['useUserStore']
-  const useValidOptions: typeof import('./utils/pricing.helper.js')['useValidOptions']
+  const useOrderStore: (typeof import('./stores/services/transaction.service.js'))['useOrderStore']
+  const usePaymentMethodStore: (typeof import('./stores/services/option.service.js'))['usePaymentMethodStore']
+  const usePaymentStore: (typeof import('./stores/services/payment.service.js'))['usePaymentStore']
+  const usePricingStore: (typeof import('./stores/services/pricing.service.js'))['usePricingStore']
+  const useRolesStore: (typeof import('./stores/services/option.service.js'))['useRolesStore']
+  const useRoute: (typeof import('vue-router'))['useRoute']
+  const useRouter: (typeof import('vue-router'))['useRouter']
+  const useRunningPreviewStore: (typeof import('./stores/services/payment.service.js'))['useRunningPreviewStore']
+  const useServiceTypeStore: (typeof import('./stores/services/option.service.js'))['useServiceTypeStore']
+  const useSlots: (typeof import('vue'))['useSlots']
+  const useStatusStore: (typeof import('./stores/services/option.service.js'))['useStatusStore']
+  const useTemplateRef: (typeof import('vue'))['useTemplateRef']
+  const useThemeClass: (typeof import('./composables/useThemeClass.js'))['useThemeClass']
+  const useThemeStore: (typeof import('./stores/utils/theme.js'))['useThemeStore']
+  const useTransactionPreviewStore: (typeof import('./stores/services/payment.service.js'))['useTransactionPreviewStore']
+  const useTransactionStatsStore: (typeof import('./stores/services/transaction.service.js'))['useTransactionStatsStore']
+  const useTransactionStore: (typeof import('./stores/services/transaction.service.js'))['useTransactionStore']
+  const useUIStore: (typeof import('./stores/utils/ui.js'))['useUIStore']
+  const useUserStore: (typeof import('./stores/services/user.service.js'))['useUserStore']
+  const useValidOptions: (typeof import('./utils/pricing.helper.js'))['useValidOptions']
   const useorderStore: (typeof import('./stores/services/transaction.service.js'))['useorderStore']
-  const watch: typeof import('vue')['watch']
-  const watchEffect: typeof import('vue')['watchEffect']
-  const watchPostEffect: typeof import('vue')['watchPostEffect']
-  const watchSyncEffect: typeof import('vue')['watchSyncEffect']
+  const watch: (typeof import('vue'))['watch']
+  const watchEffect: (typeof import('vue'))['watchEffect']
+  const watchPostEffect: (typeof import('vue'))['watchPostEffect']
+  const watchSyncEffect: (typeof import('vue'))['watchSyncEffect']
 }
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+  export type {
+    Component,
+    Slot,
+    Slots,
+    ComponentPublicInstance,
+    ComputedRef,
+    DirectiveBinding,
+    ExtractDefaultPropTypes,
+    ExtractPropTypes,
+    ExtractPublicPropTypes,
+    InjectionKey,
+    PropType,
+    Ref,
+    ShallowRef,
+    MaybeRef,
+    MaybeRefOrGetter,
+    VNode,
+    WritableComputedRef,
+  } from 'vue'
   import('vue')
 }
 
@@ -154,128 +172,186 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
-    readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
-    readonly api: UnwrapRef<typeof import('./utils/api.js')['default']>
-    readonly apiForm: UnwrapRef<typeof import('./utils/api.js')['apiForm']>
-    readonly buildMenu: UnwrapRef<typeof import('./utils/menu.builder.js')['buildMenu']>
-    readonly computed: UnwrapRef<typeof import('vue')['computed']>
-    readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
-    readonly createDebouncer: UnwrapRef<typeof import('./utils/debounce.js')['createDebouncer']>
-    readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
-    readonly createStoreBuilder: UnwrapRef<typeof import('./stores/services/store.builder.service.js')['createStoreBuilder']>
-    readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
-    readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
-    readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
-    readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
-    readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
-    readonly formatAddress: UnwrapRef<typeof import('./utils/formatters.js')['formatAddress']>
-    readonly formatCurrency: UnwrapRef<typeof import('./utils/formatters.js')['formatCurrency']>
-    readonly formatDate: UnwrapRef<typeof import('./utils/formatters.js')['formatDate']>
-    readonly formatDateForInput: UnwrapRef<typeof import('./utils/formatters.js')['formatDateForInput']>
-    readonly formatPercent: UnwrapRef<typeof import('./utils/formatters.js')['formatPercent']>
-    readonly formatPhone: UnwrapRef<typeof import('./utils/formatters.js')['formatPhone']>
-    readonly formatText: UnwrapRef<typeof import('./utils/formatters.js')['formatText']>
-    readonly formatTime: UnwrapRef<typeof import('./utils/formatters.js')['formatTime']>
-    readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
-    readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
-    readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
-    readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
-    readonly getValidOptions: UnwrapRef<typeof import('./utils/pricing.helper.js')['getValidOptions']>
-    readonly h: UnwrapRef<typeof import('vue')['h']>
-    readonly initApp: UnwrapRef<typeof import('./composables/useInitApp.js')['initApp']>
-    readonly inject: UnwrapRef<typeof import('vue')['inject']>
-    readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
-    readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
-    readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
-    readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
-    readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
-    readonly listenOptionsUpdates: UnwrapRef<typeof import('./stores/services/option.service.js')['listenOptionsUpdates']>
-    readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
-    readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>
-    readonly mapMeta: UnwrapRef<typeof import('./utils/formatters.js')['mapMeta']>
-    readonly mapState: UnwrapRef<typeof import('pinia')['mapState']>
-    readonly mapStores: UnwrapRef<typeof import('pinia')['mapStores']>
-    readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
-    readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
-    readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
-    readonly notifyConfirm: UnwrapRef<typeof import('./utils/notify.js')['notifyConfirm']>
-    readonly notifyError: UnwrapRef<typeof import('./utils/notify.js')['notifyError']>
-    readonly notifySuccess: UnwrapRef<typeof import('./utils/notify.js')['notifySuccess']>
-    readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
-    readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
-    readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
-    readonly onBeforeRouteUpdate: UnwrapRef<typeof import('vue-router')['onBeforeRouteUpdate']>
-    readonly onBeforeUnmount: UnwrapRef<typeof import('vue')['onBeforeUnmount']>
-    readonly onBeforeUpdate: UnwrapRef<typeof import('vue')['onBeforeUpdate']>
-    readonly onDeactivated: UnwrapRef<typeof import('vue')['onDeactivated']>
-    readonly onErrorCaptured: UnwrapRef<typeof import('vue')['onErrorCaptured']>
-    readonly onMounted: UnwrapRef<typeof import('vue')['onMounted']>
-    readonly onRenderTracked: UnwrapRef<typeof import('vue')['onRenderTracked']>
-    readonly onRenderTriggered: UnwrapRef<typeof import('vue')['onRenderTriggered']>
-    readonly onScopeDispose: UnwrapRef<typeof import('vue')['onScopeDispose']>
-    readonly onServerPrefetch: UnwrapRef<typeof import('vue')['onServerPrefetch']>
-    readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
-    readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
-    readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly provide: UnwrapRef<typeof import('vue')['provide']>
-    readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
-    readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
-    readonly ref: UnwrapRef<typeof import('vue')['ref']>
-    readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
-    readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
-    readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
-    readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
-    readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
-    readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
-    readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
-    readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
-    readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
-    readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
-    readonly toValueLabelOptions: UnwrapRef<typeof import('./utils/formatters.js')['toValueLabelOptions']>
-    readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
-    readonly unref: UnwrapRef<typeof import('vue')['unref']>
-    readonly useAddressStore: UnwrapRef<typeof import('./stores/services/address.service.js')['useAddressStore']>
-    readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
-    readonly useAuthStore: UnwrapRef<typeof import('./stores/auth/auth.js')['useAuthStore']>
-    readonly useChargeCategoryStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useChargeCategoryStore']>
-    readonly useChargeStore: UnwrapRef<typeof import('./stores/services/charge.service.js')['useChargeStore']>
-    readonly useChargeTypeStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useChargeTypeStore']>
-    readonly useCompanyContentStore: UnwrapRef<typeof import('./stores/services/company.setting.service.js')['useCompanyContentStore']>
-    readonly useCompanyMediaStore: UnwrapRef<typeof import('./stores/services/company.setting.service.js')['useCompanyMediaStore']>
-    readonly useCompanyProfileStore: UnwrapRef<typeof import('./stores/services/company.setting.service.js')['useCompanyProfileStore']>
-    readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
-    readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
-    readonly useGendersStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useGendersStore']>
-    readonly useId: UnwrapRef<typeof import('vue')['useId']>
-    readonly useItemTypeStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useItemTypeStore']>
-    readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
-    readonly useLoadingStore: UnwrapRef<typeof import('./stores/utils/loading.js')['useLoadingStore']>
-    readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
-    readonly useOrderStore: UnwrapRef<typeof import('./stores/services/transaction.service.js')['useOrderStore']>
-    readonly usePaymentMethodStore: UnwrapRef<typeof import('./stores/services/option.service.js')['usePaymentMethodStore']>
-    readonly usePaymentStore: UnwrapRef<typeof import('./stores/services/payment.service.js')['usePaymentStore']>
-    readonly usePricingStore: UnwrapRef<typeof import('./stores/services/pricing.service.js')['usePricingStore']>
-    readonly useRolesStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useRolesStore']>
-    readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
-    readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
-    readonly useRunningPreviewStore: UnwrapRef<typeof import('./stores/services/payment.service.js')['useRunningPreviewStore']>
-    readonly useServiceTypeStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useServiceTypeStore']>
-    readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
-    readonly useStatusStore: UnwrapRef<typeof import('./stores/services/option.service.js')['useStatusStore']>
-    readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
-    readonly useThemeClass: UnwrapRef<typeof import('./composables/useThemeClass.js')['useThemeClass']>
-    readonly useThemeStore: UnwrapRef<typeof import('./stores/utils/theme.js')['useThemeStore']>
-    readonly useTransactionPreviewStore: UnwrapRef<typeof import('./stores/services/payment.service.js')['useTransactionPreviewStore']>
-    readonly useTransactionStatsStore: UnwrapRef<typeof import('./stores/services/transaction.service.js')['useTransactionStatsStore']>
-    readonly useTransactionStore: UnwrapRef<typeof import('./stores/services/transaction.service.js')['useTransactionStore']>
-    readonly useUIStore: UnwrapRef<typeof import('./stores/utils/ui.js')['useUIStore']>
-    readonly useUserStore: UnwrapRef<typeof import('./stores/services/user.service.js')['useUserStore']>
-    readonly useValidOptions: UnwrapRef<typeof import('./utils/pricing.helper.js')['useValidOptions']>
-    readonly watch: UnwrapRef<typeof import('vue')['watch']>
-    readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
-    readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>
-    readonly watchSyncEffect: UnwrapRef<typeof import('vue')['watchSyncEffect']>
+    readonly EffectScope: UnwrapRef<(typeof import('vue'))['EffectScope']>
+    readonly acceptHMRUpdate: UnwrapRef<(typeof import('pinia'))['acceptHMRUpdate']>
+    readonly api: UnwrapRef<(typeof import('./utils/api.js'))['default']>
+    readonly apiForm: UnwrapRef<(typeof import('./utils/api.js'))['apiForm']>
+    readonly buildMenu: UnwrapRef<(typeof import('./utils/menu.builder.js'))['buildMenu']>
+    readonly computed: UnwrapRef<(typeof import('vue'))['computed']>
+    readonly createApp: UnwrapRef<(typeof import('vue'))['createApp']>
+    readonly createDebouncer: UnwrapRef<(typeof import('./utils/debounce.js'))['createDebouncer']>
+    readonly createPinia: UnwrapRef<(typeof import('pinia'))['createPinia']>
+    readonly createStoreBuilder: UnwrapRef<
+      (typeof import('./stores/services/store.builder.service.js'))['createStoreBuilder']
+    >
+    readonly customRef: UnwrapRef<(typeof import('vue'))['customRef']>
+    readonly defineAsyncComponent: UnwrapRef<(typeof import('vue'))['defineAsyncComponent']>
+    readonly defineComponent: UnwrapRef<(typeof import('vue'))['defineComponent']>
+    readonly defineStore: UnwrapRef<(typeof import('pinia'))['defineStore']>
+    readonly effectScope: UnwrapRef<(typeof import('vue'))['effectScope']>
+    readonly formatAddress: UnwrapRef<(typeof import('./utils/formatters.js'))['formatAddress']>
+    readonly formatCurrency: UnwrapRef<(typeof import('./utils/formatters.js'))['formatCurrency']>
+    readonly formatDate: UnwrapRef<(typeof import('./utils/formatters.js'))['formatDate']>
+    readonly formatDateForInput: UnwrapRef<
+      (typeof import('./utils/formatters.js'))['formatDateForInput']
+    >
+    readonly formatPercent: UnwrapRef<(typeof import('./utils/formatters.js'))['formatPercent']>
+    readonly formatPhone: UnwrapRef<(typeof import('./utils/formatters.js'))['formatPhone']>
+    readonly formatText: UnwrapRef<(typeof import('./utils/formatters.js'))['formatText']>
+    readonly formatTime: UnwrapRef<(typeof import('./utils/formatters.js'))['formatTime']>
+    readonly getActivePinia: UnwrapRef<(typeof import('pinia'))['getActivePinia']>
+    readonly getCurrentInstance: UnwrapRef<(typeof import('vue'))['getCurrentInstance']>
+    readonly getCurrentScope: UnwrapRef<(typeof import('vue'))['getCurrentScope']>
+    readonly getCurrentWatcher: UnwrapRef<(typeof import('vue'))['getCurrentWatcher']>
+    readonly getValidOptions: UnwrapRef<
+      (typeof import('./utils/pricing.helper.js'))['getValidOptions']
+    >
+    readonly h: UnwrapRef<(typeof import('vue'))['h']>
+    readonly initApp: UnwrapRef<(typeof import('./composables/useInitApp.js'))['initApp']>
+    readonly inject: UnwrapRef<(typeof import('vue'))['inject']>
+    readonly isProxy: UnwrapRef<(typeof import('vue'))['isProxy']>
+    readonly isReactive: UnwrapRef<(typeof import('vue'))['isReactive']>
+    readonly isReadonly: UnwrapRef<(typeof import('vue'))['isReadonly']>
+    readonly isRef: UnwrapRef<(typeof import('vue'))['isRef']>
+    readonly isShallow: UnwrapRef<(typeof import('vue'))['isShallow']>
+    readonly listenOptionsUpdates: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['listenOptionsUpdates']
+    >
+    readonly mapActions: UnwrapRef<(typeof import('pinia'))['mapActions']>
+    readonly mapGetters: UnwrapRef<(typeof import('pinia'))['mapGetters']>
+    readonly mapMeta: UnwrapRef<(typeof import('./utils/formatters.js'))['mapMeta']>
+    readonly mapState: UnwrapRef<(typeof import('pinia'))['mapState']>
+    readonly mapStores: UnwrapRef<(typeof import('pinia'))['mapStores']>
+    readonly mapWritableState: UnwrapRef<(typeof import('pinia'))['mapWritableState']>
+    readonly markRaw: UnwrapRef<(typeof import('vue'))['markRaw']>
+    readonly nextTick: UnwrapRef<(typeof import('vue'))['nextTick']>
+    readonly notifyConfirm: UnwrapRef<(typeof import('./utils/notify.js'))['notifyConfirm']>
+    readonly notifyError: UnwrapRef<(typeof import('./utils/notify.js'))['notifyError']>
+    readonly notifySuccess: UnwrapRef<(typeof import('./utils/notify.js'))['notifySuccess']>
+    readonly onActivated: UnwrapRef<(typeof import('vue'))['onActivated']>
+    readonly onBeforeMount: UnwrapRef<(typeof import('vue'))['onBeforeMount']>
+    readonly onBeforeRouteLeave: UnwrapRef<(typeof import('vue-router'))['onBeforeRouteLeave']>
+    readonly onBeforeRouteUpdate: UnwrapRef<(typeof import('vue-router'))['onBeforeRouteUpdate']>
+    readonly onBeforeUnmount: UnwrapRef<(typeof import('vue'))['onBeforeUnmount']>
+    readonly onBeforeUpdate: UnwrapRef<(typeof import('vue'))['onBeforeUpdate']>
+    readonly onDeactivated: UnwrapRef<(typeof import('vue'))['onDeactivated']>
+    readonly onErrorCaptured: UnwrapRef<(typeof import('vue'))['onErrorCaptured']>
+    readonly onMounted: UnwrapRef<(typeof import('vue'))['onMounted']>
+    readonly onRenderTracked: UnwrapRef<(typeof import('vue'))['onRenderTracked']>
+    readonly onRenderTriggered: UnwrapRef<(typeof import('vue'))['onRenderTriggered']>
+    readonly onScopeDispose: UnwrapRef<(typeof import('vue'))['onScopeDispose']>
+    readonly onServerPrefetch: UnwrapRef<(typeof import('vue'))['onServerPrefetch']>
+    readonly onUnmounted: UnwrapRef<(typeof import('vue'))['onUnmounted']>
+    readonly onUpdated: UnwrapRef<(typeof import('vue'))['onUpdated']>
+    readonly onWatcherCleanup: UnwrapRef<(typeof import('vue'))['onWatcherCleanup']>
+    readonly provide: UnwrapRef<(typeof import('vue'))['provide']>
+    readonly reactive: UnwrapRef<(typeof import('vue'))['reactive']>
+    readonly readonly: UnwrapRef<(typeof import('vue'))['readonly']>
+    readonly ref: UnwrapRef<(typeof import('vue'))['ref']>
+    readonly resolveComponent: UnwrapRef<(typeof import('vue'))['resolveComponent']>
+    readonly setActivePinia: UnwrapRef<(typeof import('pinia'))['setActivePinia']>
+    readonly setMapStoreSuffix: UnwrapRef<(typeof import('pinia'))['setMapStoreSuffix']>
+    readonly shallowReactive: UnwrapRef<(typeof import('vue'))['shallowReactive']>
+    readonly shallowReadonly: UnwrapRef<(typeof import('vue'))['shallowReadonly']>
+    readonly shallowRef: UnwrapRef<(typeof import('vue'))['shallowRef']>
+    readonly storeToRefs: UnwrapRef<(typeof import('pinia'))['storeToRefs']>
+    readonly toRaw: UnwrapRef<(typeof import('vue'))['toRaw']>
+    readonly toRef: UnwrapRef<(typeof import('vue'))['toRef']>
+    readonly toRefs: UnwrapRef<(typeof import('vue'))['toRefs']>
+    readonly toValue: UnwrapRef<(typeof import('vue'))['toValue']>
+    readonly toValueLabelOptions: UnwrapRef<
+      (typeof import('./utils/formatters.js'))['toValueLabelOptions']
+    >
+    readonly triggerRef: UnwrapRef<(typeof import('vue'))['triggerRef']>
+    readonly unref: UnwrapRef<(typeof import('vue'))['unref']>
+    readonly useAddressStore: UnwrapRef<
+      (typeof import('./stores/services/address.service.js'))['useAddressStore']
+    >
+    readonly useAttrs: UnwrapRef<(typeof import('vue'))['useAttrs']>
+    readonly useAuthStore: UnwrapRef<(typeof import('./stores/auth/auth.js'))['useAuthStore']>
+    readonly useChargeCategoryStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useChargeCategoryStore']
+    >
+    readonly useChargeStore: UnwrapRef<
+      (typeof import('./stores/services/charge.service.js'))['useChargeStore']
+    >
+    readonly useChargeTypeStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useChargeTypeStore']
+    >
+    readonly useCompanyContentStore: UnwrapRef<
+      (typeof import('./stores/services/company.setting.service.js'))['useCompanyContentStore']
+    >
+    readonly useCompanyMediaStore: UnwrapRef<
+      (typeof import('./stores/services/company.setting.service.js'))['useCompanyMediaStore']
+    >
+    readonly useCompanyProfileStore: UnwrapRef<
+      (typeof import('./stores/services/company.setting.service.js'))['useCompanyProfileStore']
+    >
+    readonly useCssModule: UnwrapRef<(typeof import('vue'))['useCssModule']>
+    readonly useCssVars: UnwrapRef<(typeof import('vue'))['useCssVars']>
+    readonly useGendersStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useGendersStore']
+    >
+    readonly useId: UnwrapRef<(typeof import('vue'))['useId']>
+    readonly useItemTypeStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useItemTypeStore']
+    >
+    readonly useLink: UnwrapRef<(typeof import('vue-router'))['useLink']>
+    readonly useLoadingStore: UnwrapRef<
+      (typeof import('./stores/utils/loading.js'))['useLoadingStore']
+    >
+    readonly useModel: UnwrapRef<(typeof import('vue'))['useModel']>
+    readonly useOrderStore: UnwrapRef<
+      (typeof import('./stores/services/transaction.service.js'))['useOrderStore']
+    >
+    readonly usePaymentMethodStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['usePaymentMethodStore']
+    >
+    readonly usePaymentStore: UnwrapRef<
+      (typeof import('./stores/services/payment.service.js'))['usePaymentStore']
+    >
+    readonly usePricingStore: UnwrapRef<
+      (typeof import('./stores/services/pricing.service.js'))['usePricingStore']
+    >
+    readonly useRolesStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useRolesStore']
+    >
+    readonly useRoute: UnwrapRef<(typeof import('vue-router'))['useRoute']>
+    readonly useRouter: UnwrapRef<(typeof import('vue-router'))['useRouter']>
+    readonly useRunningPreviewStore: UnwrapRef<
+      (typeof import('./stores/services/payment.service.js'))['useRunningPreviewStore']
+    >
+    readonly useServiceTypeStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useServiceTypeStore']
+    >
+    readonly useSlots: UnwrapRef<(typeof import('vue'))['useSlots']>
+    readonly useStatusStore: UnwrapRef<
+      (typeof import('./stores/services/option.service.js'))['useStatusStore']
+    >
+    readonly useTemplateRef: UnwrapRef<(typeof import('vue'))['useTemplateRef']>
+    readonly useThemeClass: UnwrapRef<
+      (typeof import('./composables/useThemeClass.js'))['useThemeClass']
+    >
+    readonly useThemeStore: UnwrapRef<(typeof import('./stores/utils/theme.js'))['useThemeStore']>
+    readonly useTransactionPreviewStore: UnwrapRef<
+      (typeof import('./stores/services/payment.service.js'))['useTransactionPreviewStore']
+    >
+    readonly useTransactionStatsStore: UnwrapRef<
+      (typeof import('./stores/services/transaction.service.js'))['useTransactionStatsStore']
+    >
+    readonly useTransactionStore: UnwrapRef<
+      (typeof import('./stores/services/transaction.service.js'))['useTransactionStore']
+    >
+    readonly useUIStore: UnwrapRef<(typeof import('./stores/utils/ui.js'))['useUIStore']>
+    readonly useUserStore: UnwrapRef<
+      (typeof import('./stores/services/user.service.js'))['useUserStore']
+    >
+    readonly useValidOptions: UnwrapRef<
+      (typeof import('./utils/pricing.helper.js'))['useValidOptions']
+    >
+    readonly watch: UnwrapRef<(typeof import('vue'))['watch']>
+    readonly watchEffect: UnwrapRef<(typeof import('vue'))['watchEffect']>
+    readonly watchPostEffect: UnwrapRef<(typeof import('vue'))['watchPostEffect']>
+    readonly watchSyncEffect: UnwrapRef<(typeof import('vue'))['watchSyncEffect']>
   }
 }

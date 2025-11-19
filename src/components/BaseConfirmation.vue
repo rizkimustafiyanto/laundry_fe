@@ -6,7 +6,7 @@
     class="p-6 flex flex-col items-center text-center gap-4"
     @close="onCancel"
   >
-    <div class="flex flex-col gap-4 mt-4">
+    <div class="flex flex-col items-center gap-4 mt-4">
       <i class="fas fa-triangle-exclamation text-5xl" :class="themeClass.icon.warning"></i>
 
       <p :class="themeClass.text.secondary" class="text-base leading-relaxed">

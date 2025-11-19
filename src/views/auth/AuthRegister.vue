@@ -44,9 +44,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
 const router = useRouter()
 const userStore = useAuthStore()
 
@@ -86,13 +83,10 @@ const register = async () => {
     password: password.value,
   }
 
-  try {
-    const result = await userStore.register(payload)
-    notifySuccess(`Selamat datang, ${result.user.name}`)
+  const res = await userStore.register(payload)
+  if (res) {
     resetForm()
     goToLogin()
-  } catch (err) {
-    notifyError(err, 'Unexpected Error!')
   }
 }
 
