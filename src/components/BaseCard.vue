@@ -71,7 +71,6 @@ const props = defineProps({
     default: 'secondary',
   },
   hasRing: {
-    // <-- props baru
     type: Boolean,
     default: true,
   },

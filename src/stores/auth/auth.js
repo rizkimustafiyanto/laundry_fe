@@ -136,6 +136,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const res = await api.post('/auth/email/request-verification')
         notifySuccess(res.data.message || 'Email verifikasi telah dikirim')
+        return
       } catch (err) {
         notifyError(err, 'Gagal mengirim email verifikasi')
       }
@@ -145,8 +146,16 @@ export const useAuthStore = defineStore('auth', {
       try {
         const res = await api.post('/auth/email/verify', { token })
         notifySuccess(res.data.message || 'Email berhasil diverifikasi!')
+        return {
+          success: true,
+          message: res.data.message,
+        }
       } catch (err) {
         notifyError(err, 'Token verifikasi tidak valid')
+        return {
+          success: false,
+          message: err.response?.data?.message || 'Token verifikasi tidak valid',
+        }
       }
     },
 

@@ -20,7 +20,6 @@
       <BaseInput label="CTA Text" v-model="formPayload.ctaText" placeholder="CTA Text" />
       <BaseInput label="CTA URL" v-model="formPayload.ctaUrl" placeholder="CTA URL" />
 
-      <!-- Logo Upload -->
       <BaseInput
         id="logo-file"
         label="Logo"
@@ -32,7 +31,6 @@
         <img :src="getPreview(logoPreview)" class="h-20 w-20 object-cover rounded shadow" />
       </div>
 
-      <!-- Hero Upload -->
       <BaseInput
         id="hero-file"
         label="Hero Image"
@@ -44,7 +42,6 @@
         <img :src="getPreview(heroPreview)" class="h-20 w-20 object-cover rounded shadow" />
       </div>
 
-      <!-- QRIS Upload -->
       <BaseInput
         id="qris-file"
         label="QRIS Image"
@@ -56,7 +53,6 @@
         <img :src="getPreview(qrisPreview)" class="h-20 w-20 object-cover rounded shadow" />
       </div>
 
-      <!-- Socials -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <BaseInput label="Facebook URL" v-model="formPayload.facebookUrl" />
         <BaseInput label="Instagram URL" v-model="formPayload.instagramUrl" />

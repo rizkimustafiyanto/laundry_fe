@@ -2,12 +2,10 @@ import { defineStore } from 'pinia'
 
 export const useUIStore = defineStore('ui', {
   state: () => ({
-    // ResponseModal
     showModal: false,
     modalStatus: '',
     modalMessage: '',
 
-    // BaseConfirmation
     showConfirm: false,
     confirmTitle: '',
     confirmMessage: '',
@@ -18,7 +16,6 @@ export const useUIStore = defineStore('ui', {
   }),
 
   actions: {
-    // === Response Modal ===
     show(status, message) {
       this.modalStatus = status
       this.modalMessage = message
@@ -30,7 +27,6 @@ export const useUIStore = defineStore('ui', {
       this.modalMessage = ''
     },
 
-    // === Base Confirmation ===
     confirm({ title, message, requireReason = false }) {
       this.confirmTitle = title
       this.confirmMessage = message

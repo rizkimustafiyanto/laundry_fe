@@ -52,8 +52,6 @@
 const props = defineProps({
   modelValue: Boolean,
   price: Object,
-  baseUrl: { type: String },
-  whatsappNumber: { type: String, default: '6281234567890' },
 })
 
 const emits = defineEmits(['update:modelValue'])
@@ -61,6 +59,9 @@ const emits = defineEmits(['update:modelValue'])
 const close = () => {
   emits('update:modelValue', false)
 }
+
+const profileStore = useCompanyProfileStore()
+const phoneNumber = computed(() => profileStore.items[0].phone)
 
 const sendWhatsApp = () => {
   if (!props.price) return
@@ -70,7 +71,7 @@ const sendWhatsApp = () => {
   const price = props.price.pricePerKg.toLocaleString('id-ID')
 
   const text = `Halo, saya ingin pesan layanan *${service}* untuk *${item}*\nHarga per Kg: Rp ${price}`
-  const url = `https://wa.me/${props.whatsappNumber}?text=` + encodeURIComponent(text)
+  const url = `https://wa.me/${phoneNumber.value}?text=` + encodeURIComponent(text)
 
   window.open(url, '_blank')
 }

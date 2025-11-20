@@ -242,12 +242,7 @@
         </div>
       </section>
     </div>
-    <PricingModal
-      v-model="showModal"
-      :price="selectedPrice"
-      :baseUrl="__BASE_URL__"
-      whatsappNumber="6285732338426"
-    />
+    <PricingModal v-model="showModal" :price="selectedPrice" />
   </div>
 </template>
 

@@ -5,7 +5,6 @@
     size="md"
   >
     <form @submit.prevent="submitForm" class="space-y-4">
-      <!-- Upload -->
       <BaseInput id="media-upload" label="File" type="file" @update:file="handleFileUpload" />
       <div v-if="imagePreview" class="mt-2 flex justify-center items-center">
         <img
@@ -15,7 +14,6 @@
         />
       </div>
 
-      <!-- Type -->
       <BaseSelect
         label="Media Type"
         v-model="formPayload.type"
@@ -24,10 +22,8 @@
         required
       />
 
-      <!-- Title -->
       <BaseInput label="Title" v-model="formPayload.title" placeholder="Judul media" />
 
-      <!-- Description -->
       <BaseInput
         type="textarea"
         label="Description"

@@ -1,23 +1,33 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full text-center animate-fadeIn">
-      <h2 class="text-xl font-bold mb-3">Verifikasi Email</h2>
+  <div
+    class="min-h-screen flex items-center justify-center px-4"
+    :class="themeClass.background.dark"
+  >
+    <div
+      class="p-6 rounded-lg shadow-lg max-w-md w-full text-center animate-fadeIn"
+      :class="themeClass.background.secondary"
+    >
+      <h2 class="text-xl font-bold mb-3" :class="themeClass.text.dark">Verifikasi Email</h2>
 
-      <div v-if="loading" class="py-6 text-gray-600">
-        <div class="loader mx-auto mb-3"></div>
+      <div
+        v-if="loading"
+        class="py-6 flex flex-col items-center gap-3"
+        :class="themeClass.text.muted"
+      >
+        <div class="loader mx-auto" :class="themeClass.text.primary"></div>
         Sedang memverifikasi email Anda...
       </div>
 
-      <div v-else-if="success" class="text-green-600 py-4">
-        <i class="fa-solid fa-circle-check text-4xl mb-2"></i>
-        <p class="font-semibold">{{ message }}</p>
+      <div v-else-if="success" class="py-4">
+        <i :class="['fa-solid fa-circle-check text-4xl mb-2', themeClass.icon.success]"></i>
+        <p :class="['font-semibold', themeClass.text.dark]">{{ message }}</p>
 
         <BaseButton label="Pergi ke Login" variant="success" class="w-full mt-4" @click="toLogin" />
       </div>
 
-      <div v-else class="text-red-600 py-4">
-        <i class="fa-solid fa-circle-xmark text-4xl mb-2"></i>
-        <p class="font-semibold">{{ message }}</p>
+      <div v-else class="py-4">
+        <i :class="['fa-solid fa-circle-xmark text-4xl mb-2', themeClass.icon.danger]"></i>
+        <p :class="['font-semibold', themeClass.text.dark]">{{ message }}</p>
 
         <BaseButton
           label="Kembali ke Login"
@@ -33,6 +43,7 @@
 <script setup>
 const route = useRoute()
 const router = useRouter()
+const themeClass = useThemeClass()
 
 const loading = ref(true)
 const success = ref(false)
@@ -50,7 +61,12 @@ async function verify() {
     return
   }
 
-  store.verifingEmail(token)
+  const res = await store.verifingEmail(token)
+  if (res) {
+    success.value = res.success
+    message.value = res.message
+  }
+
   loading.value = false
 }
 
@@ -80,8 +96,8 @@ onMounted(() => {
 }
 
 .loader {
-  border: 4px solid #ddd;
-  border-top-color: #3b82f6;
+  border-width: 4px;
+  border-style: solid;
   border-radius: 50%;
   width: 34px;
   height: 34px;

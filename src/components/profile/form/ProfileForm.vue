@@ -15,6 +15,9 @@
           @click.prevent="sendVerifyEmail"
         />
       </div>
+      <div v-else class="flex -mt-2 mb-2 mx-1">
+        <p class="text-xs text-success-light dark:text-success-dark">Email terverifikasi</p>
+      </div>
       <BaseSelect
         label="Jenis Kelamin"
         v-model="localProfile.gender"
@@ -130,17 +133,9 @@ const auth = useAuthStore()
 const sendingVerify = ref(false)
 
 async function sendVerifyEmail() {
-  try {
-    sendingVerify.value = true
-
-    const res = await auth.requestEmailVerification()
-
-    notifySuccess(res.message)
-  } catch (err) {
-    notifyError(err, 'Gagal Kirim Email')
-  } finally {
-    sendingVerify.value = false
-  }
+  sendingVerify.value = true
+  await auth.requestEmailVerification()
+  sendingVerify.value = false
 }
 
 onBeforeMount(async () => {

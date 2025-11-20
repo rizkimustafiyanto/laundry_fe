@@ -1,6 +1,5 @@
 <template>
   <div class="relative border-none bg-inherit">
-    <!-- Label -->
     <label
       v-if="label"
       :for="id"
@@ -11,7 +10,6 @@
     </label>
 
     <div class="relative">
-      <!-- Icon prefix -->
       <div
         v-if="icon && type !== 'textarea' && type !== 'file' && type !== 'date'"
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -19,7 +17,6 @@
         <i :class="['fa-solid', `fa-${icon}`, themeClass.icon.primary, sizeClass.icon]"></i>
       </div>
 
-      <!-- TEXTAREA -->
       <template v-if="type === 'textarea'">
         <textarea
           :id="id"
@@ -35,7 +32,6 @@
         />
       </template>
 
-      <!-- FILE -->
       <template v-else-if="type === 'file'">
         <div class="relative w-full">
           <input
@@ -65,7 +61,6 @@
         </div>
       </template>
 
-      <!-- NUMBER -->
       <template v-else-if="type === 'number'">
         <input
           ref="inputRef"
@@ -95,7 +90,6 @@
         />
       </template>
 
-      <!-- DATE -->
       <template v-else-if="type === 'date'">
         <input
           ref="inputRef"
@@ -118,7 +112,6 @@
         />
       </template>
 
-      <!-- DEFAULT INPUT -->
       <template v-else>
         <input
           ref="inputRef"
@@ -140,7 +133,6 @@
           :required="required"
         />
 
-        <!-- Password Toggle -->
         <button
           v-if="isPassword"
           type="button"

@@ -5,7 +5,11 @@
     size="md"
   >
     <BaseLoadingSpinner v-if="isPrepare" :type="'mini'" />
-    <BaseCard v-else class="p-6 font-mono text-sm shadow-md" :class="themeClass.baseDiv.dark">
+    <BaseCard
+      v-else
+      class="receipt p-6 font-mono text-sm shadow-md"
+      :class="themeClass.baseDiv.dark"
+    >
       <div class="text-center mb-4">
         <h2 class="text-lg font-bold">{{ appName }}</h2>
         <p :class="themeClass.text.secondary">
@@ -144,11 +148,52 @@
             : 'Detail transaksi untuk pengecekan 🙏'
         }}
       </div>
+      <section class="mt-4" v-if="waNumber && !isPaidCompleted">
+        <BaseButton
+          variant="success"
+          class="w-full font-mono"
+          label="💬 Tanyakan Pesanan via WhatsApp"
+          size="sm"
+          noBg
+          noBorder
+          @click="openWhatsApp"
+        />
+      </section>
+
+      <section class="mt-4" v-if="isPaidCompleted">
+        <teleport to="body">
+          <ThermalReceipt
+            ref="receiptRef"
+            :order="{
+              invoiceNumber,
+              customer: form.customer,
+              items: form.items,
+              invoice: form.invoice,
+              payment: form.payment,
+              createdAt: form.invoice?.createdAt,
+            }"
+            :company="{
+              name: appName,
+              address: storeCompany.items[0]?.address,
+              phone: waNumber,
+            }"
+            width="58mm"
+          />
+        </teleport>
+        <BaseButton
+          class="w-full mt-2"
+          variant="secondary"
+          label="🖨 Cetak Struk"
+          @click="printReceipt"
+        />
+      </section>
     </BaseCard>
   </BaseModal>
 </template>
 
 <script setup>
+import ThermalReceipt from '@/components/utils/ThermalReceipt.vue'
+
 const props = defineProps({
   orderId: { type: String, required: true },
   mode: { type: String, default: 'view' },
@@ -162,8 +207,11 @@ const paymentMethodStore = usePaymentMethodStore()
 const storeCompany = useCompanyProfileStore()
 
 const isPrepare = ref(true)
+const receiptRef = ref(null)
 const appName = computed(() => storeCompany.items[0]?.name || 'Laundry App')
 const qrisChar = computed(() => storeCompany.items[0]?.qrisImageUrl || null)
+const invoiceNumber = computed(() => transactionStore.item.invoiceNumber)
+const waNumber = computed(() => storeCompany.items[0].phone)
 
 const form = reactive({
   customer: null,
@@ -240,6 +288,39 @@ const submitPayment = async () => {
   paymentStore.formPayload.amountPaid = form.invoice?.grandTotal
   await paymentStore.addPayment(props.orderId, paymentStore.formPayload)
   modelValue.value = false
+}
+
+const waMessage = computed(() =>
+  [
+    `Halo ${appName.value} 👋`,
+    ``,
+    `Saya ingin menanyakan terkait pesanan laundry saya:`,
+    ``,
+    `📌 ID Pesanan: #${invoiceNumber.value}`,
+    `👤 Nama: ${form.customer?.name}`,
+    `💰 Total: ${formatCurrency(form.invoice?.grandTotal)}`,
+    `📦 Status: ${form.status}`,
+    ``,
+    `Terima kasih 🙏`,
+  ].join('\n'),
+)
+
+const waLink = computed(() => {
+  if (!waNumber.value) return null
+  return `https://wa.me/${waNumber.value}?text=${encodeURIComponent(waMessage.value)}`
+})
+
+const openWhatsApp = () => {
+  if (!waLink.value) {
+    notifyError('', 'Nomor WhatsApp belum diatur oleh admin.')
+    return
+  }
+
+  window.open(waLink.value, '_blank')
+}
+
+const printReceipt = () => {
+  receiptRef.value?.print()
 }
 
 onMounted(() => {

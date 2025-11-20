@@ -14,7 +14,6 @@
 
       <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <!-- Pelanggan -->
       <section class="space-y-1">
         <h3 class="font-semibold">👤 Pelanggan</h3>
         <p>Nama: {{ form.customer?.name }}</p>
@@ -23,7 +22,6 @@
 
       <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <!-- Total -->
       <section class="space-y-1">
         <h3 class="font-semibold">💳 Total Pembayaran</h3>
         <div class="border-t border-dashed mt-2 pt-2 flex justify-between font-bold text-md">
@@ -32,7 +30,6 @@
         </div>
       </section>
 
-      <!-- Status Sekarang -->
       <section v-if="form.payment" class="mt-4">
         <h3 class="font-semibold mb-2">📅 Status Pembayaran Saat Ini</h3>
         <div
@@ -55,11 +52,9 @@
 
       <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />
 
-      <!-- Form Konfirmasi Admin -->
       <section class="space-y-3">
         <h3 class="font-semibold">🧾 Konfirmasi Status Pembayaran</h3>
 
-        <!-- Pilihan Status -->
         <BaseRadioButton
           v-model="adminStatus"
           :options="[
@@ -70,7 +65,6 @@
           variant
         />
 
-        <!-- Catatan -->
         <BaseInput
           v-model="adminNote"
           label="Catatan Admin"
@@ -79,7 +73,6 @@
           placeholder="Opsional — misal: bukti transfer valid, atau alasan gagal..."
         />
 
-        <!-- Tombol Konfirmasi -->
         <BaseButton
           :label="
             adminStatus === 'PAID' ? 'Konfirmasi Pembayaran Berhasil' : 'Tandai Sebagai Gagal'

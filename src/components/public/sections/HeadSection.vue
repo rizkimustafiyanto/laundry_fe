@@ -3,7 +3,6 @@
     class="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-[#1A1A1A]/70 border-b border-[#1A1A1A]/30"
   >
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <!-- LOGO + NAME -->
       <div class="flex items-center space-x-3">
         <img
           :src="logoSrc"
@@ -14,7 +13,6 @@
         <span class="text-2xl font-extrabold tracking-tight">{{ appName }}</span>
       </div>
 
-      <!-- NAV MENU -->
       <div class="hidden md:flex space-x-7 items-center text-[15px] font-medium">
         <a href="#top" class="nav-link">Home</a>
         <a v-if="showAbout" href="#about" class="nav-link">About</a>
@@ -56,8 +54,6 @@ const router = useRouter()
 
 const about = computed(() => contents.value.find((c) => c.type === 'ABOUT') || null)
 const services = computed(() => contents.value.filter((c) => c.type === 'SERVICE') || [])
-// const sponsors = computed(() => medias.value.filter((m) => m.type === 'SPONSOR') || [])
-// const testimonials = computed(() => contents.value.filter((c) => c.type === 'TESTIMONIAL') || [])
 const galleries = computed(() => medias.value.filter((m) => m.type === 'GALLERY') || [])
 
 const showServices = computed(() => services.value?.length > 0)

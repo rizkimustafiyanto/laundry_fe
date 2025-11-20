@@ -17,14 +17,12 @@
       @search="$emit('search', $event)"
       @export="$emit('download')"
     >
-      <!-- Kolom Customer -->
       <template #customer="{ value }">
         <span :class="themeClass.text.secondary">
           {{ value?.name || '-' }}
         </span>
       </template>
 
-      <!-- Kolom Status -->
       <template #status="{ value }">
         <span
           class="capitalize px-2 py-1 rounded-md text-xs font-medium"
@@ -40,14 +38,12 @@
         </span>
       </template>
 
-      <!-- Kolom Tanggal -->
       <template #createdAt="{ value }">
         <span :class="themeClass.text.secondary">
           {{ formatDate(value) }}
         </span>
       </template>
 
-      <!-- Kolom Actions -->
       <template #actions="{ item }">
         <div class="flex gap-2">
           <BaseButton

@@ -3,7 +3,6 @@
     <BaseLoadingSpinner v-if="loading" :type="'mini'" />
 
     <form v-else @submit.prevent="submitOrder" class="space-y-4">
-      <!-- Customer, hanya tampil jika bukan CUSTOMER -->
       <BaseSelect
         v-if="isManualPickup && user.role !== 'CUSTOMER'"
         label="Pilih Pelanggan"
@@ -16,7 +15,6 @@
         :disabled="editMode"
       />
 
-      <!-- Pickup -->
       <BaseSelect
         v-if="form.pickupRequested"
         label="Pilih Alamat Pengambilan"
@@ -27,7 +25,6 @@
         required
       />
 
-      <!-- Delivery -->
       <BaseSelect
         v-if="form.deliveryRequested"
         label="Pilih Alamat Pengantaran"
@@ -37,7 +34,6 @@
         required
       />
 
-      <!-- Checkbox pickup & delivery -->
       <div class="flex gap-4">
         <label class="flex items-center gap-2" :class="themeClass.text.secondary">
           <input
@@ -63,7 +59,6 @@
         :disabled="editMode"
       />
 
-      <!-- Items -->
       <div>
         <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Item Laundry</h3>
         <BaseCard
@@ -108,7 +103,6 @@
         />
       </div>
 
-      <!-- Payment -->
       <div v-if="showPaymentSection" class="space-y-2">
         <h3 class="font-semibold mb-2" :class="themeClass.text.secondary">Pembayaran</h3>
         <hr class="my-3 border-dashed" :class="themeClass.border.secondary" />

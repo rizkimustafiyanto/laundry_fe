@@ -183,15 +183,11 @@
 <script setup>
 const themeClass = useThemeClass()
 
-// Stores
 const serviceTypeStore = useServiceTypeStore()
 const itemTypeStore = useItemTypeStore()
 
 const isPrepare = ref(true)
 
-// =====================
-// SERVICE TYPE FORM
-// =====================
 const serviceTypeForm = reactive({
   id: null,
   name: '',
@@ -220,9 +216,6 @@ const editServiceType = (st) => {
   serviceTypeForm.description = st.description
 }
 
-// =====================
-// ITEM TYPE FORM
-// =====================
 const itemTypeForm = reactive({
   id: null,
   name: '',
