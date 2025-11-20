@@ -6,79 +6,84 @@
       >
         <div class="flex flex-col items-start space-y-4">
           <img
-            :src="`${__BASE_URL__}${company.logoUrl}`"
+            :src="companySafe.logoUrl"
             alt="Logo"
             class="w-28 h-auto object-contain"
           />
-          <h2 class="text-xl font-bold">{{ company.name }}</h2>
-          <p class="text-sm max-w-xs">{{ company.about }}</p>
+          <h2 v-if="companySafe.name" class="text-xl font-bold">{{ companySafe.name }}</h2>
+          <p v-if="companySafe.about" class="text-sm max-w-xs">{{ companySafe.about }}</p>
         </div>
 
         <div class="flex flex-col space-y-2 text-sm">
-          <div><span class="font-semibold">Email:</span> {{ company.email }}</div>
-          <div><span class="font-semibold">Phone:</span> {{ company.phone }}</div>
-          <div><span class="font-semibold">Address:</span> {{ company.address }}</div>
+          <div v-if="companySafe.email"><span class="font-semibold">Email:</span> {{ companySafe.email }}</div>
+          <div v-if="companySafe.phone"><span class="font-semibold">Phone:</span> {{ companySafe.phone }}</div>
+          <div v-if="companySafe.address"><span class="font-semibold">Address:</span> {{ companySafe.address }}</div>
         </div>
 
-        <div class="flex flex-col space-y-2">
+        <div v-if="companySafe.hasSocial" class="flex flex-col space-y-2">
           <span class="font-semibold">Follow Us</span>
           <div class="flex space-x-3">
             <a
-              v-if="company.facebookUrl"
-              :href="company.facebookUrl"
+              v-if="companySafe.facebookUrl"
+              :href="companySafe.facebookUrl"
               target="_blank"
               :class="themeClass.icon.primary"
+              title="Follow on Facebook"
             >
               <i class="fa-brands fa-facebook text-xl"></i>
             </a>
             <a
-              v-if="company.instagramUrl"
-              :href="company.instagramUrl"
+              v-if="companySafe.instagramUrl"
+              :href="companySafe.instagramUrl"
               target="_blank"
               :class="themeClass.icon.softPink"
+              title="Follow on Instagram"
             >
               <i class="fa-brands fa-instagram text-xl"></i>
             </a>
             <a
-              v-if="company.twitterUrl"
-              :href="company.twitterUrl"
+              v-if="companySafe.twitterUrl"
+              :href="companySafe.twitterUrl"
               target="_blank"
               :class="themeClass.icon.info"
+              title="Follow on Twitter"
             >
               <i class="fa-brands fa-twitter text-xl"></i>
             </a>
             <a
-              v-if="company.linkedinUrl"
-              :href="company.linkedinUrl"
+              v-if="companySafe.linkedinUrl"
+              :href="companySafe.linkedinUrl"
               target="_blank"
               :class="themeClass.icon.primary"
+              title="Follow on LinkedIn"
             >
               <i class="fa-brands fa-linkedin text-xl"></i>
             </a>
             <a
-              v-if="company.tiktokUrl"
-              :href="company.tiktokUrl"
+              v-if="companySafe.tiktokUrl"
+              :href="companySafe.tiktokUrl"
               target="_blank"
               :class="themeClass.icon.dark"
+              title="Follow on TikTok"
             >
               <i class="fa-brands fa-tiktok text-xl"></i>
             </a>
           </div>
         </div>
 
-        <div v-if="company.sponsors?.length" class="flex flex-col space-y-2">
+        <div v-if="companySafe.sponsors.length" class="flex flex-col space-y-2">
           <span class="font-semibold">Sponsors</span>
           <div class="flex space-x-3">
             <a
-              v-for="sponsor in company.sponsors"
+              v-for="sponsor in companySafe.sponsors"
               :key="sponsor.id"
-              :href="sponsor.websiteUrl"
+              :href="sponsor.websiteUrl || '#'"
               target="_blank"
             >
               <img
-                :src="`${__BASE_URL__}${sponsor.logoUrl}`"
-                :alt="sponsor.sponsorName"
-                class="w-16 h-auto object-contain"
+                :src="sponsor.logoUrl || '/default-sponsor.png'"
+                :alt="sponsor.sponsorName || 'Sponsor'"
+                class="w-8 h-auto object-contain"
               />
             </a>
           </div>
@@ -86,7 +91,7 @@
       </div>
 
       <div class="mt-8 text-center text-sm text-gray-400">
-        &copy; {{ new Date().getFullYear() }} {{ company.name }}. All rights reserved.
+        &copy; {{ new Date().getFullYear() }} {{ companySafe.name || 'Company' }}. All rights reserved.
       </div>
     </div>
   </div>
@@ -94,12 +99,37 @@
 
 <script setup>
 const store = useCompanyProfileStore()
+const mediaStore = useCompanyMediaStore()
+
 const { items } = storeToRefs(store)
+const { items: medias } = storeToRefs(mediaStore)
+
 const themeClass = useThemeClass()
 
 const company = ref(items.value[0] || {})
+const sponsors = computed(() => medias.value.filter((m) => m.type === 'SPONSOR') || [])
 
 watch(items, (newItems) => {
   company.value = newItems[0] || {}
 })
+
+const companySafe = computed(() => ({
+  name: company.value.name || '',
+  email: company.value.email || '',
+  phone: company.value.phone || '',
+  address: company.value.address || '',
+  about: company.value.about || '',
+  logoUrl: company.value.logoUrl ? `${__BASE_URL__}${company.value.logoUrl}` : '/default-logo.png',
+  facebookUrl: company.value.facebookUrl || '',
+  instagramUrl: company.value.instagramUrl || '',
+  twitterUrl: company.value.twitterUrl || '',
+  linkedinUrl: company.value.linkedinUrl || '',
+  tiktokUrl: company.value.tiktokUrl || '',
+  sponsors: sponsors.value?.map(s => ({
+    ...s,
+    logoUrl: s.url ? `${__BASE_URL__}${s.url}` : '/default-sponsor.png',
+    sponsorName: s.title || 'Sponsor'
+  })) || [],
+  hasSocial: company.value.facebookUrl || company.value.instagramUrl || company.value.twitterUrl || company.value.linkedinUrl || company.value.tiktokUrl
+}))
 </script>
