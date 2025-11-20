@@ -169,6 +169,15 @@ export const useTransactionStatsStore = createStoreBuilder({
     },
   },
   customActions: {
+    async exportTransactions(payload) {
+      try {
+        const res = await api.post('/transactions/export', payload)
+        notifySuccess('Export transaksi berhasil')
+        return res.data
+      } catch (err) {
+        notifyError(err, 'Gagal mengekspor transaksi')
+      }
+    },
     listenStatUpdates() {
       socket.on('transaction_updated', (updatedTransaction) => {
         const index = this.items.findIndex((t) => t.id === updatedTransaction.id)

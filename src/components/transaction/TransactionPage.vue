@@ -189,6 +189,8 @@ async function handleDownload() {
       message: `Apakah Anda yakin ingin download data ini?`,
     })
 
+    console.log('AWW')
+
     const res = await transactionStore.exportTransactions({
       status: transactionStore.filters?.status || '',
       search: transactionStore.filters?.search || '',

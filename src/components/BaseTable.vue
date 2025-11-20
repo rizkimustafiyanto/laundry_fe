@@ -7,7 +7,7 @@
     ]"
   >
     <div class="flex justify-between items-center" :class="sizeClass.header">
-      <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-2 items-center">
         <BaseInput
           v-if="searchable"
           :modelValue="searchQuery"
@@ -15,6 +15,7 @@
           placeholder="Cari..."
           :size-variant="sizeVariant"
         />
+
         <div v-if="limitable" class="hidden md:flex gap-2 items-center" :class="sizeClass.font">
           <BaseSelect
             :modelValue="localLimit"
@@ -28,7 +29,7 @@
         </div>
       </div>
 
-      <div class="flex flex-row gap-2">
+      <div class="hidden md:flex flex-row gap-2">
         <BaseButton
           v-if="exportable"
           @click="$emit('export')"
@@ -48,6 +49,54 @@
           :placeholder="dropdownLabel"
           :size-variant="sizeVariant"
         />
+      </div>
+
+      <div class="md:hidden relative mobile-menu-wrapper">
+        <BaseButton
+          variant="mist"
+          icon="fa-solid fa-ellipsis-vertical"
+          no-border
+          no-bg
+          :size="sizeVariant"
+          @click.stop="toggleMobileMenu"
+        />
+
+        <div
+          v-if="showMobileMenu"
+          class="absolute right-0 mt-2 w-48 rounded-md shadow-lg z-50 p-2"
+          :class="themeClass.background.dark"
+        >
+          <BaseButton
+            v-if="exportable"
+            variant="mist"
+            label="Export"
+            icon="fa-solid fa-download mr-2"
+            no-border
+            no-bg
+            :size="sizeVariant"
+            @click="clickMobile(() => emit('export'))"
+          />
+
+          <div v-if="choosable" class="px-2 py-2">
+            <BaseSelect
+              :modelValue="selectedDropdownValue"
+              @update:modelValue="(v) => clickMobile(() => handleDropdownSelect(v))"
+              :options="dropdownItems"
+              :placeholder="dropdownLabel"
+              :size-variant="sizeVariant"
+            />
+          </div>
+
+          <div v-if="limitable" class="px-2 py-2">
+            <BaseSelect
+              :modelValue="localLimit"
+              @update:modelValue="(v) => clickMobile(() => applyLimit(v))"
+              :options="[5, 10, 20, 50, 100].map((n) => ({ label: n, value: n }))"
+              placeholder="Limit"
+              :size-variant="sizeVariant"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -160,6 +209,34 @@ const applyLimit = (value) => {
   localLimit.value = value
   emit('limit-change', value)
 }
+
+const showMobileMenu = ref(false)
+
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value
+}
+
+const clickMobile = (callback) => {
+  callback()
+  showMobileMenu.value = false
+}
+
+const handleClickOutside = (e) => {
+  const wrapper = document.querySelector('.mobile-menu-wrapper')
+  if (!wrapper) return
+
+  if (showMobileMenu.value && !wrapper.contains(e.target)) {
+    showMobileMenu.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 const computedKeys = computed(() => (props.items?.length ? Object.keys(props.items[0]) : []))
 const computedColumns = computed(() => {

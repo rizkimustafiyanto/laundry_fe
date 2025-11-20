@@ -10,6 +10,7 @@
       choosable
       searchable
       limitable
+      exportable
       @page-change="$emit('page-change', $event)"
       @dropdown-select="$emit('dropdown-select', $event)"
       @limit-change="$emit('limit-change', $event)"

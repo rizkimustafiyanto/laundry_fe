@@ -113,6 +113,69 @@
       </section>
 
       <section
+        v-if="groupedPricing"
+        id="pricing"
+        class="py-28 bg-[#1A1A1A]/60 backdrop-blur-sm fade-up shadow-[0_0_40px_rgba(198,166,103,0.15)]"
+      >
+        <div class="max-w-7xl mx-auto px-6 text-center">
+          <h2 class="text-4xl font-bold mb-14 text-[#C6A667]">Daftar Harga</h2>
+
+          <div
+            id="pricing-scroll"
+            class="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
+            :class="{
+              'justify-center': isSmallPricing,
+              'justify-start': !isSmallPricing,
+            }"
+          >
+            <div
+              v-for="(group, service) in groupedPricing"
+              :key="service"
+              class="min-w-[350px] bg-[#0D0D0D]/80 backdrop-blur-xl p-10 rounded-3xl border border-[#C6A667]/20 shadow-md hover:shadow-lg transition-all"
+            >
+              <h3 class="text-2xl font-semibold text-[#C6A667] mb-6 tracking-wide">
+                {{ formatText(service) }}
+              </h3>
+
+              <div
+                class="grid gap-6 place-items-center"
+                style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))"
+              >
+                <div
+                  v-for="price in group.items"
+                  :key="price.id"
+                  @click="openModal(price)"
+                  class="w-full p-5 rounded-2xl bg-[#1A1A1A]/60 border border-[#C6A667]/10 hover:border-[#C6A667]/40 shadow-sm hover:shadow-xl transition-all cursor-pointer"
+                >
+                  <div class="w-full text-center mb-3">
+                    <span class="text-lg font-semibold text-[#F5F5F5]">
+                      {{ price.itemType?.name ? formatText(price.itemType?.name) : '-' }}
+                    </span>
+                  </div>
+
+                  <div class="mt-2 text-[#D4D4D4] text-center">
+                    <p class="text-sm opacity-80">Harga / Kg</p>
+                    <p class="text-xl font-bold text-[#C6A667] mt-1">
+                      Rp {{ price.pricePerKg.toLocaleString('id-ID') }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-[#D4D4D4] leading-relaxed text-center mt-10">
+                <p v-if="group.description">
+                  <strong class="text-[#C6A667] text-lg">Deskripsi Layanan:</strong><br />
+                  <span class="opacity-90">{{ group.description }}</span>
+                </p>
+
+                <p v-else class="text-[#777] italic">Tidak ada deskripsi untuk layanan ini.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
         id="testimonial"
         class="py-28 bg-[#1A1A1A]/80 backdrop-blur-sm fade-up"
         v-if="testimonials.length"
@@ -179,16 +242,24 @@
         </div>
       </section>
     </div>
+    <PricingModal
+      v-model="showModal"
+      :price="selectedPrice"
+      :baseUrl="__BASE_URL__"
+      whatsappNumber="6285732338426"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import defaultLogo from '@/assets/logo.svg'
+import PricingModal from '../PricingModal.vue'
 
 const profileStore = useCompanyProfileStore()
 const contentStore = useCompanyContentStore()
 const mediaStore = useCompanyMediaStore()
+const pricingStore = usePricingStore()
 
 const { items: profiles } = storeToRefs(profileStore)
 const { items: contents } = storeToRefs(contentStore)
@@ -214,6 +285,37 @@ const bgImageUrl = computed(() => {
   return `${__BASE_URL__}${bgbodymain.value[0].url}`
 })
 
+const groupedPricing = computed(() => {
+  const groups = {}
+
+  pricingStore.items.forEach((price) => {
+    const serviceName = price.serviceType?.name || 'Tanpa Layanan'
+
+    if (!groups[serviceName]) {
+      groups[serviceName] = {
+        description: price.serviceType?.description || null,
+        items: [],
+      }
+    }
+
+    groups[serviceName].items.push(price)
+  })
+
+  return groups
+})
+
+const showModal = ref(false)
+const selectedPrice = ref(null)
+
+const openModal = (price) => {
+  selectedPrice.value = price
+  showModal.value = true
+}
+
+const isSmallPricing = computed(() => {
+  return Object.keys(groupedPricing.value).length <= 4
+})
+
 const animateOnScroll = () => {
   const elements = document.querySelectorAll('.fade-up')
   const observer = new IntersectionObserver(
@@ -231,9 +333,18 @@ const animateOnScroll = () => {
 }
 
 onMounted(async () => {
-  await Promise.all([contentStore.fetchItems(), mediaStore.fetchItems()])
+  await Promise.all([contentStore.fetchItems(), mediaStore.fetchItems(), pricingStore.fetchItems()])
   await nextTick()
   animateOnScroll()
+  nextTick(() => {
+    const el = document.querySelector('#pricing-scroll')
+    if (el) {
+      el.scrollTo({
+        left: el.scrollWidth / 2 - el.clientWidth / 2,
+        behavior: 'smooth',
+      })
+    }
+  })
 })
 </script>
 
@@ -269,5 +380,12 @@ onMounted(async () => {
   [style*='background-attachment: fixed'] {
     background-attachment: scroll !important;
   }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  scrollbar-width: none;
 }
 </style>

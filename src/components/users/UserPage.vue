@@ -16,6 +16,7 @@
         @page-change="handlePageChange"
         @limit-change="handleLimitChange"
         @search="handleSearch"
+        @export="handleDownload"
       >
         <template #name_email="{ item }">
           <div
@@ -134,6 +135,37 @@ const openEditModal = (userId) => {
 
 const saveEditedUser = async () => {
   await userStore.updateItem(userStore.formPayload.id)
+}
+
+async function handleDownload() {
+  try {
+    isLoading.value = true
+
+    await notifyConfirm({
+      title: 'Download Data',
+      message: `Apakah Anda yakin ingin download data ini?`,
+    })
+
+    const res = await userStore.exportTransactions({
+      status: userStore.filters?.status || '',
+      search: userStore.filters?.search || '',
+    })
+
+    const fileUrl = `${__BASE_URL__}${res.data.replace(/\\/g, '/')}`
+
+    const link = document.createElement('a')
+    link.href = fileUrl
+    link.setAttribute('download', `transactions_${Date.now()}.xlsx`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch (err) {
+    if (err !== 'cancelled') {
+      notifyError(err, `Gagal download data`)
+    }
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onMounted(async () => {
