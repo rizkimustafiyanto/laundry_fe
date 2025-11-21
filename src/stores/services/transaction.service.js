@@ -151,7 +151,7 @@ export const useTransactionStatsStore = createStoreBuilder({
         acc[t.status] = (acc[t.status] || 0) + 1
         return acc
       }, {})
-      return Object.entries(grouped).map(([status, count]) => ({ status, count }))
+      return Object.entries(grouped).map(([status, count]) => ({ status: formatText(status), count }))
     },
     todayTransactions: (state) => {
       const today = new Date().toDateString()
@@ -166,6 +166,38 @@ export const useTransactionStatsStore = createStoreBuilder({
         return acc
       }, {})
       return Object.entries(grouped).map(([status, count]) => ({ status, count }))
+    },
+    profitByMonth: (state) => {
+      const monthly = {}
+
+      state.items.forEach((t) => {
+        if (t?.payment?.status === 'PAID' && typeof t?.payment?.amountPaid === 'number') {
+          const date = new Date(t.createdAt)
+
+          const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+
+          monthly[key] = (monthly[key] || 0) + t.payment.amountPaid
+        }
+      })
+
+      const sortedKeys = Object.keys(monthly).sort()
+
+      if (!sortedKeys.length) {
+        return { categories: [], data: [] }
+      }
+
+      return {
+        categories: sortedKeys.map((key) => {
+          const [year, month] = key.split('-')
+
+          return new Date(year, month - 1).toLocaleString('id-ID', {
+            month: 'long',
+            year: 'numeric',
+          })
+        }),
+
+        data: sortedKeys.map((key) => monthly[key]),
+      }
     },
   },
   customActions: {

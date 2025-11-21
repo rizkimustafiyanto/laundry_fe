@@ -5,13 +5,31 @@
  * Contoh: 1500000 -> "Rp 1.500.000"
  * Jika value null/undefined/NaN, kembalikan "Rp 0"
  */
-export function formatCurrency(value) {
-  if (typeof value !== 'number' || isNaN(value)) return 'Rp 0'
-  return new Intl.NumberFormat('id-ID', {
+export function formatCurrency(value, options = {}) {
+  const {
+    locale = 'id-ID',
+    currency = 'IDR',
+    minimumFractionDigits = 0,
+    maximumFractionDigits,
+    fallback = 0,
+    asNumber = false, // true = return number, false = string formatted
+  } = options
+
+  const number = Number(value)
+
+  if (isNaN(number)) return asNumber ? fallback : `${currency} ${fallback}`
+
+  // Jika ingin hasil number (tanpa format), misalnya untuk proses lain
+  if (asNumber) {
+    return Number(number.toFixed(maximumFractionDigits ?? minimumFractionDigits))
+  }
+
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(value)
+    currency,
+    minimumFractionDigits,
+    ...(maximumFractionDigits !== undefined && { maximumFractionDigits }),
+  }).format(number)
 }
 
 /**

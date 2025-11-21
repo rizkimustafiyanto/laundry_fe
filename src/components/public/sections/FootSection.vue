@@ -5,19 +5,21 @@
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-0"
       >
         <div class="flex flex-col items-start space-y-4">
-          <img
-            :src="companySafe.logoUrl"
-            alt="Logo"
-            class="w-28 h-auto object-contain"
-          />
+          <img :src="companySafe.logoUrl" alt="Logo" class="w-28 h-auto object-contain" />
           <h2 v-if="companySafe.name" class="text-xl font-bold">{{ companySafe.name }}</h2>
           <p v-if="companySafe.about" class="text-sm max-w-xs">{{ companySafe.about }}</p>
         </div>
 
         <div class="flex flex-col space-y-2 text-sm">
-          <div v-if="companySafe.email"><span class="font-semibold">Email:</span> {{ companySafe.email }}</div>
-          <div v-if="companySafe.phone"><span class="font-semibold">Phone:</span> {{ companySafe.phone }}</div>
-          <div v-if="companySafe.address"><span class="font-semibold">Address:</span> {{ companySafe.address }}</div>
+          <div v-if="companySafe.email">
+            <span class="font-semibold">Email:</span> {{ companySafe.email }}
+          </div>
+          <div v-if="companySafe.phone">
+            <span class="font-semibold">Phone:</span> {{ companySafe.phone }}
+          </div>
+          <div v-if="companySafe.address">
+            <span class="font-semibold">Address:</span> {{ companySafe.address }}
+          </div>
         </div>
 
         <div v-if="companySafe.hasSocial" class="flex flex-col space-y-2">
@@ -91,7 +93,8 @@
       </div>
 
       <div class="mt-8 text-center text-sm text-gray-400">
-        &copy; {{ new Date().getFullYear() }} {{ companySafe.name || 'Company' }}. All rights reserved.
+        &copy; {{ new Date().getFullYear() }} {{ companySafe.name || 'Company' }}. All rights
+        reserved.
       </div>
     </div>
   </div>
@@ -125,11 +128,17 @@ const companySafe = computed(() => ({
   twitterUrl: company.value.twitterUrl || '',
   linkedinUrl: company.value.linkedinUrl || '',
   tiktokUrl: company.value.tiktokUrl || '',
-  sponsors: sponsors.value?.map(s => ({
-    ...s,
-    logoUrl: s.url ? `${__BASE_URL__}${s.url}` : '/default-sponsor.png',
-    sponsorName: s.title || 'Sponsor'
-  })) || [],
-  hasSocial: company.value.facebookUrl || company.value.instagramUrl || company.value.twitterUrl || company.value.linkedinUrl || company.value.tiktokUrl
+  sponsors:
+    sponsors.value?.map((s) => ({
+      ...s,
+      logoUrl: s.url ? `${__BASE_URL__}${s.url}` : '/default-sponsor.png',
+      sponsorName: s.title || 'Sponsor',
+    })) || [],
+  hasSocial:
+    company.value.facebookUrl ||
+    company.value.instagramUrl ||
+    company.value.twitterUrl ||
+    company.value.linkedinUrl ||
+    company.value.tiktokUrl,
 }))
 </script>

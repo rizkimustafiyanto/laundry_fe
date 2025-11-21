@@ -8,6 +8,24 @@
 
       <StatusSummary :statusSummary="statusSummary" />
 
+      <BaseCard variant="secondary" class="p-4 rounded-xl shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-sm font-medium flex items-center gap-2" :class="themeClass.text.subtle">
+            <i :class="['fa-solid fa-chart-simple', themeClass.icon.secondary]"></i>
+            Grafik Pesanan per Bulan
+          </h3>
+        </div>
+
+        <BaseLoadingSpinner v-if="loading && !profitByMonth" type="mini" />
+        <BaseChart
+          v-else
+          type="line"
+          :categories="profitByMonth.categories"
+          :data="profitByMonth.data"
+          format="currency"
+        />
+      </BaseCard>
+
       <TransactionTable
         :transactions="transactions"
         :columns="columns"
@@ -63,6 +81,8 @@ import PaymentConfirm from '@/components/dashboard/form/PaymentConfirm.vue'
 
 const transactionStore = useTransactionStatsStore()
 const statusStore = useStatusStore()
+const transactionStatStore = useTransactionStatsStore()
+const themeClass = useThemeClass()
 
 const idValueSelected = ref(null)
 const showEditModal = ref(false)
@@ -71,12 +91,13 @@ const openViewModalValue = ref(false)
 const openPaymentConfirmModalValue = ref(false)
 const loading = ref(false)
 
-const todayTransactions = computed(() => transactionStore.todayTransactions ?? 0)
-const completedTransactions = computed(() => transactionStore.completedTransactions ?? 0)
-const statusSummary = computed(() => transactionStore.runningTransactionsByStatus ?? [])
+const todayTransactions = computed(() => transactionStatStore.todayTransactions ?? 0)
+const completedTransactions = computed(() => transactionStatStore.completedTransactions ?? 0)
+const statusSummary = computed(() => transactionStatStore.runningTransactionsByStatus ?? [])
 const transactions = computed(() => transactionStore.items ?? [])
 const meta = computed(() => transactionStore.meta ?? {})
 const statusOptions = computed(() => [{ label: 'All', value: '' }, ...statusStore.options])
+const profitByMonth = computed(() => transactionStatStore.profitByMonth)
 
 async function initPageData() {
   try {
@@ -87,6 +108,7 @@ async function initPageData() {
     if (!statusStore.items?.length) {
       await statusStore.fetch()
     }
+    transactionStatStore.fetchItems({ limit: 10000 })
   } catch (err) {
     notifyError(err, 'Gagal memuat data awal')
   } finally {
