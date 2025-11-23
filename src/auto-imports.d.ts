@@ -106,6 +106,7 @@ declare global {
   const useCompanyGalleryStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyGalleryStore']
   const useCompanyMediaStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyMediaStore']
   const useCompanyProfileStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyProfileStore']
+  const useCompanyReviewStore: (typeof import('./stores/services/company.setting.service.js'))['useCompanyReviewStore']
   const useCompanyStore: (typeof import('./stores/services/company.service.js'))['useCompanyStore']
   const useCssModule: (typeof import('vue'))['useCssModule']
   const useCssVars: (typeof import('vue'))['useCssVars']
@@ -286,6 +287,9 @@ declare module 'vue' {
     >
     readonly useCompanyProfileStore: UnwrapRef<
       (typeof import('./stores/services/company.setting.service.js'))['useCompanyProfileStore']
+    >
+    readonly useCompanyReviewStore: UnwrapRef<
+      (typeof import('./stores/services/company.setting.service.js'))['useCompanyReviewStore']
     >
     readonly useCssModule: UnwrapRef<(typeof import('vue'))['useCssModule']>
     readonly useCssVars: UnwrapRef<(typeof import('vue'))['useCssVars']>

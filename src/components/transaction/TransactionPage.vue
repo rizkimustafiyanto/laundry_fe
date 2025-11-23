@@ -8,6 +8,131 @@
 
       <StatusSummary :statusSummary="statusSummary" />
 
+      <BaseCard variant="secondary" class="p-4 md:p-5 rounded-2xl shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+          <h3 class="text-sm font-semibold flex items-center gap-2" :class="themeClass.text.subtle">
+            <i class="fa-solid fa-star" :class="themeClass.text.warning"></i>
+            Kepuasan Pelanggan
+          </h3>
+
+          <span
+            class="text-[11px] px-2 py-1 rounded-full w-fit"
+            :class="[themeClass.background.secondary, themeClass.text.muted]"
+          >
+            Total: {{ summary?.totalReviews || 0 }} ulasan
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="flex flex-col items-center md:items-center md:justify-center space-y-1">
+            <span class="text-3xl font-bold" :class="themeClass.text.primary">
+              {{ summary?.rating?.toFixed(1) || 0 }}
+            </span>
+
+            <div class="flex gap-1 text-sm">
+              <i
+                v-for="i in 5"
+                :key="i"
+                class="fa-star"
+                :class="
+                  i <= Math.round(summary?.rating)
+                    ? ['fa-solid', themeClass.text.warning]
+                    : ['fa-regular', themeClass.text.muted]
+                "
+              />
+            </div>
+
+            <span class="text-xs" :class="themeClass.text.muted"> Rata-rata rating </span>
+          </div>
+
+          <div class="space-y-3 col-span-1 md:col-span-2">
+            <div
+              v-for="rate in [5, 4, 3, 2, 1]"
+              :key="rate"
+              class="flex items-center gap-2 text-xs w-full"
+            >
+              <span class="w-4 shrink-0">{{ rate }}</span>
+
+              <i class="fa-solid fa-star shrink-0" :class="themeClass.text.warning"></i>
+
+              <div
+                class="flex-1 h-2 rounded-full overflow-hidden"
+                :class="themeClass.background.secondary"
+              >
+                <div
+                  class="h-full rounded-full transition-all duration-500 ease-out"
+                  :class="themeClass.background.primary"
+                  :style="{ width: (ratingPercentage[rate] || 0) + '%' }"
+                />
+              </div>
+
+              <span class="w-10 text-right shrink-0" :class="themeClass.text.muted">
+                {{ ratingPercentage[rate] || 0 }}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="border-t pt-4 space-y-3 max-h-[320px] md:max-h-[260px] overflow-y-auto pr-1"
+          :class="themeClass.border.secondary"
+        >
+          <div
+            v-if="!listReview?.length && !loading"
+            class="text-center text-sm py-4"
+            :class="themeClass.text.muted"
+          >
+            Belum ada ulasan dari pelanggan
+          </div>
+
+          <BaseLoadingSpinner v-else-if="loading" type="mini" />
+
+          <div
+            v-for="review in listReview"
+            :key="review.id"
+            class="p-3 md:p-4 rounded-xl space-y-2"
+            :class="themeClass.background.secondary"
+          >
+            <div class="flex justify-between items-start gap-3">
+              <div class="flex gap-2 items-center min-w-0">
+                <img
+                  v-if="review.user?.photo"
+                  :src="`${__BASE_URL__}${review.user.photo}`"
+                  class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover shrink-0"
+                />
+
+                <div class="min-w-0">
+                  <p class="font-medium text-sm truncate" :class="themeClass.text.primary">
+                    {{ review.user?.name || 'Anonymous' }}
+                  </p>
+
+                  <div class="flex gap-1 text-[11px]">
+                    <i
+                      v-for="i in 5"
+                      :key="i"
+                      class="fa-star"
+                      :class="
+                        i <= review.rating
+                          ? ['fa-solid', themeClass.text.warning]
+                          : ['fa-regular', themeClass.text.muted]
+                      "
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <span class="text-[10px] whitespace-nowrap" :class="themeClass.text.muted">
+                {{ formatDate(review.createdAt) }}
+              </span>
+            </div>
+
+            <p class="text-xs leading-relaxed break-words" :class="themeClass.text.subtle">
+              {{ review.comment || 'Tidak ada komentar' }}
+            </p>
+          </div>
+        </div>
+      </BaseCard>
+
       <BaseCard variant="secondary" class="p-4 rounded-xl shadow-sm">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-sm font-medium flex items-center gap-2" :class="themeClass.text.subtle">
@@ -79,9 +204,11 @@ import OrderForm from '@/components/dashboard/form/OrderForm.vue'
 import OrderView from '@/components/dashboard/form/OrderView.vue'
 import PaymentConfirm from '@/components/dashboard/form/PaymentConfirm.vue'
 
+const companyStore = useCompanyProfileStore()
 const transactionStore = useTransactionStatsStore()
 const statusStore = useStatusStore()
 const transactionStatStore = useTransactionStatsStore()
+const reviewStore = useCompanyReviewStore()
 const themeClass = useThemeClass()
 
 const idValueSelected = ref(null)
@@ -90,6 +217,7 @@ const showPaymentModal = ref(false)
 const openViewModalValue = ref(false)
 const openPaymentConfirmModalValue = ref(false)
 const loading = ref(false)
+const summary = ref(null)
 
 const todayTransactions = computed(() => transactionStatStore.todayTransactions ?? 0)
 const completedTransactions = computed(() => transactionStatStore.completedTransactions ?? 0)
@@ -98,6 +226,33 @@ const transactions = computed(() => transactionStore.items ?? [])
 const meta = computed(() => transactionStore.meta ?? {})
 const statusOptions = computed(() => [{ label: 'All', value: '' }, ...statusStore.options])
 const profitByMonth = computed(() => transactionStatStore.profitByMonth)
+const listReview = computed(() => reviewStore.items)
+
+const ratingCount = computed(() => {
+  const result = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+
+  if (!listReview.value?.length) return result
+
+  listReview.value.forEach((r) => {
+    if (r.rating >= 1 && r.rating <= 5) {
+      result[r.rating]++
+    }
+  })
+
+  return result
+})
+
+/* Hitung persentase per bintang */
+const ratingPercentage = computed(() => {
+  const total = summary.value?.totalReviews || 1
+  const percent = {}
+
+  for (let i = 1; i <= 5; i++) {
+    percent[i] = Math.round((ratingCount.value[i] / total) * 100)
+  }
+
+  return percent
+})
 
 async function initPageData() {
   try {
@@ -108,7 +263,9 @@ async function initPageData() {
     if (!statusStore.items?.length) {
       await statusStore.fetch()
     }
-    transactionStatStore.fetchItems({ limit: 10000 })
+    await transactionStatStore.fetchItems({ limit: 10000 })
+    await reviewStore.fetchByCompany(companyStore.items[0].id)
+    summary.value = await reviewStore.fetchRatingSummary(companyStore.items[0].id)
   } catch (err) {
     notifyError(err, 'Gagal memuat data awal')
   } finally {

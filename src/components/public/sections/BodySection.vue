@@ -189,9 +189,9 @@
               :key="testi.id"
               class="p-7 bg-[#0D0D0D]/80 backdrop-blur-lg rounded-3xl shadow-md border border-[#C6A667]/20 hover:shadow-xl transition"
             >
-              <p class="italic text-[#D4D4D4] mb-4">“{{ testi.description }}”</p>
+              <p class="italic text-[#D4D4D4] mb-4">“{{ testi.comment }}”</p>
               <div class="flex justify-between items-center mt-4">
-                <span class="font-semibold text-[#F5F5F5]">{{ testi.title }}</span>
+                <span class="font-semibold text-[#F5F5F5]">{{ testi.user.name }}</span>
                 <span v-if="testi.rating" class="text-[#C6A667] font-medium"
                   >⭐ {{ testi.rating }}/5</span
                 >
@@ -247,7 +247,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import defaultLogo from '@/assets/logo.svg'
 import PricingModal from '../PricingModal.vue'
 
@@ -255,10 +254,12 @@ const profileStore = useCompanyProfileStore()
 const contentStore = useCompanyContentStore()
 const mediaStore = useCompanyMediaStore()
 const pricingStore = usePricingStore()
+const reviewStore = useCompanyReviewStore()
 
 const { items: profiles } = storeToRefs(profileStore)
 const { items: contents } = storeToRefs(contentStore)
 const { items: medias } = storeToRefs(mediaStore)
+const { items: reviews } = storeToRefs(reviewStore)
 
 const profile = computed(() => profiles.value[0] || null)
 
@@ -281,20 +282,10 @@ const sponsors = computed(() =>
       }
     }),
 )
-const testimonials = computed(() =>
-  contents.value
-    .filter((c) => c.type === 'TESTIMONI')
-    .map((t) => {
-      const sponsorMedia = medias.value.find((m) => m.id === t.mediaId)
-      return {
-        ...t,
-        logoUrl: sponsorMedia?.url ? `${__BASE_URL__}${sponsorMedia.url}` : defaultLogo,
-      }
-    }),
-)
+const testimonials = computed(() => reviews.value)
 
 const galleries = computed(
-  () => medias.value.filter((m) => !['SPONSOR', 'BG_MAIN', 'TESTIMONI'].includes(m.type)) || [],
+  () => medias.value.filter((m) => !['SPONSOR', 'BG_MAIN'].includes(m.type)) || [],
 )
 const bgbodymain = computed(() => medias.value.filter((m) => m.type === 'BG_MAIN') || [])
 
@@ -351,7 +342,12 @@ const animateOnScroll = () => {
 }
 
 onMounted(async () => {
-  await Promise.all([contentStore.fetchItems(), mediaStore.fetchItems(), pricingStore.fetchItems()])
+  await Promise.all([
+    contentStore.fetchItems(),
+    mediaStore.fetchItems(),
+    pricingStore.fetchItems(),
+    reviewStore.fetchByCompany(profile.value.id, { limit: 1000 }),
+  ])
   await nextTick()
   animateOnScroll()
   nextTick(() => {

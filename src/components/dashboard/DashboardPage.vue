@@ -144,6 +144,10 @@
           <StatisticReport />
         </BaseCard>
       </div>
+
+      <BaseCard variant="secondary">
+        <CompanyReviewList :companyId="companyStore.items[0].id" :userId="user?.id" />
+      </BaseCard>
     </div>
 
     <OrderForm v-if="showCreateModal" v-model="showCreateModal" mode="manualpickup" />
@@ -177,10 +181,12 @@ import OrderForm from '@/components/dashboard/form/OrderForm.vue'
 import OrderView from './form/OrderView.vue'
 import StatisticReport from './manage/StatisticReport.vue'
 import PaymentConfirm from './form/PaymentConfirm.vue'
+import CompanyReviewList from '@/components/review/ReviewList.vue'
 
 const authStore = useAuthStore()
 const transactionStore = useTransactionStatsStore()
 const runningPreview = useRunningPreviewStore()
+const companyStore = useCompanyProfileStore()
 const themeClass = useThemeClass()
 
 const user = computed(() => authStore.user)

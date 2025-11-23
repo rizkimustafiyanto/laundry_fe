@@ -108,6 +108,7 @@
     "useCompanyContentStore": "readonly",
     "useCompanyMediaStore": "readonly",
     "useCompanyProfileStore": "readonly",
+    "useCompanyReviewStore": "readonly",
     "useCssModule": "readonly",
     "useCssVars": "readonly",
     "useGendersStore": "readonly",
