@@ -79,7 +79,7 @@
             <a
               v-for="sponsor in companySafe.sponsors"
               :key="sponsor.id"
-              :href="sponsor.websiteUrl || '#'"
+              :href="sponsor.link || '#'"
               target="_blank"
             >
               <img
@@ -102,15 +102,18 @@
 
 <script setup>
 const store = useCompanyProfileStore()
+const contentStore = useCompanyContentStore()
 const mediaStore = useCompanyMediaStore()
 
 const { items } = storeToRefs(store)
+const { items: content } = storeToRefs(contentStore)
 const { items: medias } = storeToRefs(mediaStore)
 
 const themeClass = useThemeClass()
 
 const company = ref(items.value[0] || {})
-const sponsors = computed(() => medias.value.filter((m) => m.type === 'SPONSOR') || [])
+const sponsors = computed(() => content.value.filter((m) => m.type === 'SPONSOR') || [])
+const media = computed(() => medias.value.filter((m) => m.type === 'SPONSOR') || [])
 
 watch(items, (newItems) => {
   company.value = newItems[0] || {}
@@ -129,11 +132,15 @@ const companySafe = computed(() => ({
   linkedinUrl: company.value.linkedinUrl || '',
   tiktokUrl: company.value.tiktokUrl || '',
   sponsors:
-    sponsors.value?.map((s) => ({
-      ...s,
-      logoUrl: s.url ? `${__BASE_URL__}${s.url}` : '/default-sponsor.png',
-      sponsorName: s.title || 'Sponsor',
-    })) || [],
+    sponsors.value?.map((s) => {
+      const sponsorMedia = media.value.find((m) => m.id === s.mediaId)
+
+      return {
+        ...s,
+        logoUrl: sponsorMedia?.url ? `${__BASE_URL__}${sponsorMedia.url}` : '/default-sponsor.png',
+        sponsorName: s.title || 'Sponsor',
+      }
+    }) || [],
   hasSocial:
     company.value.facebookUrl ||
     company.value.instagramUrl ||

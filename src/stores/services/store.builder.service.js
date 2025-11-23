@@ -121,9 +121,10 @@ export function createStoreBuilder({
 
       async createItemWithFormData(formData) {
         try {
-          await apiForm.post(endpoint, formData)
+          const res = await apiForm.post(endpoint, formData)
           notifySuccess(`Data berhasil dibuat`)
           this.resetForm()
+          return res.data.data
         } catch (err) {
           notifyError(err, `Gagal membuat data`)
         }
@@ -131,9 +132,10 @@ export function createStoreBuilder({
 
       async updateItemWithFormData(id, formData) {
         try {
-          await apiForm.put(`${endpoint}/${id}`, formData)
+          const res = await apiForm.put(`${endpoint}/${id}`, formData)
           notifySuccess(`Data berhasil diperbarui`)
           this.resetForm()
+          return res.data.data
         } catch (err) {
           notifyError(err, `Gagal memperbarui data`)
         }

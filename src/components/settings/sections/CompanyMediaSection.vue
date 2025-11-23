@@ -1,5 +1,7 @@
 <template>
-  <div class="space-y-10">
+  <div
+    :class="[themeClass.baseDiv.secondary, 'p-6 rounded-xl shadow-lg backdrop-blur-md space-y-4']"
+  >
     <div v-for="(group, type) in groupedItems" :key="type" class="space-y-2">
       <h2 class="text-xl font-bold" :class="themeClass.text.primary">
         {{ typeLabel(type) }}
@@ -9,8 +11,8 @@
         <div
           v-for="item in group"
           :key="item.id"
-          class="p-4 rounded-xl shadow-md backdrop-blur-md group flex flex-col transition hover:shadow-lg"
-          :class="themeClass.baseDiv.secondary"
+          class="p-4 rounded-xl shadow-md backdrop-blur-md group flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          :class="themeClass.baseDiv.mist"
         >
           <div class="relative">
             <img
@@ -29,6 +31,7 @@
                 variant="secondary"
                 :title="`Edit ${item.title}`"
               />
+
               <BaseButton
                 @click="deleteItem(item.id)"
                 icon="fa-solid fa-trash"
@@ -42,14 +45,41 @@
           <h3 class="text-lg font-semibold mt-3 line-clamp-2" :class="themeClass.text.secondary">
             {{ item.title }}
           </h3>
-          <p v-if="item.description" class="text-sm text-gray-500 line-clamp-2">
+
+          <p v-if="item.description" class="text-sm opacity-70 line-clamp-2">
             {{ item.description }}
           </p>
         </div>
 
         <div
-          class="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed cursor-pointer text-center transition hover:scale-[1.02]"
-          :class="[themeClass.border.dark, themeClass.hover.secondary]"
+          v-if="group.length === 0"
+          class="col-span-full rounded-xl border-2 border-dashed p-10 flex flex-col items-center justify-center text-center space-y-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+          :class="[themeClass.border.secondary, themeClass.baseDiv.secondary]"
+        >
+          <i class="fa-regular fa-image text-5xl opacity-40" :class="themeClass.text.secondary"></i>
+
+          <p class="text-base font-semibold tracking-wide" :class="themeClass.text.secondary">
+            Belum ada gambar
+          </p>
+
+          <p class="text-sm opacity-60">Silakan tambahkan media untuk mengisi bagian ini</p>
+
+          <BaseButton
+            v-if="type === MAIN_TYPE"
+            @click="openEditModal(null, type)"
+            icon="fa-solid fa-plus"
+            size="sm"
+            class="mt-4"
+            variant="secondary"
+          >
+            Tambah {{ typeLabel(type) }}
+          </BaseButton>
+        </div>
+
+        <div
+          v-if="type === MAIN_TYPE"
+          class="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed cursor-pointer text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
+          :class="themeClass.border.secondary"
           @click="openEditModal(null, type)"
         >
           <i class="fa-solid fa-plus text-2xl mb-2" :class="themeClass.icon.secondary"></i>
@@ -82,9 +112,13 @@ const modalOpen = ref(false)
 const modalMode = ref('edit')
 const currentItem = ref(null)
 
+const MAIN_TYPE = 'BG_MAIN'
+const GENERAL_TYPE = 'GENERAL'
+
 const openEditModal = (item, defaultType = null) => {
   modalMode.value = item ? 'edit' : 'create'
   currentItem.value = item ? { ...item } : { type: defaultType }
+
   modalOpen.value = true
 }
 
@@ -97,20 +131,18 @@ const refresh = async () => {
   modalOpen.value = false
 }
 
-const ALL_MEDIA_TYPES = ['SPONSOR', 'TESTIMONI', 'BG_MAIN']
-
 const groupedItems = computed(() => {
-  const groups = {}
-
-  for (const type of ALL_MEDIA_TYPES) {
-    groups[type] = []
+  const groups = {
+    [GENERAL_TYPE]: [],
+    [MAIN_TYPE]: [],
   }
 
   for (const item of items.value) {
-    if (!groups[item.type]) {
-      groups[item.type] = []
+    if (item.type === MAIN_TYPE) {
+      groups[MAIN_TYPE].push(item)
+    } else {
+      groups[GENERAL_TYPE].push(item)
     }
-    groups[item.type].push(item)
   }
 
   return groups
@@ -118,9 +150,8 @@ const groupedItems = computed(() => {
 
 const typeLabel = (type) => {
   const labels = {
-    SPONSOR: 'Sponsor',
-    TESTIMONI: 'Testimoni',
-    BG_MAIN: 'Background Picture',
+    [MAIN_TYPE]: 'Background Picture',
+    [GENERAL_TYPE]: 'General',
   }
   return labels[type] || type
 }
@@ -129,6 +160,7 @@ onBeforeMount(async () => {
   if (!items.value.length) {
     await store.fetchItems()
   }
+
   refresh()
 })
 </script>

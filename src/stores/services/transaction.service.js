@@ -151,7 +151,10 @@ export const useTransactionStatsStore = createStoreBuilder({
         acc[t.status] = (acc[t.status] || 0) + 1
         return acc
       }, {})
-      return Object.entries(grouped).map(([status, count]) => ({ status: formatText(status), count }))
+      return Object.entries(grouped).map(([status, count]) => ({
+        status: formatText(status),
+        count,
+      }))
     },
     todayTransactions: (state) => {
       const today = new Date().toDateString()

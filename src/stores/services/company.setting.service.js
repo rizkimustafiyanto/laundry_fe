@@ -52,6 +52,7 @@ export const useCompanyContentStore = createStoreBuilder({
     rating: null,
     icon: '',
     mediaId: null,
+    link: '',
     order: 0,
   },
 })

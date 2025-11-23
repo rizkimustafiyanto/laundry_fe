@@ -235,7 +235,7 @@
             <img
               v-for="media in sponsors"
               :key="media.id"
-              :src="`${__BASE_URL__}${media.url}`"
+              :src="media.logoUrl"
               class="h-14 grayscale hover:grayscale-0 transition duration-300 opacity-80 hover:opacity-100"
             />
           </div>
@@ -268,8 +268,31 @@ const heroImage = computed(() =>
 
 const about = computed(() => contents.value.find((c) => c.type === 'ABOUT') || null)
 const services = computed(() => contents.value.filter((c) => c.type === 'SERVICE') || [])
-const sponsors = computed(() => medias.value.filter((m) => m.type === 'SPONSOR') || [])
-const testimonials = computed(() => contents.value.filter((c) => c.type === 'TESTIMONI') || [])
+const sponsors = computed(() =>
+  contents.value
+    .filter((c) => c.type === 'SPONSOR')
+    .map((s) => {
+      const sponsorMedia = medias.value.find((m) => m.id === s.mediaId)
+
+      return {
+        ...s,
+        logoUrl: sponsorMedia?.url ? `${__BASE_URL__}${sponsorMedia.url}` : defaultLogo,
+        sponsorName: s.title || 'Sponsor',
+      }
+    }),
+)
+const testimonials = computed(() =>
+  contents.value
+    .filter((c) => c.type === 'TESTIMONI')
+    .map((t) => {
+      const sponsorMedia = medias.value.find((m) => m.id === t.mediaId)
+      return {
+        ...t,
+        logoUrl: sponsorMedia?.url ? `${__BASE_URL__}${sponsorMedia.url}` : defaultLogo,
+      }
+    }),
+)
+
 const galleries = computed(
   () => medias.value.filter((m) => !['SPONSOR', 'BG_MAIN', 'TESTIMONI'].includes(m.type)) || [],
 )

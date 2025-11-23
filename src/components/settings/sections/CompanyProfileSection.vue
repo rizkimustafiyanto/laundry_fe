@@ -15,7 +15,7 @@
       class="p-6 rounded-xl shadow-md backdrop-blur-md relative flex flex-col gap-6"
       :class="themeClass.baseDiv.secondary"
     >
-      <div class="absolute top-6 right-6 z-10 hidden md:flex">
+      <div class="absolute top-7 right-7 z-10 hidden md:flex">
         <BaseButton
           @click="openEditModal(company)"
           label="Edit"
@@ -25,13 +25,12 @@
         />
       </div>
 
-      <div class="flex md:hidden justify-end">
+      <div class="flex absolute top-7 right-7 z-10 md:hidden justify-end">
         <BaseButton
           @click="openEditModal(company)"
           icon="fa-solid fa-pen"
           size="sm"
           variant="secondary"
-          label="edit"
         />
       </div>
 

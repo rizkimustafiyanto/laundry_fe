@@ -16,7 +16,7 @@
       <BaseInput label="Judul" v-model="formPayload.title" placeholder="Masukkan judul konten" />
 
       <BaseInput
-        v-if="['ABOUT', 'HERO'].includes(formPayload?.type)"
+        v-if="['ABOUT'].includes(formPayload?.type)"
         label="Sub Judul"
         v-model="formPayload.subtitle"
         placeholder="Masukkan sub judul"
@@ -30,7 +30,7 @@
       />
 
       <BaseSelect
-        v-if="['SERVICE', 'FEATURE'].includes(formPayload?.type)"
+        v-if="['SERVICE'].includes(formPayload?.type)"
         label="Ikon (opsional)"
         v-model="formPayload.icon"
         :options="availableIcons"
@@ -52,7 +52,7 @@
       </BaseSelect>
 
       <BaseInput
-        v-if="formPayload.type === 'TESTIMONIAL'"
+        v-if="formPayload.type === 'TESTIMONI'"
         type="number"
         label="Rating (opsional)"
         v-model="formPayload.rating"
@@ -61,13 +61,11 @@
         placeholder="Masukkan rating (1-5)"
       />
 
-      <div>
+      <div v-if="!['ABOUT', 'SERVICE', 'TESTIMONI'].includes(formPayload.type)">
         <BaseInput id="media-upload" label="File" type="file" @update:file="handleFileUpload" />
         <div v-if="previewImage" class="mt-2 flex justify-center items-center">
           <img
-            :src="
-              previewImage.startsWith('data:') ? previewImage : `${__BASE_URL__}${previewImage}`
-            "
+            :src="`${__BASE_URL__}${previewImage}`"
             alt="Preview"
             class="h-20 w-20 object-cover rounded shadow"
           />
@@ -75,6 +73,14 @@
       </div>
 
       <BaseInput
+        v-if="['SPONSOR'].includes(formPayload?.type)"
+        label="Link Sponsor"
+        v-model="formPayload.link"
+        placeholder="Masukkan link sponsor"
+      />
+
+      <BaseInput
+        v-if="['SERVICE'].includes(formPayload?.type)"
         type="number"
         label="Urutan Tampil (opsional)"
         v-model="formPayload.order"
@@ -112,19 +118,17 @@ const { formPayload } = storeToRefs(store)
 const previewImage = ref(null)
 
 const contentTypes = [
-  { label: 'Hero', value: 'HERO' },
-  { label: 'About', value: 'ABOUT' },
-  { label: 'Service', value: 'SERVICE' },
-  { label: 'Feature', value: 'FEATURE' },
-  { label: 'Testimonial', value: 'TESTIMONIAL' },
-  { label: 'Sponsor', value: 'SPONSOR' },
+  { label: 'Tentang Kami', value: 'ABOUT' },
+  { label: 'Layanan / Services', value: 'SERVICE' },
+  { label: 'Testimonial Pelanggan', value: 'TESTIMONI' },
+  { label: 'Sponsor / Partner', value: 'SPONSOR' },
 ]
 
 async function handleFileUpload(file) {
   if (!file) return
 
   const formData = new FormData()
-  formData.append('file', file)
+  formData.append('url', file)
   formData.append('companyId', companyId.value)
   formData.append('type', formPayload.value.type || 'GENERAL')
 

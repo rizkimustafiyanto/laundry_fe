@@ -33,7 +33,7 @@
           :class="themeClass.text.secondary"
         >
           <i :class="['fa-solid fa-images mr-1', themeClass.icon.teal]"></i>
-          Media Perusahaan (Gallery, Sponsor, dll)
+          Media Perusahaan
         </h3>
         <CompanyMediaSection />
       </div>

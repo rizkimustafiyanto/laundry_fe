@@ -5,6 +5,15 @@
     size="md"
   >
     <form @submit.prevent="submitForm" class="space-y-4">
+      <BaseInput
+        hidden
+        disabled
+        label="Media Type"
+        v-model="formPayload.type"
+        placeholder="Pilih tipe"
+        required
+      />
+
       <BaseInput id="media-upload" label="File" type="file" @update:file="handleFileUpload" />
       <div v-if="imagePreview" class="mt-2 flex justify-center items-center">
         <img
@@ -13,14 +22,6 @@
           class="h-20 w-20 object-cover rounded shadow"
         />
       </div>
-
-      <BaseSelect
-        label="Media Type"
-        v-model="formPayload.type"
-        :options="mediaTypeOptions"
-        placeholder="Pilih tipe media"
-        required
-      />
 
       <BaseInput label="Title" v-model="formPayload.title" placeholder="Judul media" />
 
@@ -60,12 +61,6 @@ const formPayload = reactive({
   order: 0,
 })
 
-const mediaTypeOptions = [
-  { value: 'SPONSOR', label: 'Sponsor' },
-  { value: 'TESTIMONI', label: 'Testimoni' },
-  { value: 'BG_MAIN', label: 'Background Image Landing Page' },
-]
-
 const imagePreview = ref(null)
 const fileObj = ref(null)
 
@@ -80,6 +75,7 @@ watch(
       Object.keys(formPayload).forEach((k) => (formPayload[k] = ''))
       formPayload.companyId = companyId.value
       imagePreview.value = null
+      formPayload.type = 'BG_MAIN'
       fileObj.value = null
     }
   },

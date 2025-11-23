@@ -33,9 +33,9 @@
             class="p-4 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 flex flex-col gap-3 relative"
             :class="[themeClass.baseDiv.mist, themeClass.border.dark]"
           >
-            <div v-if="item.media?.url" class="relative w-full h-40 rounded-lg overflow-hidden">
+            <div v-if="item.url" class="relative w-full h-40 rounded-lg overflow-hidden">
               <img
-                :src="`${__BASE_URL__}${item.media.url}`"
+                :src="item.url"
                 :alt="item.title || 'content image'"
                 class="object-cover w-full h-full"
               />
@@ -100,15 +100,28 @@
 import CompanyContentForm from '../form/CompanyContentForm.vue'
 
 const store = useCompanyContentStore()
+const storeMedia = useCompanyMediaStore()
 const { items } = storeToRefs(store)
+const { items: medias } = storeToRefs(storeMedia)
 const themeClass = useThemeClass()
+
+const contents = computed(() =>
+  items.value.map((s) => {
+    const contentsMedia = medias.value.find((m) => m.id === s.mediaId)
+
+    return {
+      ...s,
+      url: contentsMedia ? `${__BASE_URL__}${contentsMedia.url}` : null,
+    }
+  }),
+)
 
 const modalOpen = ref(false)
 const modalMode = ref('edit')
 
 const groupedContent = computed(() => {
   const groups = {}
-  for (const item of items.value) {
+  for (const item of contents.value) {
     if (!groups[item.type]) groups[item.type] = []
     groups[item.type].push(item)
   }
@@ -120,11 +133,9 @@ const groupedContent = computed(() => {
 
 const typeLabel = (type) => {
   const labels = {
-    HERO: 'Hero Section',
     ABOUT: 'Tentang Kami',
     SERVICE: 'Layanan / Services',
-    FEATURE: 'Fitur Unggulan',
-    TESTIMONIAL: 'Testimonial Pelanggan',
+    TESTIMONI: 'Testimonial Pelanggan',
     SPONSOR: 'Sponsor / Partner',
   }
   return labels[type] || type
