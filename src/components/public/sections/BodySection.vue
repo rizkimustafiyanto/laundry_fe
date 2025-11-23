@@ -122,25 +122,21 @@
 
           <div
             id="pricing-scroll"
-            class="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
-            :class="{
-              'justify-center': isSmallPricing,
-              'justify-start': !isSmallPricing,
-            }"
+            :class="[
+              'flex gap-6 pb-6 snap-x snap-mandatory scrollbar-hide overflow-x-auto',
+              Object.keys(groupedPricing).length < 4 ? 'lg:justify-center' : '',
+            ]"
           >
             <div
               v-for="(group, service) in groupedPricing"
               :key="service"
-              class="min-w-[350px] bg-[#0D0D0D]/80 backdrop-blur-xl p-10 rounded-3xl border border-[#C6A667]/20 shadow-md hover:shadow-lg transition-all"
+              class="shrink-0 w-[85%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%] bg-[#0D0D0D]/80 backdrop-blur-xl p-8 rounded-3xl border border-[#C6A667]/20 shadow-md hover:shadow-lg transition-all snap-start"
             >
               <h3 class="text-2xl font-semibold text-[#C6A667] mb-6 tracking-wide">
                 {{ formatText(service) }}
               </h3>
 
-              <div
-                class="grid gap-6 place-items-center"
-                style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr))"
-              >
+              <div class="flex flex-col gap-6">
                 <div
                   v-for="price in group.items"
                   :key="price.id"
@@ -181,20 +177,27 @@
         v-if="testimonials.length"
       >
         <div class="max-w-6xl mx-auto text-center px-6">
-          <h2 class="text-4xl font-bold mb-14 text-[#C6A667]">Testimoni</h2>
+          <h2 class="text-4xl font-bold mb-14 text-[#C6A667]">Testimoni Pelanggan</h2>
 
-          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            class="flex flex-col gap-8 max-h-[520px] overflow-y-auto lg:flex-row lg:overflow-x-auto lg:overflow-y-hidden justify-center scrollbar-hide pb-4"
+          >
             <div
-              v-for="testi in testimonials"
+              v-for="(testi, i) in testimonials"
               :key="testi.id"
-              class="p-7 bg-[#0D0D0D]/80 backdrop-blur-lg rounded-3xl shadow-md border border-[#C6A667]/20 hover:shadow-xl transition"
+              class="w-full max-w-sm p-7 bg-[#0D0D0D]/80 backdrop-blur-lg rounded-3xl border border-[#C6A667]/20 shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(198,166,103,0.2)] animate-fade-up lg:shrink-0 lg:snap-start"
+              :style="{ animationDelay: `${i * 120}ms` }"
             >
-              <p class="italic text-[#D4D4D4] mb-4">“{{ testi.comment }}”</p>
+              <p class="italic text-[#D4D4D4] mb-6 leading-relaxed">“{{ testi.comment }}”</p>
+
               <div class="flex justify-between items-center mt-4">
-                <span class="font-semibold text-[#F5F5F5]">{{ testi.user.name }}</span>
-                <span v-if="testi.rating" class="text-[#C6A667] font-medium"
-                  >⭐ {{ testi.rating }}/5</span
-                >
+                <span class="font-semibold text-[#F5F5F5]">
+                  {{ testi.user.name }}
+                </span>
+
+                <span v-if="testi.rating" class="text-[#C6A667] font-medium text-sm">
+                  ⭐ {{ testi.rating }}/5
+                </span>
               </div>
             </div>
           </div>
@@ -203,17 +206,19 @@
 
       <section
         id="gallery"
-        class="py-28 bg-[#1A1A1A]/80 backdrop-blur-sm fade-up"
+        class="py-28 bg-[#1A1A1A]/60 backdrop-blur-sm fade-up"
         v-if="galleries.length"
       >
         <div class="max-w-6xl mx-auto text-center px-6">
           <h2 class="text-4xl font-bold mb-12 text-[#C6A667]">Galeri</h2>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div
+            class="flex flex-col sm:grid sm:grid-cols-2 sm:gap-4 max-h-[520px] overflow-y-auto lg:flex lg:flex-row lg:gap-6 lg:overflow-x-auto lg:overflow-y-hidden justify-center items-start scrollbar-hide pb-4"
+          >
             <div
               v-for="g in galleries"
               :key="g.id"
-              class="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition"
+              class="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition w-full sm:w-auto lg:w-[260px] lg:shrink-0 lg:snap-start"
             >
               <img
                 :src="`${__BASE_URL__}${g.url}`"
@@ -231,12 +236,16 @@
       >
         <div class="max-w-6xl mx-auto text-center px-6">
           <h2 class="text-2xl font-semibold mb-10 text-[#C6A667]">Partner & Sponsor</h2>
-          <div class="flex flex-wrap justify-center gap-12 items-center">
+
+          <div
+            class="flex flex-col items-center gap-10 max-h-[420px] overflow-y-auto lg:flex-row lg:overflow-x-auto lg:overflow-y-hidden justify-center scrollbar-hide pb-4"
+          >
             <img
-              v-for="media in sponsors"
+              v-for="(media, i) in sponsors"
               :key="media.id"
               :src="media.logoUrl"
-              class="h-14 grayscale hover:grayscale-0 transition duration-300 opacity-80 hover:opacity-100"
+              class="h-14 grayscale hover:grayscale-0 transition-all duration-300 opacity-80 hover:opacity-100 lg:shrink-0 lg:snap-start"
+              :style="{ animationDelay: `${i * 80}ms` }"
             />
           </div>
         </div>
@@ -321,10 +330,6 @@ const openModal = (price) => {
   showModal.value = true
 }
 
-const isSmallPricing = computed(() => {
-  return Object.keys(groupedPricing.value).length <= 4
-})
-
 const animateOnScroll = () => {
   const elements = document.querySelectorAll('.fade-up')
   const observer = new IntersectionObserver(
@@ -350,15 +355,6 @@ onMounted(async () => {
   ])
   await nextTick()
   animateOnScroll()
-  nextTick(() => {
-    const el = document.querySelector('#pricing-scroll')
-    if (el) {
-      el.scrollTo({
-        left: el.scrollWidth / 2 - el.clientWidth / 2,
-        behavior: 'smooth',
-      })
-    }
-  })
 })
 </script>
 
@@ -389,7 +385,6 @@ onMounted(async () => {
   animation: pulse-slow 8s ease-in-out infinite;
 }
 
-/* Mobile Safari fix */
 @media (max-width: 768px) {
   [style*='background-attachment: fixed'] {
     background-attachment: scroll !important;
@@ -401,5 +396,20 @@ onMounted(async () => {
 }
 .scrollbar-hide {
   scrollbar-width: none;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.7s ease forwards;
 }
 </style>
