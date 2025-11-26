@@ -23,8 +23,27 @@ export const usePricingStore = createStoreBuilder({
     },
 
     listenPricingUpdates() {
-      socket.on('pricing_updated', () => {
-        this.fetchItems()
+      socket.on('pricing_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('pricing_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('pricing_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
       })
     },
   },

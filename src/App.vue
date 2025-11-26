@@ -50,4 +50,19 @@ itemStore.listenItemTypeUpdates()
 
 const serviceStore = useServiceTypeStore()
 serviceStore.listenServiceTypeUpdates()
+
+const chargeStore = useChargeStore()
+chargeStore.listenChargeUpdates()
+
+const reviewStore = useCompanyReviewStore()
+reviewStore.listenReviewUpdates()
+
+const portoStore = useCompanyProfileStore()
+portoStore.listenPortoUpdates()
+
+const mediaStore = useCompanyMediaStore()
+mediaStore.listenMediaUpdates()
+
+const pricingStore = usePricingStore()
+pricingStore.listenPricingUpdates()
 </script>

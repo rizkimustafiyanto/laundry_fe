@@ -53,7 +53,7 @@
       <BaseCard variant="dark" class="p-6 rounded-xl shadow-sm space-y-6">
         <template v-for="(items, service) in groupedPricing" :key="service">
           <h3 class="text-lg font-semibold mb-2" :class="themeClass.text.secondary">
-            {{ service }}
+            {{ formatText(service) }}
           </h3>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -65,7 +65,7 @@
             >
               <div class="flex justify-between items-start mb-2">
                 <span class="font-semibold" :class="themeClass.text.secondary">
-                  {{ price.itemType?.name }}
+                  {{ formatText(price.itemType?.name) }}
                 </span>
                 <div class="space-x-1">
                   <BaseButton
@@ -84,7 +84,7 @@
               </div>
 
               <p class="text-sm" :class="themeClass.text.secondary">
-                Harga / Kg: <span class="font-medium">{{ price.pricePerKg.toLocaleString() }}</span>
+                Harga / Kg: <span class="font-bold">{{ formatCurrency(price.pricePerKg) }}</span>
               </p>
             </BaseCard>
           </div>

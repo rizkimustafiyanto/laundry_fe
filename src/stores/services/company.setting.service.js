@@ -1,3 +1,4 @@
+import socket from '@/plugins/socket'
 import { createStoreBuilder } from './store.builder.service'
 
 export const useCompanyProfileStore = createStoreBuilder({
@@ -24,6 +25,32 @@ export const useCompanyProfileStore = createStoreBuilder({
     metaTitle: '',
     metaDescription: '',
   },
+  customActions: {
+    listenPortoUpdates() {
+      socket.on('porto_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('porto_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('porto_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+      })
+    },
+  },
 })
 
 export const useCompanyMediaStore = createStoreBuilder({
@@ -36,6 +63,32 @@ export const useCompanyMediaStore = createStoreBuilder({
     title: '',
     description: '',
     order: 0,
+  },
+  customActions: {
+    listenMediaUpdates() {
+      socket.on('media_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('media_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('media_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+      })
+    },
   },
 })
 
@@ -53,6 +106,32 @@ export const useCompanyContentStore = createStoreBuilder({
     mediaId: null,
     link: '',
     order: 0,
+  },
+  customActions: {
+    listenContentUpdates() {
+      socket.on('content_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('content_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('content_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+      })
+    },
   },
 })
 
@@ -119,6 +198,31 @@ export const useCompanyReviewStore = createStoreBuilder({
 
     hasUserReviewed(userId) {
       return this.items.some((r) => r.userId === userId)
+    },
+
+    listenReviewUpdates() {
+      socket.on('review_created', (newTransaction) => {
+        const exists = this.items.some((t) => t.id === newTransaction.id)
+        if (!exists) {
+          this.items.unshift(newTransaction)
+        }
+      })
+
+      socket.on('review_updated', (updatedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === updatedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1, updatedTransaction)
+        } else {
+          this.items.push(updatedTransaction)
+        }
+      })
+
+      socket.on('review_deleted', (deletedTransaction) => {
+        const index = this.items.findIndex((t) => t.id === deletedTransaction.id)
+        if (index !== -1) {
+          this.items.splice(index, 1)
+        }
+      })
     },
   },
 })
